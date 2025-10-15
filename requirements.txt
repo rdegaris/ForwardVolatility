@@ -1,4 +1,7 @@
+# GUI Calculator (calculator.py)
 # No additional requirements - tkinter is included with Python standard library
-# Uncomment below if you add additional dependencies in the future:
-# numpy>=1.20.0
-# matplotlib>=3.5.0
+
+# Scanner (scanner.py)
+yfinance>=0.2.28
+pandas>=2.0.0
+numpy>=1.20.0
