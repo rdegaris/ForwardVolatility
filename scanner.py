@@ -8,6 +8,7 @@ import yfinance as yf
 from datetime import datetime, timedelta
 import pandas as pd
 from typing import List, Dict, Tuple, Optional
+import time
 
 
 # Nasdaq 100 stocks (subset - you can expand this list)
@@ -89,30 +90,40 @@ def calculate_forward_vol(dte1: float, iv1: float, dte2: float, iv2: float) -> O
     }
 
 
-def get_atm_iv(ticker: str, expiry_date: str) -> Optional[float]:
+def get_atm_iv(ticker: str, expiry_date: str, stock_obj=None) -> Optional[float]:
     """
     Get ATM (at-the-money) implied volatility for a given ticker and expiry.
     
     Args:
         ticker: Stock ticker symbol
         expiry_date: Expiration date string in format returned by yfinance
+        stock_obj: Optional yf.Ticker object to reuse
     
     Returns:
         ATM implied volatility as percentage, or None if not found
     """
     try:
-        stock = yf.Ticker(ticker)
-        current_price = stock.info.get('regularMarketPrice') or stock.info.get('currentPrice')
+        if stock_obj is None:
+            stock_obj = yf.Ticker(ticker)
+        
+        # Get option chain for the expiry
+        opt_chain = stock_obj.option_chain(expiry_date)
+        
+        # Get current price from fast_info or info
+        try:
+            current_price = stock_obj.fast_info.get('lastPrice') or stock_obj.fast_info.get('regularMarketPrice')
+        except:
+            current_price = stock_obj.info.get('regularMarketPrice') or stock_obj.info.get('currentPrice')
         
         if current_price is None:
             return None
         
-        # Get option chain for the expiry
-        opt_chain = stock.option_chain(expiry_date)
-        
         # Combine calls and puts
         calls = opt_chain.calls
         puts = opt_chain.puts
+        
+        if calls.empty or puts.empty:
+            return None
         
         # Find ATM options (closest to current price)
         calls['distance'] = abs(calls['strike'] - current_price)
@@ -127,12 +138,12 @@ def get_atm_iv(ticker: str, expiry_date: str) -> Optional[float]:
         
         if not atm_call.empty and 'impliedVolatility' in atm_call.columns:
             call_iv = atm_call.iloc[0]['impliedVolatility']
-            if pd.notna(call_iv):
+            if pd.notna(call_iv) and call_iv > 0:
                 call_iv = call_iv * 100  # Convert to percentage
         
         if not atm_put.empty and 'impliedVolatility' in atm_put.columns:
             put_iv = atm_put.iloc[0]['impliedVolatility']
-            if pd.notna(put_iv):
+            if pd.notna(put_iv) and put_iv > 0:
                 put_iv = put_iv * 100  # Convert to percentage
         
         # Average call and put IV if both available
@@ -146,7 +157,7 @@ def get_atm_iv(ticker: str, expiry_date: str) -> Optional[float]:
             return None
             
     except Exception as e:
-        print(f"Error getting IV for {ticker} expiry {expiry_date}: {e}")
+        # Silently fail for individual expiries
         return None
 
 
@@ -176,14 +187,34 @@ def scan_ticker(ticker: str, threshold: float = 0.4) -> List[Dict]:
     
     try:
         stock = yf.Ticker(ticker)
-        expiries = stock.options
         
-        if len(expiries) < 2:
-            print(f"{ticker}: Not enough expiry dates available")
+        # Small delay to avoid rate limits
+        time.sleep(0.5)
+        
+        # Get current price using history (more reliable)
+        try:
+            hist = stock.history(period='1d')
+            if not hist.empty:
+                current_price = hist['Close'].iloc[-1]
+            else:
+                current_price = None
+        except:
+            current_price = None
+        
+        if current_price is None:
+            print(f"{ticker}: Could not fetch current price")
             return opportunities
         
-        # Get current price for reference
-        current_price = stock.info.get('regularMarketPrice') or stock.info.get('currentPrice')
+        # Get expiries
+        try:
+            expiries = stock.options
+        except Exception as e:
+            print(f"{ticker}: Could not fetch options data - {str(e)[:100]}")
+            return opportunities
+        
+        if len(expiries) < 2:
+            print(f"{ticker}: Not enough expiry dates available (found {len(expiries)})")
+            return opportunities
         
         print(f"\nScanning {ticker} (Price: ${current_price:.2f})...")
         
@@ -199,9 +230,12 @@ def scan_ticker(ticker: str, threshold: float = 0.4) -> List[Dict]:
             if dte1 < 1 or dte2 < 1 or (dte2 - dte1) < 5:
                 continue
             
+            # Small delay between option chain calls
+            time.sleep(0.3)
+            
             # Get ATM IVs
-            iv1 = get_atm_iv(ticker, expiry1)
-            iv2 = get_atm_iv(ticker, expiry2)
+            iv1 = get_atm_iv(ticker, expiry1, stock)
+            iv2 = get_atm_iv(ticker, expiry2, stock)
             
             if iv1 is None or iv2 is None:
                 continue
@@ -236,7 +270,7 @@ def scan_ticker(ticker: str, threshold: float = 0.4) -> List[Dict]:
             print(f"  No opportunities above threshold {threshold}")
             
     except Exception as e:
-        print(f"Error scanning {ticker}: {e}")
+        print(f"Error scanning {ticker}: {str(e)[:100]}")
     
     return opportunities
 
@@ -254,9 +288,14 @@ def scan_multiple_tickers(tickers: List[str], threshold: float = 0.4) -> pd.Data
     """
     all_opportunities = []
     
-    for ticker in tickers:
+    for idx, ticker in enumerate(tickers, 1):
+        print(f"\n[{idx}/{len(tickers)}] ", end="")
         opps = scan_ticker(ticker, threshold)
         all_opportunities.extend(opps)
+        
+        # Add delay between tickers to avoid rate limits
+        if idx < len(tickers):
+            time.sleep(1.0)
     
     if not all_opportunities:
         print("\nNo opportunities found above threshold.")
