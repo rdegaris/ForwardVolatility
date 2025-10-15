@@ -180,7 +180,7 @@ class IBScanner:
             print(f"  Error getting option chains: {e}")
             return []
     
-    def get_atm_iv(self, ticker: str, expiry: str, current_price: float) -> Optional[float]:
+    def get_atm_iv(self, ticker: str, expiry: str, current_price: float, debug: bool = False) -> Optional[float]:
         """Get ATM implied volatility for specific expiry."""
         try:
             stock = Stock(ticker, 'SMART', 'USD')
@@ -188,6 +188,8 @@ class IBScanner:
             
             chains = self.ib.reqSecDefOptParams(stock.symbol, '', stock.secType, stock.conId)
             if not chains:
+                if debug:
+                    print(f"\n    [DEBUG] No chains found")
                 return None
             
             strikes = chains[0].strikes
@@ -195,21 +197,52 @@ class IBScanner:
             # Find ATM strike
             atm_strike = min(strikes, key=lambda x: abs(x - current_price))
             
+            if debug:
+                print(f"\n    [DEBUG] ATM Strike: {atm_strike} (Price: {current_price})")
+            
             # Get call and put
             call = Option(ticker, expiry, atm_strike, 'C', 'SMART')
             put = Option(ticker, expiry, atm_strike, 'P', 'SMART')
             
             self.ib.qualifyContracts(call, put)
             
-            # Request market data
-            call_ticker = self.ib.reqMktData(call, '', False, False)
-            put_ticker = self.ib.reqMktData(put, '', False, False)
+            if debug:
+                print(f"    [DEBUG] Call: {call.localSymbol if hasattr(call, 'localSymbol') else 'qualified'}")
+                print(f"    [DEBUG] Put: {put.localSymbol if hasattr(put, 'localSymbol') else 'qualified'}")
             
-            self.ib.sleep(2)  # Wait for data
+            # Request market data with generic tick for IV
+            call_ticker = self.ib.reqMktData(call, '106', False, False)  # 106 = option IV
+            put_ticker = self.ib.reqMktData(put, '106', False, False)
             
-            # Get IVs
-            call_iv = call_ticker.modelGreeks.impliedVol if call_ticker.modelGreeks else None
-            put_iv = put_ticker.modelGreeks.impliedVol if put_ticker.modelGreeks else None
+            self.ib.sleep(3)  # Wait for data
+            
+            # Try multiple methods to get IV
+            call_iv = None
+            put_iv = None
+            
+            # Method 1: modelGreeks
+            if call_ticker.modelGreeks and call_ticker.modelGreeks.impliedVol:
+                call_iv = call_ticker.modelGreeks.impliedVol
+                if debug:
+                    print(f"    [DEBUG] Call IV (modelGreeks): {call_iv}")
+            
+            if put_ticker.modelGreeks and put_ticker.modelGreeks.impliedVol:
+                put_iv = put_ticker.modelGreeks.impliedVol
+                if debug:
+                    print(f"    [DEBUG] Put IV (modelGreeks): {put_iv}")
+            
+            # Method 2: Try last price if IV not available (for very ITM/OTM)
+            if not call_iv and call_ticker.last and call_ticker.last > 0:
+                if debug:
+                    print(f"    [DEBUG] Call has price but no IV: ${call_ticker.last}")
+            
+            if not put_iv and put_ticker.last and put_ticker.last > 0:
+                if debug:
+                    print(f"    [DEBUG] Put has price but no IV: ${put_ticker.last}")
+            
+            # Cancel market data subscriptions
+            self.ib.cancelMktData(call)
+            self.ib.cancelMktData(put)
             
             # Convert to percentage
             ivs = []
@@ -219,10 +252,18 @@ class IBScanner:
                 ivs.append(put_iv * 100)
             
             if ivs:
-                return sum(ivs) / len(ivs)
+                avg_iv = sum(ivs) / len(ivs)
+                if debug:
+                    print(f"    [DEBUG] Average IV: {avg_iv:.2f}%")
+                return avg_iv
             
+            if debug:
+                print(f"    [DEBUG] No valid IV found")
             return None
+            
         except Exception as e:
+            if debug:
+                print(f"\n    [DEBUG] Exception: {e}")
             return None
     
     def scan_ticker(self, ticker: str, threshold: float = 0.4) -> List[Dict]:
@@ -258,13 +299,14 @@ class IBScanner:
             if dte1 < 1 or dte2 < 1 or (dte2 - dte1) < 5:
                 continue
             
-            print(f"  Checking {expiry1} (DTE={dte1}) vs {expiry2} (DTE={dte2})...", end=' ')
+            print(f"  Checking {expiry1} (DTE={dte1}) vs {expiry2} (DTE={dte2})...")
             
-            iv1 = self.get_atm_iv(ticker, expiry1, current_price)
-            iv2 = self.get_atm_iv(ticker, expiry2, current_price)
+            iv1 = self.get_atm_iv(ticker, expiry1, current_price, debug=True)
+            time.sleep(0.5)
+            iv2 = self.get_atm_iv(ticker, expiry2, current_price, debug=True)
             
             if iv1 is None or iv2 is None:
-                print("No IV data")
+                print("  -> No IV data\n")
                 continue
             
             result = calculate_forward_vol(dte1, iv1, dte2, iv2)
@@ -290,9 +332,10 @@ class IBScanner:
                     'ff_pct': round(result['ff_pct'], 1)
                 }
                 opportunities.append(opportunity)
-                print(f"FOUND! FF={ff_ratio:.3f}")
+                print(f"  -> FOUND! FF={ff_ratio:.3f}\n")
             else:
-                print(f"FF={ff_ratio:.3f if ff_ratio else 'N/A'}")
+                ff_str = f"{ff_ratio:.3f}" if ff_ratio is not None else "N/A"
+                print(f"  -> FF={ff_str}\n")
         
         return opportunities
 
