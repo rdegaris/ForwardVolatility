@@ -180,8 +180,12 @@ class IBScanner:
             print(f"  Error getting option chains: {e}")
             return []
     
-    def get_atm_iv(self, ticker: str, expiry: str, current_price: float, debug: bool = False) -> Optional[float]:
-        """Get ATM implied volatility for specific expiry."""
+    def get_atm_iv(self, ticker: str, expiry: str, current_price: float, debug: bool = False) -> Optional[Dict]:
+        """Get ATM implied volatility for specific expiry.
+        
+        Returns:
+            Dict with 'call_iv', 'put_iv', 'avg_iv' or None
+        """
         try:
             stock = Stock(ticker, 'SMART', 'USD')
             self.ib.qualifyContracts(stock)
@@ -222,14 +226,14 @@ class IBScanner:
             
             # Method 1: modelGreeks
             if call_ticker.modelGreeks and call_ticker.modelGreeks.impliedVol:
-                call_iv = call_ticker.modelGreeks.impliedVol
+                call_iv = call_ticker.modelGreeks.impliedVol * 100  # Convert to percentage
                 if debug:
-                    print(f"    [DEBUG] Call IV (modelGreeks): {call_iv}")
+                    print(f"    [DEBUG] Call IV (modelGreeks): {call_iv:.2f}%")
             
             if put_ticker.modelGreeks and put_ticker.modelGreeks.impliedVol:
-                put_iv = put_ticker.modelGreeks.impliedVol
+                put_iv = put_ticker.modelGreeks.impliedVol * 100  # Convert to percentage
                 if debug:
-                    print(f"    [DEBUG] Put IV (modelGreeks): {put_iv}")
+                    print(f"    [DEBUG] Put IV (modelGreeks): {put_iv:.2f}%")
             
             # Method 2: Try last price if IV not available (for very ITM/OTM)
             if not call_iv and call_ticker.last and call_ticker.last > 0:
@@ -244,22 +248,27 @@ class IBScanner:
             self.ib.cancelMktData(call)
             self.ib.cancelMktData(put)
             
-            # Convert to percentage
+            # Calculate average
             ivs = []
             if call_iv and call_iv > 0:
-                ivs.append(call_iv * 100)
+                ivs.append(call_iv)
             if put_iv and put_iv > 0:
-                ivs.append(put_iv * 100)
+                ivs.append(put_iv)
             
-            if ivs:
-                avg_iv = sum(ivs) / len(ivs)
+            if not ivs:
                 if debug:
-                    print(f"    [DEBUG] Average IV: {avg_iv:.2f}%")
-                return avg_iv
+                    print(f"    [DEBUG] No valid IV found")
+                return None
             
+            avg_iv = sum(ivs) / len(ivs)
             if debug:
-                print(f"    [DEBUG] No valid IV found")
-            return None
+                print(f"    [DEBUG] Average IV: {avg_iv:.2f}%")
+            
+            return {
+                'call_iv': call_iv,
+                'put_iv': put_iv,
+                'avg_iv': avg_iv
+            }
             
         except Exception as e:
             if debug:
@@ -301,23 +310,43 @@ class IBScanner:
             
             print(f"  Checking {expiry1} (DTE={dte1}) vs {expiry2} (DTE={dte2})...")
             
-            iv1 = self.get_atm_iv(ticker, expiry1, current_price, debug=True)
+            iv_data1 = self.get_atm_iv(ticker, expiry1, current_price, debug=True)
             time.sleep(0.5)
-            iv2 = self.get_atm_iv(ticker, expiry2, current_price, debug=True)
+            iv_data2 = self.get_atm_iv(ticker, expiry2, current_price, debug=True)
             
-            if iv1 is None or iv2 is None:
+            if iv_data1 is None or iv_data2 is None:
                 print("  -> No IV data\n")
                 continue
             
-            result = calculate_forward_vol(dte1, iv1, dte2, iv2)
+            # Calculate FF for average (blended calls+puts)
+            result_avg = calculate_forward_vol(dte1, iv_data1['avg_iv'], dte2, iv_data2['avg_iv'])
             
-            if result is None:
+            # Calculate FF for calls only
+            result_call = None
+            if iv_data1['call_iv'] and iv_data2['call_iv']:
+                result_call = calculate_forward_vol(dte1, iv_data1['call_iv'], dte2, iv_data2['call_iv'])
+            
+            # Calculate FF for puts only
+            result_put = None
+            if iv_data1['put_iv'] and iv_data2['put_iv']:
+                result_put = calculate_forward_vol(dte1, iv_data1['put_iv'], dte2, iv_data2['put_iv'])
+            
+            if result_avg is None:
                 print("Invalid")
                 continue
             
-            ff_ratio = result.get('ff_ratio')
+            ff_ratio_avg = result_avg.get('ff_ratio')
+            ff_ratio_call = result_call.get('ff_ratio') if result_call else None
+            ff_ratio_put = result_put.get('ff_ratio') if result_put else None
             
-            if ff_ratio is not None and ff_ratio >= threshold:
+            # Check if any FF meets threshold
+            max_ff = ff_ratio_avg
+            if ff_ratio_call and ff_ratio_call > max_ff:
+                max_ff = ff_ratio_call
+            if ff_ratio_put and ff_ratio_put > max_ff:
+                max_ff = ff_ratio_put
+            
+            if max_ff is not None and max_ff >= threshold:
                 opportunity = {
                     'ticker': ticker,
                     'price': current_price,
@@ -325,17 +354,29 @@ class IBScanner:
                     'expiry2': expiry2,
                     'dte1': dte1,
                     'dte2': dte2,
-                    'iv1': round(iv1, 2),
-                    'iv2': round(iv2, 2),
-                    'fwd_vol_pct': round(result['fwd_sigma_pct'], 2),
-                    'ff_ratio': round(ff_ratio, 3),
-                    'ff_pct': round(result['ff_pct'], 1)
+                    'call_iv1': round(iv_data1['call_iv'], 2) if iv_data1['call_iv'] else None,
+                    'call_iv2': round(iv_data2['call_iv'], 2) if iv_data2['call_iv'] else None,
+                    'put_iv1': round(iv_data1['put_iv'], 2) if iv_data1['put_iv'] else None,
+                    'put_iv2': round(iv_data2['put_iv'], 2) if iv_data2['put_iv'] else None,
+                    'avg_iv1': round(iv_data1['avg_iv'], 2),
+                    'avg_iv2': round(iv_data2['avg_iv'], 2),
+                    'ff_call': round(ff_ratio_call, 3) if ff_ratio_call else None,
+                    'ff_put': round(ff_ratio_put, 3) if ff_ratio_put else None,
+                    'ff_avg': round(ff_ratio_avg, 3) if ff_ratio_avg else None
                 }
                 opportunities.append(opportunity)
-                print(f"  -> FOUND! FF={ff_ratio:.3f}\n")
+                
+                print(f"  -> FOUND!")
+                if ff_ratio_call:
+                    print(f"     Call FF = {ff_ratio_call:.3f}")
+                if ff_ratio_put:
+                    print(f"     Put FF  = {ff_ratio_put:.3f}")
+                print(f"     Avg FF  = {ff_ratio_avg:.3f}\n")
             else:
-                ff_str = f"{ff_ratio:.3f}" if ff_ratio is not None else "N/A"
-                print(f"  -> FF={ff_str}\n")
+                ff_str_avg = f"{ff_ratio_avg:.3f}" if ff_ratio_avg is not None else "N/A"
+                ff_str_call = f"{ff_ratio_call:.3f}" if ff_ratio_call is not None else "N/A"
+                ff_str_put = f"{ff_ratio_put:.3f}" if ff_ratio_put is not None else "N/A"
+                print(f"  -> Call FF={ff_str_call}, Put FF={ff_str_put}, Avg FF={ff_str_avg}\n")
         
         return opportunities
 
