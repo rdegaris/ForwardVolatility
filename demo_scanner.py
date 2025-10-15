@@ -6,6 +6,44 @@ Shows what the output looks like when Yahoo Finance API is working
 import pandas as pd
 from datetime import datetime
 
+
+def print_bordered_table(df):
+    """Print a DataFrame with ASCII borders."""
+    
+    # Convert all columns to strings and get max widths
+    col_widths = {}
+    for col in df.columns:
+        col_widths[col] = max(
+            len(str(col)),
+            df[col].astype(str).str.len().max()
+        )
+    
+    # Create separator line
+    sep_line = '+'
+    for col in df.columns:
+        sep_line += '-' * (col_widths[col] + 2) + '+'
+    
+    # Print top border
+    print(sep_line)
+    
+    # Print header
+    header = '|'
+    for col in df.columns:
+        header += f' {str(col).ljust(col_widths[col])} |'
+    print(header)
+    print(sep_line)
+    
+    # Print rows
+    for _, row in df.iterrows():
+        row_str = '|'
+        for col in df.columns:
+            value = str(row[col])
+            row_str += f' {value.ljust(col_widths[col])} |'
+        print(row_str)
+    
+    # Print bottom border
+    print(sep_line)
+
 # Sample opportunities (realistic data based on typical market conditions)
 sample_data = [
     {
@@ -104,7 +142,7 @@ def main():
     
     aapl_opps = [opp for opp in sample_data if opp['ticker'] == 'AAPL']
     for opp in aapl_opps:
-        print(f"  ✓ FOUND: {opp['expiry1']} (DTE={opp['dte1']}, IV={opp['iv1']:.1f}%) → "
+        print(f"  [FOUND] {opp['expiry1']} (DTE={opp['dte1']}, IV={opp['iv1']:.1f}%) -> "
               f"{opp['expiry2']} (DTE={opp['dte2']}, IV={opp['iv2']:.1f}%) | "
               f"FF={opp['ff_ratio']:.3f} ({opp['ff_pct']:.1f}%)")
     
@@ -127,7 +165,7 @@ def main():
         if ticker_opps:
             opp = ticker_opps[0]
             print(f"\n[Sample] Scanning {ticker} (Price: ${opp['price']:.2f})...")
-            print(f"  ✓ FOUND: {opp['expiry1']} (DTE={opp['dte1']}, IV={opp['iv1']:.1f}%) → "
+            print(f"  [FOUND] {opp['expiry1']} (DTE={opp['dte1']}, IV={opp['iv1']:.1f}%) -> "
                   f"{opp['expiry2']} (DTE={opp['dte2']}, IV={opp['iv2']:.1f}%) | "
                   f"FF={opp['ff_ratio']:.3f} ({opp['ff_pct']:.1f}%)")
     
@@ -135,11 +173,12 @@ def main():
     df_all = pd.DataFrame(sample_data)
     df_all = df_all.sort_values('ff_ratio', ascending=False)
     
-    print("\n" + "=" * 80)
-    print("ALL OPPORTUNITIES (FF > 0.4)")
-    print("=" * 80)
-    print(df_all[['ticker', 'price', 'expiry1', 'expiry2', 'dte1', 'dte2', 
-                  'iv1', 'iv2', 'fwd_vol_pct', 'ff_ratio', 'ff_pct']].to_string(index=False))
+    print("\n" + "=" * 140)
+    print("ALL OPPORTUNITIES (FF > 0.4)".center(140))
+    print("=" * 140)
+    print()
+    print_bordered_table(df_all[['ticker', 'price', 'expiry1', 'expiry2', 'dte1', 'dte2', 
+                  'iv1', 'iv2', 'fwd_vol_pct', 'ff_ratio', 'ff_pct']])
     
     # Save to CSV
     filename = f"forward_vol_opportunities_DEMO_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
