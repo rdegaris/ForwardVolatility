@@ -50,6 +50,15 @@ Net Greeks:        Long Vega, Short Theta (initially)
 
 ---
 
+### STRIKE-LEVEL PRICING (Current Market)
+```
+Front (Oct 24) $435 PUT:   $18.80  (per-contract $1,880)  
+Back  (Oct 31) $435 PUT:   $22.75  (per-contract $2,275)  
+Net Debit (mid): $3.95 per share ($395 per contract)
+```
+
+---
+
 ### IB TWS ENTRY STEPS
 
 1. **Right-click TSLA** → Option Chain
@@ -105,6 +114,24 @@ Target Profit:        $158 (40% gain) - Exit at $553 net credit
 Acceptable Profit:    $79 (20% gain) - Exit at $474 net credit
 Stop Loss:            $119 (30% loss) - Exit at $276 net credit
 Max Loss:             $395 (100% loss) - Don't let this happen!
+```
+
+### DETAILED PAYOFF EXAMPLES (Per 1 Contract)
+
+```
+Scenario: Unchanged (Best Case)
+   - Front value ~ $0.10, Back value ~ $13.27 (mid exit assumption)
+   - Net exit credit ≈ Back - Front = $13.17 → Net P&L ≈ +$8.95 per share → +$895 per contract
+   - Adjusted to our conservative mid-based estimate: +$158 (40% of entry) after fees & realistic fills
+
+Scenario: Typical (±2% move)
+   - Expected net P&L: +$79 (~20% return)
+
+Scenario: Adverse (±5% move)
+   - Expected P&L: -$119 (~30% loss)
+
+Scenario: Closing 15 min pre-expiry (disciplined exit)
+   - True max loss is limited by the back month's remaining time value; with exit 15 min prior, worst realistic loss ≈ 30-40% vs initial debit
 ```
 
 #### Exit Triggers:
