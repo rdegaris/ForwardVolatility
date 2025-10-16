@@ -1,17 +1,14 @@
 # GUI Calculator (calculator.py)
 # No additional requirements - tkinter is included with Python standard library
 
-# Yahoo Finance Scanner (scanner.py)
-yfinance>=0.2.28
-pandas>=2.0.0
-numpy>=1.20.0
-
-# Interactive Brokers Scanner (scanner_ib.py) - RECOMMENDED
+# Interactive Brokers Scanner (scanner_ib.py)
 ib_insync>=0.9.86
 eventkit>=1.0.3
 nest-asyncio>=1.6.0
 
-# Alternative providers (optional)
-requests>=2.28.0
-beautifulsoup4>=4.11.0
-lxml>=4.9.0
+# Data processing
+pandas>=2.0.0
+numpy>=1.20.0
+
+# Earnings calendar (for earnings_checker.py)
+yfinance>=0.2.28

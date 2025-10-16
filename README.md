@@ -32,21 +32,23 @@ A **positive FF** (especially FF > 0.4) indicates that front-month IV is signifi
 - **Forward Factor analysis** for volatility term structure insights
 - **Error handling** for edge cases (negative variance, invalid inputs)
 
-### Option Chain Scanner (scanner.py)
-- **Live option data** fetched from Yahoo Finance via yfinance
-- **Automated ATM IV calculation** for each expiration date
-- **Batch scanning** of Nasdaq 100 stocks
-- **Opportunity detection** flags trades where FF > 0.4
+### Interactive Brokers Scanner (scanner_ib.py)
+- **Real-time option data** from Interactive Brokers API
+- **Earnings calendar filtering** - automatically excludes tickers with earnings in trading window
+- **Separate call/put analysis** - calculates FF for calls, puts, and blended separately
+- **Reliable data source** - no rate limits, always available during market hours
+- **Advanced IV fetching** with generic tick 106 and debug mode
 - **CSV export** of results with timestamps
-- **Curated stock lists** (Full Nasdaq 100, Tech-heavy subset, Magnificent 7)
+- **Batch scanning** - scan multiple tickers from curated lists (Nasdaq 100, Tech-heavy, Mag 7)
 
 ## Requirements
 
 - **calculator.py**: Python 3.7+ with tkinter (usually included)
-- **scanner.py**: 
-  - yfinance >= 0.2.28
+- **scanner_ib.py**: 
+  - ib_insync >= 0.9.86
   - pandas >= 2.0.0
   - numpy >= 1.20.0
+  - yfinance >= 0.2.28 (for earnings calendar data)
 
 ## Installation
 
@@ -88,32 +90,29 @@ python calculator.py
 2. Click "Compute"
 3. View the calculated forward volatility and Forward Factor
 
-### Option Chain Scanner (Live Data)
+### Interactive Brokers Scanner (Live Data)
 
-For automated scanning of real option chains:
+For automated scanning of real option chains via IB:
 
 ```bash
-python scanner.py
+python scanner_ib.py
 ```
 
 **What it does:**
-1. Scans AAPL option chain first as an example
-2. Asks if you want to scan all Nasdaq 100 stocks
-3. For each stock, compares consecutive expiration dates
-4. Calculates forward volatility and forward factor for ATM options
-5. Reports all opportunities where FF > 0.4
-6. Saves results to CSV file with timestamp
+1. Connects to IB Gateway or TWS
+2. Prompts for tickers to scan
+3. For each ticker, fetches option chains and current price
+4. Compares consecutive expiration dates
+5. Calculates forward volatility and forward factor for ATM options (calls, puts, and blended)
+6. Filters out tickers with earnings in trading window
+7. Reports all opportunities where FF meets threshold
+8. Saves results to CSV file with timestamp
 
-**Example output:**
-```
-================================================================================
-SCANNING AAPL
-================================================================================
-
-Scanning AAPL (Price: $178.25)...
-  ✓ FOUND: 2025-11-15 (DTE=31, IV=25.3%) → 2025-12-20 (DTE=66, IV=18.2%) | FF=0.456 (45.6%)
-  ✓ FOUND: 2025-12-20 (DTE=66, IV=23.1%) → 2026-01-17 (DTE=94, IV=17.8%) | FF=0.442 (44.2%)
-```
+**Quick test scripts:**
+- `python quick_test_ib.py` - Test single ticker (TSLA)
+- `python scan_show_all.py` - Interactive scan with custom threshold
+- `python test_call_put_ff.py` - Compare call vs put forward factors
+- `python test_earnings_filter.py` - Test earnings filtering
 
 ### Using Stock Lists
 
@@ -132,11 +131,39 @@ tech_stocks = get_tech_heavy_list()
 mag7 = get_mag7()
 ```
 
+### Earnings Calendar Filtering
+
+The IB scanner automatically filters out opportunities with earnings reports in the trading window:
+
+```python
+from scanner_ib import IBScanner
+
+# Default: earnings filtering enabled
+scanner = IBScanner(port=7497, check_earnings=True)
+
+# Disable earnings filtering (not recommended)
+scanner = IBScanner(port=7497, check_earnings=False)
+```
+
+**Why filter earnings?**
+- Earnings reports cause IV spikes that distort forward volatility calculations
+- Post-earnings IV crush can invalidate the opportunity
+- Adds risk due to large potential price moves
+- 2-day buffer before and after earnings date is applied by default
+
+**How it works:**
+1. Uses yfinance to fetch next earnings date for each ticker
+2. Checks if earnings falls within the trading window (expiry1 to expiry2)
+3. Applies 2-day buffer before and after earnings
+4. Automatically excludes any opportunities with earnings conflicts
+5. Reports excluded tickers with earnings dates
+
 ### Constraints
 
 - DTE₂ > DTE₁ ≥ 0
 - IV₁, IV₂ ≥ 0
 - Forward variance must be positive for real-valued forward volatility
+- Earnings should not fall within trading window (when using earnings filter)
 
 ## Output Interpretation
 

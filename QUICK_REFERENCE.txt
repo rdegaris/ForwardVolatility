@@ -1,0 +1,95 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    TSLA $435 PUT CALENDAR SPREAD                             ║
+║                         QUICK REFERENCE CARD                                 ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ENTRY ORDERS - October 15, 2025                                             │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  LEG 1: BUY TO OPEN                    LEG 2: SELL TO OPEN
+  ════════════════════                  ════════════════════
+  Oct 31 $435 PUT                       Oct 24 $435 PUT
+  1 contract                            1 contract
+  Limit: $22.75                         Limit: $18.80
+  
+  NET DEBIT: $3.95 per share = $395 TOTAL INVESTMENT
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ EXIT ORDERS - October 24, 2025 @ 3:45 PM ET                                 │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  LEG 1: SELL TO CLOSE                  LEG 2: BUY TO CLOSE
+  ═════════════════════                 ════════════════════
+  Oct 31 $435 PUT                       Oct 24 $435 PUT
+  1 contract                            1 contract
+  Market/Limit at profit target         Market/Limit at profit target
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ PROFIT/LOSS QUICK GUIDE                                                      │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  Entry:           $395
+  
+  🎯 Target:       $553 exit → $158 profit (40% return)
+  ✅ Good:         $474 exit → $79 profit (20% return)
+  🛑 Stop:         $276 exit → $119 loss (30% loss)
+  ⚠️  Max Loss:    $0 exit → $395 loss (100% - DON'T LET THIS HAPPEN!)
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ IB TWS 3-STEP ENTRY                                                          │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  1. Right-click TSLA → Option Chain → $435 Strike
+  2. Click Oct 24 PUT → "Buy Calendar" → Select Oct 31 as back month
+  3. Set LIMIT order @ $3.95 net debit → SUBMIT
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ EXIT TRIGGERS                                                                │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  ✅ TAKE PROFIT:  TSLA at $430-$440 on Oct 24
+  🛑 STOP LOSS:    TSLA moves >4% (below $418 or above $453)
+  🕐 TIME EXIT:    Oct 24 at 3:45 PM (15 min before close) - NO EXCEPTIONS!
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ POSITION SUMMARY                                                             │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  Strategy:        Calendar Spread (Time Spread)
+  Direction:       Neutral (profit if TSLA stays near $435)
+  Contracts:       1 (100 shares)
+  Investment:      $395 + $2.60 commissions = $397.60
+  Margin Req:      ~$400-500 (verify with IB)
+  Max Profit:      $158 (if TSLA unchanged)
+  Max Risk:        $395 (if spread collapses)
+  Hold Period:     9 days (Oct 15 → Oct 24)
+  
+  Forward Factor:  0.281 (28.1%)
+  Front IV:        71.05% (elevated)
+  Back IV:         64.25% (lower)
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ CRITICAL REMINDERS                                                           │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  ⚠️  SET CALENDAR ALERT: Oct 24, 3:30 PM
+  ⚠️  DO NOT hold through front month expiration
+  ⚠️  Exit if stock moves >4% from $435
+  ⚠️  Only risk capital you can afford to lose
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ FILL TRACKING                                                                │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  Entry Date:      __________    Time: __________
+  Entry Price:     $__________   Stock Price: $__________
+  
+  Exit Date:       __________    Time: __________
+  Exit Price:      $__________   Stock Price: $__________
+  
+  P&L:             $__________   Return: _________%
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ TRADE ID: TSLA-CAL-435P-1024-1031                                           ║
+╚══════════════════════════════════════════════════════════════════════════════╝

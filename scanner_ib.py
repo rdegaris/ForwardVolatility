@@ -17,6 +17,12 @@ except ImportError:
     print("ERROR: ib_insync not installed")
     print("Install with: pip install ib_insync")
 
+try:
+    from earnings_checker import EarningsChecker
+    EARNINGS_CHECKER_AVAILABLE = True
+except ImportError:
+    EARNINGS_CHECKER_AVAILABLE = False
+
 
 def calculate_forward_vol(dte1: float, iv1: float, dte2: float, iv2: float) -> Optional[Dict]:
     """Calculate forward volatility and forward factor."""
@@ -99,7 +105,7 @@ def print_bordered_table(df):
 class IBScanner:
     """Interactive Brokers Forward Volatility Scanner."""
     
-    def __init__(self, host='127.0.0.1', port=7497, client_id=1):
+    def __init__(self, host='127.0.0.1', port=7497, client_id=1, check_earnings=True):
         """
         Initialize IB connection.
         
@@ -107,12 +113,15 @@ class IBScanner:
             host: IB Gateway/TWS host (default: localhost)
             port: 7497 for TWS paper, 7496 for TWS live, 4002 for Gateway paper, 4001 for Gateway live
             client_id: Unique client ID
+            check_earnings: Filter out tickers with earnings in trading window (default: True)
         """
         self.ib = IB()
         self.host = host
         self.port = port
         self.client_id = client_id
         self.connected = False
+        self.check_earnings = check_earnings and EARNINGS_CHECKER_AVAILABLE
+        self.earnings_checker = EarningsChecker() if self.check_earnings else None
     
     def connect(self):
         """Connect to IB Gateway or TWS."""
@@ -377,6 +386,11 @@ class IBScanner:
                 ff_str_call = f"{ff_ratio_call:.3f}" if ff_ratio_call is not None else "N/A"
                 ff_str_put = f"{ff_ratio_put:.3f}" if ff_ratio_put is not None else "N/A"
                 print(f"  -> Call FF={ff_str_call}, Put FF={ff_str_put}, Avg FF={ff_str_avg}\n")
+        
+        # Filter out opportunities with earnings in trading window
+        if self.check_earnings and self.earnings_checker and opportunities:
+            print(f"\n  Checking for earnings conflicts...")
+            opportunities = self.earnings_checker.filter_opportunities(opportunities, buffer_days=2, verbose=True)
         
         return opportunities
 
