@@ -48,7 +48,8 @@ A **positive FF** (especially FF > 0.4) indicates that front-month IV is signifi
   - ib_insync >= 0.9.86
   - pandas >= 2.0.0
   - numpy >= 1.20.0
-  - Interactive Brokers market data subscription (for earnings calendar data)
+  - yfinance >= 0.2.28 (for earnings calendar data)
+  - requests >= 2.28.0
 
 ## Installation
 
@@ -149,15 +150,14 @@ scanner = IBScanner(port=7497, check_earnings=False)
 - Earnings reports cause IV spikes that distort forward volatility calculations
 - Post-earnings IV crush can invalidate the opportunity
 - Adds risk due to large potential price moves
-- 2-day buffer before and after earnings date is applied by default
 
 **How it works:**
-1. Uses Interactive Brokers fundamental data to fetch next earnings date for each ticker
-2. Checks if earnings falls within the trading window (expiry1 to expiry2)
-3. Applies 2-day buffer before and after earnings
-4. Automatically excludes any opportunities with earnings conflicts
-5. Reports excluded tickers with earnings dates
-6. Note: Requires IB market data subscription for fundamental data access
+1. Uses yfinance library to fetch next earnings date for each ticker
+2. **STRICT RULE**: Excludes ALL trades where earnings occurs BEFORE the front month expiry
+3. No buffer, no tolerance - any earnings before front expiry date = EXCLUDE
+4. Automatically filters opportunities and reports excluded tickers
+5. Pre-fetches earnings dates at scan start for efficiency
+6. Runs FIRST before any other analysis
 
 ### Constraints
 

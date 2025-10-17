@@ -398,10 +398,10 @@ class IBScanner:
                 ff_str_put = f"{ff_ratio_put:.3f}" if ff_ratio_put is not None else "N/A"
                 print(f"  -> Call FF={ff_str_call}, Put FF={ff_str_put}, Avg FF={ff_str_avg}\n")
         
-        # Filter out opportunities with earnings in trading window
+        # Filter out opportunities with earnings before front month expiry
         if self.check_earnings and self.earnings_checker and opportunities:
-            print(f"\n  Checking for earnings conflicts...")
-            opportunities = self.earnings_checker.filter_opportunities(opportunities, buffer_days=2, verbose=True)
+            print(f"\n  Checking for earnings before front expiry...")
+            opportunities = self.earnings_checker.filter_opportunities(opportunities, verbose=True)
         
         return opportunities
 

@@ -10,5 +10,6 @@ nest-asyncio>=1.6.0
 pandas>=2.0.0
 numpy>=1.20.0
 
-# Note: Earnings calendar data comes from Interactive Brokers fundamental data
-# Requires IB market data subscription for earnings dates
+# Earnings calendar data (yfinance is most reliable free source)
+yfinance>=0.2.28
+requests>=2.28.0
