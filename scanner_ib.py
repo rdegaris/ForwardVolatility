@@ -356,6 +356,16 @@ class IBScanner:
                 max_ff = ff_ratio_put
             
             if max_ff is not None and max_ff >= threshold:
+                # Get earnings date if available
+                next_earnings = None
+                if self.check_earnings and self.earnings_checker:
+                    earnings_date = self.earnings_checker.cache.get(ticker)
+                    if not earnings_date:
+                        # Try to fetch it
+                        earnings_date = self.earnings_checker.get_earnings_date_yfinance(ticker)
+                    if earnings_date:
+                        next_earnings = earnings_date.strftime('%Y-%m-%d')
+                
                 opportunity = {
                     'ticker': ticker,
                     'price': current_price,
@@ -371,7 +381,8 @@ class IBScanner:
                     'avg_iv2': round(iv_data2['avg_iv'], 2),
                     'ff_call': round(ff_ratio_call, 3) if ff_ratio_call else None,
                     'ff_put': round(ff_ratio_put, 3) if ff_ratio_put else None,
-                    'ff_avg': round(ff_ratio_avg, 3) if ff_ratio_avg else None
+                    'ff_avg': round(ff_ratio_avg, 3) if ff_ratio_avg else None,
+                    'next_earnings': next_earnings
                 }
                 opportunities.append(opportunity)
                 
