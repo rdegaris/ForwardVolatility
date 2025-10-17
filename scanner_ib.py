@@ -361,8 +361,8 @@ class IBScanner:
                 if self.check_earnings and self.earnings_checker:
                     earnings_date = self.earnings_checker.cache.get(ticker)
                     if not earnings_date:
-                        # Try to fetch it
-                        earnings_date = self.earnings_checker.get_earnings_date_yfinance(ticker)
+                        # Try to fetch it from IB
+                        earnings_date = self.earnings_checker.get_earnings_date(ticker)
                     if earnings_date:
                         next_earnings = earnings_date.strftime('%Y-%m-%d')
                 

@@ -80,11 +80,11 @@ def run_mag7_scan(threshold=0.2):
         print("Make sure TWS or IB Gateway is running on port 7497")
         return None
     
-    # Pre-fetch earnings dates for all tickers
+    # Pre-fetch earnings dates for all tickers from IB
     if scanner.earnings_checker:
-        print("Pre-fetching earnings dates...")
+        print("Pre-fetching earnings dates from Interactive Brokers...")
         for ticker in tickers:
-            scanner.earnings_checker.get_earnings_date_yfinance(ticker)
+            scanner.earnings_checker.get_earnings_date(ticker)
         print()
     
     all_opportunities = []
