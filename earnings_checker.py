@@ -56,17 +56,17 @@ class EarningsChecker:
     
     def has_earnings_before_expiry(self, ticker: str, front_expiry: str) -> bool:
         """
-        Check if earnings occurs BEFORE the front month expiry.
+        Check if earnings occurs BEFORE OR ON the front month expiry.
         
-        RULE: Exclude ALL trades where earnings is before front expiry date.
-        No buffer, no tolerance - if earnings comes before front expiry, EXCLUDE.
+        RULE: Exclude ALL trades where earnings is before OR ON front expiry date.
+        No buffer, no tolerance - if earnings is same day or before front expiry, EXCLUDE.
         
         Args:
             ticker: Stock symbol
             front_expiry: Front month expiry date in YYYYMMDD format
             
         Returns:
-            True if earnings is BEFORE front expiry (should EXCLUDE), False otherwise
+            True if earnings is BEFORE OR ON front expiry (should EXCLUDE), False otherwise
         """
         # Parse front expiry date
         front_dt = datetime.strptime(front_expiry, '%Y%m%d')
@@ -74,12 +74,12 @@ class EarningsChecker:
         # Get earnings date
         earnings_date = self.get_earnings_date(ticker)
         
-        # If we have an earnings date, check if it's before front expiry
+        # If we have an earnings date, check if it's before OR ON front expiry
         if earnings_date:
-            if earnings_date < front_dt:
-                return True  # EXCLUDE - earnings before front expiry
+            if earnings_date <= front_dt:
+                return True  # EXCLUDE - earnings before or on front expiry day
         
-        return False  # Safe to trade (no earnings before front expiry)
+        return False  # Safe to trade (no earnings before or on front expiry)
     
     def filter_opportunities(self, opportunities: List[Dict], verbose: bool = True) -> List[Dict]:
         """
