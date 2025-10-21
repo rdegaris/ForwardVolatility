@@ -1,11 +1,18 @@
 """
 Earnings Calendar Checker
 Filters out tickers with earnings reports before the front month expiry
-Uses manually maintained earnings calendar for reliability
+
+Data Sources (in priority order):
+1. Finnhub API - Real-time earnings calendar (requires FINNHUB_API_KEY env var)
+2. Manual Calendar - Fallback from earnings_calendar.py
+
+Set FINNHUB_API_KEY environment variable to enable Finnhub API.
 """
 
 from datetime import datetime, timedelta
 from typing import Optional, Dict, List
+import requests
+import os
 
 try:
     from earnings_calendar import EARNINGS_CALENDAR
@@ -16,14 +23,26 @@ except ImportError:
 class EarningsChecker:
     """Check if earnings occurs before the front month expiry."""
     
-    def __init__(self):
-        """Initialize earnings checker with manual earnings calendar."""
+    def __init__(self, use_finnhub=True):
+        """
+        Initialize earnings checker.
+        
+        Args:
+            use_finnhub: If True, try Finnhub API first before manual calendar
+        """
         self.cache = {}  # Cache parsed earnings dates
         self.calendar = EARNINGS_CALENDAR
+        self.use_finnhub = use_finnhub
+        # Use hardcoded API key or environment variable
+        self.finnhub_api_key = os.environ.get('FINNHUB_API_KEY', 'd3rcvl1r01qopgh82hs0d3rcvl1r01qopgh82hsg')
+        
+        if self.use_finnhub and not self.finnhub_api_key:
+            print("⚠️  WARNING: FINNHUB_API_KEY not set in environment. Using manual calendar only.")
+            self.use_finnhub = False
     
     def get_earnings_date(self, ticker: str) -> Optional[datetime]:
         """
-        Get next earnings date from manually maintained calendar.
+        Get next earnings date from Finnhub API or manual calendar fallback.
         
         Args:
             ticker: Stock symbol
@@ -35,7 +54,38 @@ class EarningsChecker:
         if ticker in self.cache:
             return self.cache[ticker]
         
-        # Check manual calendar
+        # Try Finnhub API first
+        if self.use_finnhub:
+            try:
+                # Get earnings calendar for next 60 days
+                from_date = datetime.now().strftime('%Y-%m-%d')
+                to_date = (datetime.now() + timedelta(days=60)).strftime('%Y-%m-%d')
+                
+                url = f"https://finnhub.io/api/v1/calendar/earnings?from={from_date}&to={to_date}&symbol={ticker}&token={self.finnhub_api_key}"
+                response = requests.get(url, timeout=5)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    
+                    # Check if we have earnings data
+                    if data and 'earningsCalendar' in data and len(data['earningsCalendar']) > 0:
+                        # Get the first (nearest) earnings date
+                        earnings_entry = data['earningsCalendar'][0]
+                        date_str = earnings_entry.get('date')
+                        
+                        if date_str:
+                            try:
+                                earnings_date = datetime.strptime(date_str, '%Y-%m-%d')
+                                self.cache[ticker] = earnings_date
+                                print(f"  📅 {ticker} earnings from Finnhub: {date_str}")
+                                return earnings_date
+                            except ValueError:
+                                pass
+                
+            except Exception as e:
+                print(f"  ⚠️  Finnhub API error for {ticker}: {e}")
+        
+        # Fallback to manual calendar
         if ticker in self.calendar:
             date_str = self.calendar[ticker]
             try:
@@ -44,6 +94,7 @@ class EarningsChecker:
                 # Only return if it's in the future
                 if earnings_date > datetime.now():
                     self.cache[ticker] = earnings_date
+                    print(f"  📅 {ticker} earnings from manual calendar: {date_str}")
                     return earnings_date
                 else:
                     # Earnings date has passed - needs updating
