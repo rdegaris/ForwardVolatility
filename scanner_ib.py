@@ -25,7 +25,11 @@ except ImportError:
 
 
 def calculate_forward_vol(dte1: float, iv1: float, dte2: float, iv2: float) -> Optional[Dict]:
-    """Calculate forward volatility and forward factor."""
+    """Calculate forward volatility and forward factor.
+    
+    Returns:
+        Dict with forward variance, forward vol, and forward factor metrics
+    """
     if dte1 < 0 or dte2 < 0 or iv1 < 0 or iv2 < 0:
         return None
     if dte2 <= dte1:
@@ -43,11 +47,13 @@ def calculate_forward_vol(dte1: float, iv1: float, dte2: float, iv2: float) -> O
     if denom <= 0:
         return None
     
+    # Forward variance (annualized)
     fwd_var = (tv2 - tv1) / denom
     
     if fwd_var < 0:
         return None
     
+    # Forward volatility (annualized)
     fwd_sigma = math.sqrt(fwd_var)
     
     if fwd_sigma == 0.0:
@@ -56,8 +62,10 @@ def calculate_forward_vol(dte1: float, iv1: float, dte2: float, iv2: float) -> O
         ff_ratio = (s1 - fwd_sigma) / fwd_sigma
     
     return {
-        'fwd_sigma': fwd_sigma,
-        'fwd_sigma_pct': fwd_sigma * 100,
+        'fwd_var': fwd_var,  # Annualized forward variance
+        'fwd_var_pct': fwd_var * 100,  # As percentage
+        'fwd_sigma': fwd_sigma,  # Annualized forward volatility
+        'fwd_sigma_pct': fwd_sigma * 100,  # As percentage
         'ff_ratio': ff_ratio,
         'ff_pct': ff_ratio * 100 if ff_ratio is not None else None
     }
@@ -169,6 +177,64 @@ class IBScanner:
             return None
         except Exception as e:
             print(f"  Error getting price: {e}")
+            return None
+    
+    def get_200day_ma(self, ticker: str) -> Optional[float]:
+        """Get 200-day moving average for a stock.
+        
+        Returns:
+            200-day MA price, or None if not available
+        """
+        try:
+            stock = Stock(ticker, 'SMART', 'USD')
+            self.ib.qualifyContracts(stock)
+            
+            # Request 200 days of daily bars
+            bars = self.ib.reqHistoricalData(
+                stock,
+                endDateTime='',
+                durationStr='200 D',
+                barSizeSetting='1 day',
+                whatToShow='TRADES',
+                useRTH=True,
+                formatDate=1
+            )
+            
+            if bars and len(bars) >= 200:
+                # Calculate average of close prices
+                closes = [bar.close for bar in bars[-200:]]
+                ma_200 = sum(closes) / len(closes)
+                return ma_200
+            
+            return None
+            
+        except Exception as e:
+            return None
+    
+    def get_stock_info(self, ticker: str) -> Optional[Dict]:
+        """Get stock price and 200-day MA.
+        
+        Returns:
+            Dict with 'price', 'ma_200', 'above_ma_200'
+        """
+        try:
+            price = self.get_stock_price(ticker)
+            if not price:
+                return None
+            
+            ma_200 = self.get_200day_ma(ticker)
+            
+            above_ma_200 = None
+            if ma_200:
+                above_ma_200 = price > ma_200
+            
+            return {
+                'price': price,
+                'ma_200': ma_200,
+                'above_ma_200': above_ma_200
+            }
+            
+        except Exception as e:
             return None
     
     def get_option_chains(self, ticker: str) -> List[str]:
@@ -327,13 +393,21 @@ class IBScanner:
         
         print(f"\nScanning {ticker}...")
         
-        # Get current price
-        current_price = self.get_stock_price(ticker)
-        if not current_price:
+        # Get stock info (price and 200-day MA)
+        stock_info = self.get_stock_info(ticker)
+        if not stock_info:
             print(f"  Could not get price for {ticker}")
             return opportunities
         
+        current_price = stock_info['price']
+        ma_200 = stock_info.get('ma_200')
+        above_ma_200 = stock_info.get('above_ma_200')
+        
+        # Display price and MA info
         print(f"  Price: ${current_price:.2f}")
+        if ma_200:
+            trend = "↑ ABOVE" if above_ma_200 else "↓ BELOW"
+            print(f"  200-day MA: ${ma_200:.2f} ({trend})")
         
         # Get option chains
         expirations = self.get_option_chains(ticker)
@@ -445,6 +519,8 @@ class IBScanner:
                 opportunity = {
                     'ticker': ticker,
                     'price': current_price,
+                    'ma_200': round(ma_200, 2) if ma_200 else None,
+                    'above_ma_200': above_ma_200,
                     'expiry1': expiry1,
                     'expiry2': expiry2,
                     'dte1': dte1,
@@ -455,9 +531,18 @@ class IBScanner:
                     'put_iv2': round(iv_data2['put_iv'], 2) if iv_data2['put_iv'] else None,
                     'avg_iv1': round(iv_data1['avg_iv'], 2),
                     'avg_iv2': round(iv_data2['avg_iv'], 2),
+                    # Forward factor ratios
                     'ff_call': round(ff_ratio_call, 3) if ff_ratio_call else None,
                     'ff_put': round(ff_ratio_put, 3) if ff_ratio_put else None,
                     'ff_avg': round(ff_ratio_avg, 3) if ff_ratio_avg else None,
+                    # Forward variance (annualized) - for debugging
+                    'fwd_var_call': round(result_call.get('fwd_var'), 6) if result_call else None,
+                    'fwd_var_put': round(result_put.get('fwd_var'), 6) if result_put else None,
+                    'fwd_var_avg': round(result_avg.get('fwd_var'), 6) if result_avg else None,
+                    # Forward volatility (annualized %) - for debugging
+                    'fwd_vol_call': round(result_call.get('fwd_sigma_pct'), 2) if result_call else None,
+                    'fwd_vol_put': round(result_put.get('fwd_sigma_pct'), 2) if result_put else None,
+                    'fwd_vol_avg': round(result_avg.get('fwd_sigma_pct'), 2) if result_avg else None,
                     'next_earnings': next_earnings
                 }
                 opportunities.append(opportunity)
@@ -467,7 +552,8 @@ class IBScanner:
                     print(f"     Call FF = {ff_ratio_call:.3f}")
                 if ff_ratio_put:
                     print(f"     Put FF  = {ff_ratio_put:.3f}")
-                print(f"     Avg FF  = {ff_ratio_avg:.3f}\n")
+                print(f"     Avg FF  = {ff_ratio_avg:.3f}")
+                print(f"     Fwd Vol = {result_avg.get('fwd_sigma_pct'):.2f}% (annualized)\n")
             else:
                 ff_str_avg = f"{ff_ratio_avg:.3f}" if ff_ratio_avg is not None else "N/A"
                 ff_str_call = f"{ff_ratio_call:.3f}" if ff_ratio_call is not None else "N/A"
