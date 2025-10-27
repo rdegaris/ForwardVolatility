@@ -113,6 +113,11 @@ class EarningsChecker:
         Since we hold the position until the back month expiry, we need to ensure
         no earnings events occur during the entire holding period.
         
+        NOTE: We add a 1-day safety buffer because earnings data sources (Finnhub, etc.)
+        can be inconsistent about AMC (after market close) dates. Some sources report
+        the date of the call, others report the "next trading day". To be conservative,
+        we add 1 day to the earnings date.
+        
         Args:
             ticker: Stock symbol
             back_expiry: Back month expiry date in YYYYMMDD format
@@ -127,10 +132,11 @@ class EarningsChecker:
         earnings_date = self.get_earnings_date(ticker)
         
         # If we have an earnings date, check if it's before OR ON back expiry
-        # This ensures no earnings between today and the back expiry
+        # ADD 1 DAY SAFETY BUFFER to account for AMC reporting inconsistencies
         if earnings_date:
-            if earnings_date <= back_dt:
-                return True  # EXCLUDE - earnings before or on back expiry day
+            earnings_date_with_buffer = earnings_date + timedelta(days=1)
+            if earnings_date_with_buffer <= back_dt:
+                return True  # EXCLUDE - earnings (with buffer) before or on back expiry day
         
         return False  # Safe to trade (no earnings before or on back expiry)
     
