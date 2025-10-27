@@ -379,7 +379,8 @@ class IBScanner:
             return {
                 'call_iv': call_iv,
                 'put_iv': put_iv,
-                'avg_iv': avg_iv
+                'avg_iv': avg_iv,
+                'atm_strike': atm_strike
             }
             
         except Exception as e:
@@ -525,6 +526,8 @@ class IBScanner:
                     'expiry2': expiry2,
                     'dte1': dte1,
                     'dte2': dte2,
+                    'strike1': iv_data1.get('atm_strike') if iv_data1 else None,
+                    'strike2': iv_data2.get('atm_strike') if iv_data2 else None,
                     'call_iv1': round(iv_data1['call_iv'], 2) if iv_data1['call_iv'] else None,
                     'call_iv2': round(iv_data2['call_iv'], 2) if iv_data2['call_iv'] else None,
                     'put_iv1': round(iv_data1['put_iv'], 2) if iv_data1['put_iv'] else None,

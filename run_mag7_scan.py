@@ -12,7 +12,24 @@ import time
 def calculate_trade_details(row):
     """Calculate trade recommendations and P&L estimates"""
     stock_price = row['price']
-    strike = round(stock_price / 2.5) * 2.5
+    
+    # Use the actual ATM strike from the scan if available, otherwise calculate
+    if pd.notna(row.get('strike1')) and pd.notna(row.get('strike2')):
+        # Use the strike from the front expiry (they should be the same or very close)
+        strike = float(row['strike1'])
+    else:
+        # Fallback: Use appropriate strike interval based on stock price
+        # IB uses: $0.50 for stocks <$25, $1 for $25-$200, $5 for $200-$500, $10 for >$500
+        if stock_price < 25:
+            strike_interval = 0.5
+        elif stock_price < 200:
+            strike_interval = 1.0
+        elif stock_price < 500:
+            strike_interval = 5.0
+        else:
+            strike_interval = 10.0
+        
+        strike = round(stock_price / strike_interval) * strike_interval
     
     ff_call = row['ff_call'] if pd.notna(row['ff_call']) else 0
     ff_put = row['ff_put'] if pd.notna(row['ff_put']) else 0

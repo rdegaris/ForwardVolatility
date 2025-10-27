@@ -2,8 +2,29 @@
 Run NASDAQ 100 scan and save for web display
 """
 import json
-from datetime import datetime
-from batch_scan import batch_scan
+from datetime i            # Calculate trade details
+            stock_price = opp['price']
+            
+            # Use the actual ATM strike from the scan if available, otherwise calculate
+            if pd.notna(row.get('strike1')) and pd.notna(row.get('strike2')):
+                # Use the strike from the front expiry (they should be the same or very close)
+                strike = float(row['strike1'])
+            else:
+                # Fallback: Use appropriate strike interval based on stock price
+                # IB uses: $0.50 for stocks <$25, $1 for $25-$200, $5 for $200-$500, $10 for >$500
+                if stock_price < 25:
+                    strike_interval = 0.5
+                elif stock_price < 200:
+                    strike_interval = 1.0
+                elif stock_price < 500:
+                    strike_interval = 5.0
+                else:
+                    strike_interval = 10.0
+                
+                strike = round(stock_price / strike_interval) * strike_interval
+            
+            ff_call = opp['ff_call'] if opp['ff_call'] is not None else 0
+            ff_put = opp['ff_put'] if opp['ff_put'] is not None else 0om batch_scan import batch_scan
 from nasdaq100 import get_nasdaq_100_list
 import pandas as pd
 
@@ -84,7 +105,19 @@ def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=50):
             
             # Calculate trade details
             stock_price = opp['price']
-            strike = round(stock_price / 2.5) * 2.5
+            
+            # Use appropriate strike interval based on stock price
+            # IB uses: $0.50 for stocks <$25, $1 for $25-$200, $5 for $200-$500, $10 for >$500
+            if stock_price < 25:
+                strike_interval = 0.5
+            elif stock_price < 200:
+                strike_interval = 1.0
+            elif stock_price < 500:
+                strike_interval = 5.0
+            else:
+                strike_interval = 10.0
+            
+            strike = round(stock_price / strike_interval) * strike_interval
             
             ff_call = opp['ff_call'] if opp['ff_call'] is not None else 0
             ff_put = opp['ff_put'] if opp['ff_put'] is not None else 0
