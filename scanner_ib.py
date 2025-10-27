@@ -306,18 +306,57 @@ class IBScanner:
         
         print(f"  Found {len(expirations)} expiration dates")
         
-        # Compare consecutive expirations
-        for i in range(min(len(expirations) - 1, 5)):  # Limit to first 5 pairs
-            expiry1 = expirations[i]
-            expiry2 = expirations[i + 1]
+        # Define target DTE pairs with tolerance
+        # Format: (target_dte1, target_dte2, tolerance)
+        target_pairs = [
+            (7, 14, 5),    # ~1 week vs ~2 weeks
+            (14, 21, 5),   # ~2 weeks vs ~3 weeks
+            (7, 21, 5),    # ~1 week vs ~3 weeks
+            (30, 60, 5),   # ~1 month vs ~2 months
+            (60, 90, 5),   # ~2 months vs ~3 months
+            (30, 90, 5),   # ~1 month vs ~3 months
+        ]
+        
+        # Find expirations matching target DTEs
+        checked_pairs = set()  # Track pairs to avoid duplicates
+        
+        for target_dte1, target_dte2, tolerance in target_pairs:
+            # Find expiry closest to target_dte1
+            expiry1 = None
+            min_diff1 = float('inf')
+            for exp in expirations:
+                dte = calculate_dte(exp)
+                diff = abs(dte - target_dte1)
+                if diff <= tolerance and diff < min_diff1:
+                    expiry1 = exp
+                    min_diff1 = diff
+            
+            # Find expiry closest to target_dte2
+            expiry2 = None
+            min_diff2 = float('inf')
+            for exp in expirations:
+                dte = calculate_dte(exp)
+                diff = abs(dte - target_dte2)
+                if diff <= tolerance and diff < min_diff2 and exp != expiry1:
+                    expiry2 = exp
+                    min_diff2 = diff
+            
+            # Skip if we didn't find both or if already checked
+            if not expiry1 or not expiry2:
+                continue
+            
+            pair_key = (expiry1, expiry2)
+            if pair_key in checked_pairs:
+                continue
+            checked_pairs.add(pair_key)
             
             dte1 = calculate_dte(expiry1)
             dte2 = calculate_dte(expiry2)
             
-            if dte1 < 1 or dte2 < 1 or (dte2 - dte1) < 5:
+            if dte1 < 1 or dte2 < 1 or dte2 <= dte1:
                 continue
             
-            print(f"  Checking {expiry1} (DTE={dte1}) vs {expiry2} (DTE={dte2})...")
+            print(f"  Checking {expiry1} (DTE={dte1}) vs {expiry2} (DTE={dte2}) [Target: {target_dte1}/{target_dte2}]...")
             
             iv_data1 = self.get_atm_iv(ticker, expiry1, current_price, debug=True)
             time.sleep(0.5)
