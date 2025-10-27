@@ -189,6 +189,43 @@ class IBScanner:
             print(f"  Error getting option chains: {e}")
             return []
     
+    def get_near_term_iv(self, ticker: str, current_price: float) -> Optional[float]:
+        """Get near-term (7-21 day) IV for quick ranking.
+        
+        Returns:
+            Average IV as a percentage, or None if not available
+        """
+        try:
+            expirations = self.get_option_chains(ticker)
+            if not expirations:
+                return None
+            
+            # Find expiration closest to 14 days (2 weeks)
+            target_dte = 14
+            best_expiry = None
+            min_diff = float('inf')
+            
+            for exp in expirations:
+                dte = calculate_dte(exp)
+                if 7 <= dte <= 21:  # Within 1-3 week range
+                    diff = abs(dte - target_dte)
+                    if diff < min_diff:
+                        best_expiry = exp
+                        min_diff = diff
+            
+            if not best_expiry:
+                return None
+            
+            # Get IV for this expiry
+            iv_data = self.get_atm_iv(ticker, best_expiry, current_price, debug=False)
+            if iv_data and iv_data['avg_iv']:
+                return iv_data['avg_iv']
+            
+            return None
+            
+        except Exception as e:
+            return None
+    
     def get_atm_iv(self, ticker: str, expiry: str, current_price: float, debug: bool = False) -> Optional[Dict]:
         """Get ATM implied volatility for specific expiry.
         
@@ -443,6 +480,102 @@ class IBScanner:
             opportunities = self.earnings_checker.filter_opportunities(opportunities, verbose=True)
         
         return opportunities
+
+
+def rank_tickers_by_iv(scanner: IBScanner, tickers: List[str], top_n: Optional[int] = None) -> List[tuple]:
+    """
+    Rank tickers by near-term IV to prioritize high IV stocks.
+    
+    Args:
+        scanner: IBScanner instance
+        tickers: List of ticker symbols
+        top_n: Return only top N tickers (None = return all)
+    
+    Returns:
+        List of (ticker, iv, price) tuples sorted by IV descending
+    """
+    print("\n" + "=" * 80)
+    print("RANKING TICKERS BY NEAR-TERM IV")
+    print("=" * 80)
+    print("This helps prioritize high-volatility opportunities...\n")
+    
+    ticker_ivs = []
+    
+    for i, ticker in enumerate(tickers, 1):
+        print(f"[{i}/{len(tickers)}] Checking {ticker}...", end=" ")
+        
+        try:
+            price = scanner.get_stock_price(ticker)
+            if not price:
+                print("❌ No price data")
+                continue
+            
+            iv = scanner.get_near_term_iv(ticker, price)
+            if iv:
+                ticker_ivs.append((ticker, iv, price))
+                print(f"✅ IV: {iv:.1f}%")
+            else:
+                print("⚠️  No IV data")
+            
+            time.sleep(0.3)  # Rate limiting
+            
+        except Exception as e:
+            print(f"❌ Error: {e}")
+    
+    # Sort by IV descending
+    ticker_ivs.sort(key=lambda x: x[1], reverse=True)
+    
+    print("\n" + "=" * 80)
+    print("IV RANKING RESULTS")
+    print("=" * 80)
+    
+    for i, (ticker, iv, price) in enumerate(ticker_ivs[:top_n] if top_n else ticker_ivs, 1):
+        print(f"{i:2d}. {ticker:6s} - IV: {iv:5.1f}% (Price: ${price:.2f})")
+    
+    if top_n and len(ticker_ivs) > top_n:
+        print(f"\n(Showing top {top_n} of {len(ticker_ivs)} tickers)")
+    
+    return ticker_ivs[:top_n] if top_n else ticker_ivs
+
+
+def scan_batch(scanner: IBScanner, tickers: List[str], threshold: float = 0.2, 
+               rank_by_iv: bool = True, top_n: Optional[int] = None) -> List[Dict]:
+    """
+    Scan multiple tickers for forward volatility opportunities.
+    
+    Args:
+        scanner: IBScanner instance
+        tickers: List of ticker symbols to scan
+        threshold: FF threshold (default: 0.2)
+        rank_by_iv: If True, rank tickers by IV first (default: True)
+        top_n: If rank_by_iv=True, scan only top N tickers (None = scan all)
+    
+    Returns:
+        List of all opportunities found
+    """
+    if rank_by_iv:
+        ranked = rank_tickers_by_iv(scanner, tickers, top_n)
+        scan_list = [ticker for ticker, iv, price in ranked]
+    else:
+        scan_list = tickers
+    
+    print("\n" + "=" * 80)
+    print(f"SCANNING {len(scan_list)} TICKERS FOR OPPORTUNITIES")
+    print("=" * 80)
+    
+    all_opportunities = []
+    
+    for i, ticker in enumerate(scan_list, 1):
+        print(f"\n[{i}/{len(scan_list)}] {ticker}...")
+        opportunities = scanner.scan_ticker(ticker, threshold)
+        all_opportunities.extend(opportunities)
+        
+        if opportunities:
+            print(f"  ✅ Found {len(opportunities)} opportunity(ies)")
+        else:
+            print(f"  ⚪ No opportunities")
+    
+    return all_opportunities
 
 
 def main():

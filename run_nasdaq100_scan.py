@@ -7,8 +7,14 @@ from batch_scan import batch_scan
 from nasdaq100 import get_nasdaq_100_list
 import pandas as pd
 
-def run_nasdaq100_scan(threshold=0.2):
-    """Run scan on NASDAQ 100 stocks and save formatted results."""
+def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=50):
+    """Run scan on NASDAQ 100 stocks and save formatted results.
+    
+    Args:
+        threshold: FF threshold (default 0.2)
+        rank_by_iv: Pre-rank by near-term IV (default True)
+        top_n_iv: If ranking, scan top N tickers (default 50, None = scan all)
+    """
     
     scan_log = []
     
@@ -24,10 +30,12 @@ def run_nasdaq100_scan(threshold=0.2):
     tickers = get_nasdaq_100_list()
     log(f"Scanning: {len(tickers)} NASDAQ 100 stocks")
     log(f"Threshold: {threshold}")
+    if rank_by_iv:
+        log(f"Strategy: Scan top {top_n_iv if top_n_iv else 'all'} by near-term IV")
     log("")
     
-    # Run batch scan (which handles the IB connection and scanning)
-    df = batch_scan(tickers, threshold=threshold)
+    # Run batch scan with IV ranking
+    df = batch_scan(tickers, threshold=threshold, rank_by_iv=rank_by_iv, top_n_iv=top_n_iv)
     
     if df is None or df.empty:
         result = {

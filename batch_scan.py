@@ -5,13 +5,13 @@ Batch Scanner - Scan multiple tickers from Nasdaq 100 and rank opportunities
 import sys
 sys.path.insert(0, '.')
 
-from scanner_ib import IBScanner, print_bordered_table
+from scanner_ib import IBScanner, print_bordered_table, rank_tickers_by_iv
 from nasdaq100 import get_nasdaq_100_list, get_tech_heavy_list, get_mag7
 import pandas as pd
 from datetime import datetime
 import time
 
-def batch_scan(tickers, threshold=0.2, max_tickers=None):
+def batch_scan(tickers, threshold=0.2, max_tickers=None, rank_by_iv=True, top_n_iv=None):
     """
     Scan multiple tickers and return ranked opportunities.
     
@@ -19,6 +19,8 @@ def batch_scan(tickers, threshold=0.2, max_tickers=None):
         tickers: List of ticker symbols
         threshold: Minimum FF to include (default 0.2)
         max_tickers: Maximum number of tickers to scan (None = all)
+        rank_by_iv: Pre-rank tickers by near-term IV (default True)
+        top_n_iv: If rank_by_iv=True, scan only top N by IV (None = scan all with ranking)
     
     Returns:
         DataFrame of all opportunities, sorted by FF
@@ -40,8 +42,18 @@ def batch_scan(tickers, threshold=0.2, max_tickers=None):
     
     try:
         # Limit number of tickers if specified
-        scan_list = tickers[:max_tickers] if max_tickers else tickers
+        initial_list = tickers[:max_tickers] if max_tickers else tickers
         
+        # Rank by IV if requested
+        if rank_by_iv:
+            print(f"\n🔍 Pre-ranking {len(initial_list)} tickers by near-term IV...")
+            ranked = rank_tickers_by_iv(scanner, initial_list, top_n=top_n_iv)
+            scan_list = [ticker for ticker, iv, price in ranked]
+            print(f"\n✅ Will scan {len(scan_list)} tickers (sorted by IV)")
+        else:
+            scan_list = initial_list
+        
+        print()
         print(f"Scanning {len(scan_list)} tickers with FF threshold > {threshold}")
         print(f"Earnings filtering: ENABLED")
         print("-" * 80)
