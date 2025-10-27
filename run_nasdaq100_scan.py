@@ -57,6 +57,8 @@ def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=50):
             opp = {
                 'ticker': row['ticker'],
                 'price': float(row['price']),
+                'ma_200': float(row['ma_200']) if pd.notna(row.get('ma_200')) else None,
+                'above_ma_200': bool(row['above_ma_200']) if pd.notna(row.get('above_ma_200')) else None,
                 'expiry1': str(row['expiry1']),
                 'expiry2': str(row['expiry2']),
                 'dte1': int(row['dte1']),
@@ -72,6 +74,12 @@ def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=50):
                 'put_iv2': float(row['put_iv2']) if pd.notna(row['put_iv2']) else None,
                 'avg_iv1': float(row['avg_iv1']) if pd.notna(row['avg_iv1']) else None,
                 'avg_iv2': float(row['avg_iv2']) if pd.notna(row['avg_iv2']) else None,
+                'fwd_var_call': float(row['fwd_var_call']) if pd.notna(row.get('fwd_var_call')) else None,
+                'fwd_var_put': float(row['fwd_var_put']) if pd.notna(row.get('fwd_var_put')) else None,
+                'fwd_var_avg': float(row['fwd_var_avg']) if pd.notna(row.get('fwd_var_avg')) else None,
+                'fwd_vol_call': float(row['fwd_vol_call']) if pd.notna(row.get('fwd_vol_call')) else None,
+                'fwd_vol_put': float(row['fwd_vol_put']) if pd.notna(row.get('fwd_vol_put')) else None,
+                'fwd_vol_avg': float(row['fwd_vol_avg']) if pd.notna(row.get('fwd_vol_avg')) else None,
             }
             
             # Calculate trade details
