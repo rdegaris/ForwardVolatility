@@ -98,7 +98,15 @@ def run_mag7_scan(threshold=0.2):
         try:
             ranked = rank_tickers_by_iv(scanner, tickers, top_n=None)  # Rank all
             iv_rankings_data = []
-            for ticker, iv, price, expiry, dte, ma_200, above_ma_200 in ranked:
+            for ticker, iv, price in ranked:
+                # Get 200-day MA
+                ma_200 = scanner.get_200day_ma(ticker)
+                above_ma_200 = price > ma_200 if ma_200 else None
+                
+                # Get near-term expiry
+                expiry = scanner.get_near_term_expiry(ticker)
+                dte = (expiry - datetime.now().date()).days if expiry else None
+                
                 iv_rankings_data.append({
                     'ticker': ticker,
                     'price': float(price) if price else None,
