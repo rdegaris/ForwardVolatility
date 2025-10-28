@@ -55,16 +55,10 @@ def run_midcap400_scan(threshold=0.2, rank_by_iv=True, top_n_iv=100):
                 ma_200 = scanner.get_200day_ma(ticker)
                 above_ma_200 = price > ma_200 if ma_200 else None
                 
-                # Get near-term expiry
-                expiry = scanner.get_near_term_expiry(ticker)
-                dte = (expiry - datetime.now().date()).days if expiry else None
-                
                 iv_rankings_data.append({
                     'ticker': ticker,
                     'price': float(price) if price else None,
                     'iv': float(iv) if iv else None,
-                    'expiry': str(expiry) if expiry else None,
-                    'dte': int(dte) if dte else None,
                     'ma_200': float(ma_200) if pd.notna(ma_200) else None,
                     'above_ma_200': bool(above_ma_200) if pd.notna(above_ma_200) else None,
                     'universe': 'S&P MidCap 400'
