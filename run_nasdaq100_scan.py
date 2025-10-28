@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 from batch_scan import batch_scan
 from nasdaq100 import get_nasdaq_100_list
+from scanner_ib import IBScanner, rank_tickers_by_iv
 import pandas as pd
 
 def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=50):
@@ -33,6 +34,31 @@ def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=50):
     if rank_by_iv:
         log(f"Strategy: Scan top {top_n_iv if top_n_iv else 'all'} by near-term IV")
     log("")
+    
+    # Get IV rankings first (for IV Rankings page)
+    iv_rankings_data = None
+    if rank_by_iv:
+        log("Ranking all tickers by near-term IV...")
+        scanner = IBScanner(check_earnings=False)
+        scanner.connect()
+        try:
+            ranked = rank_tickers_by_iv(scanner, tickers, top_n=None)  # Rank all
+            iv_rankings_data = []
+            for ticker, iv, price, expiry, dte, ma_200, above_ma_200 in ranked:
+                iv_rankings_data.append({
+                    'ticker': ticker,
+                    'price': float(price) if price else None,
+                    'iv': float(iv) if iv else None,
+                    'expiry': str(expiry) if expiry else None,
+                    'dte': int(dte) if dte else None,
+                    'ma_200': float(ma_200) if pd.notna(ma_200) else None,
+                    'above_ma_200': bool(above_ma_200) if pd.notna(above_ma_200) else None,
+                    'universe': 'NASDAQ 100'
+                })
+            log(f"Ranked {len(iv_rankings_data)} tickers by IV")
+            log("")
+        finally:
+            scanner.disconnect()
     
     # Run batch scan with IV ranking
     df = batch_scan(tickers, threshold=threshold, rank_by_iv=rank_by_iv, top_n_iv=top_n_iv)
@@ -176,6 +202,20 @@ def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=50):
     log("")
     log(f"✅ Results saved to {output_file}")
     log(f"📊 Total opportunities: {result['summary']['total_opportunities']}")
+    
+    # Save IV rankings separately for IV Rankings page
+    if iv_rankings_data:
+        iv_rankings_file = 'nasdaq100_iv_rankings_latest.json'
+        iv_rankings_result = {
+            'timestamp': datetime.now().isoformat(),
+            'date': datetime.now().strftime('%Y-%m-%d'),
+            'universe': 'NASDAQ 100',
+            'total_tickers': len(iv_rankings_data),
+            'rankings': iv_rankings_data
+        }
+        with open(iv_rankings_file, 'w') as f:
+            json.dump(iv_rankings_result, f, indent=2)
+        log(f"✅ IV Rankings saved to {iv_rankings_file}")
     
     return result
 

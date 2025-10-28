@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 from batch_scan import batch_scan
 from midcap400 import get_midcap400_list
+from scanner_ib import IBScanner, rank_tickers_by_iv
 import pandas as pd
 
 def run_midcap400_scan(threshold=0.2, rank_by_iv=True, top_n_iv=100):
@@ -39,6 +40,31 @@ def run_midcap400_scan(threshold=0.2, rank_by_iv=True, top_n_iv=100):
     # Print to console
     for line in scan_log:
         print(line)
+    
+    # Get IV rankings first (for IV Rankings page)
+    iv_rankings_data = None
+    if rank_by_iv:
+        print("Ranking all tickers by near-term IV...")
+        scanner = IBScanner(check_earnings=False)
+        scanner.connect()
+        try:
+            ranked = rank_tickers_by_iv(scanner, tickers, top_n=None)  # Rank all
+            iv_rankings_data = []
+            for ticker, iv, price, expiry, dte, ma_200, above_ma_200 in ranked:
+                iv_rankings_data.append({
+                    'ticker': ticker,
+                    'price': float(price) if price else None,
+                    'iv': float(iv) if iv else None,
+                    'expiry': str(expiry) if expiry else None,
+                    'dte': int(dte) if dte else None,
+                    'ma_200': float(ma_200) if pd.notna(ma_200) else None,
+                    'above_ma_200': bool(above_ma_200) if pd.notna(above_ma_200) else None,
+                    'universe': 'S&P MidCap 400'
+                })
+            print(f"Ranked {len(iv_rankings_data)} tickers by IV")
+            print()
+        finally:
+            scanner.disconnect()
     
     # Run the batch scan
     df = batch_scan(tickers, threshold=threshold, rank_by_iv=rank_by_iv, top_n_iv=top_n_iv)
@@ -184,6 +210,20 @@ def run_midcap400_scan(threshold=0.2, rank_by_iv=True, top_n_iv=100):
         json.dump(result, f, indent=2)
     
     print(f"✅ Latest results saved to: midcap400_results_latest.json")
+    
+    # Save IV rankings separately for IV Rankings page
+    if iv_rankings_data:
+        iv_rankings_file = 'midcap400_iv_rankings_latest.json'
+        iv_rankings_result = {
+            'timestamp': datetime.now().isoformat(),
+            'date': datetime.now().strftime('%Y-%m-%d'),
+            'universe': 'S&P MidCap 400',
+            'total_tickers': len(iv_rankings_data),
+            'rankings': iv_rankings_data
+        }
+        with open(iv_rankings_file, 'w') as f:
+            json.dump(iv_rankings_result, f, indent=2)
+        print(f"✅ IV Rankings saved to {iv_rankings_file}")
     
     print()
     print("=" * 80)

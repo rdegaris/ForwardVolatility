@@ -4,7 +4,7 @@ Run MAG7 scan with full trade recommendations and save for web display
 import sys
 import json
 from datetime import datetime
-from scanner_ib import IBScanner
+from scanner_ib import IBScanner, rank_tickers_by_iv
 from nasdaq100 import get_mag7
 import pandas as pd
 import time
@@ -90,6 +90,31 @@ def run_mag7_scan(threshold=0.2):
     print(f"Threshold: {threshold}")
     print()
     
+    # Get IV rankings first (for IV Rankings page)
+    iv_rankings_data = None
+    print("Ranking all tickers by near-term IV...")
+    scanner = IBScanner(port=7497, check_earnings=False)
+    if scanner.connect():
+        try:
+            ranked = rank_tickers_by_iv(scanner, tickers, top_n=None)  # Rank all
+            iv_rankings_data = []
+            for ticker, iv, price, expiry, dte, ma_200, above_ma_200 in ranked:
+                iv_rankings_data.append({
+                    'ticker': ticker,
+                    'price': float(price) if price else None,
+                    'iv': float(iv) if iv else None,
+                    'expiry': str(expiry) if expiry else None,
+                    'dte': int(dte) if dte else None,
+                    'ma_200': float(ma_200) if pd.notna(ma_200) else None,
+                    'above_ma_200': bool(above_ma_200) if pd.notna(above_ma_200) else None,
+                    'universe': 'MAG7'
+                })
+            print(f"Ranked {len(iv_rankings_data)} tickers by IV")
+            print()
+        finally:
+            scanner.disconnect()
+    
+    # Now run the actual scan
     scanner = IBScanner(port=7497, check_earnings=True)
     
     if not scanner.connect():
@@ -217,7 +242,7 @@ def run_mag7_scan(threshold=0.2):
                 print("=" * 80)
                 print()
             
-            return {
+            result_data = {
                 'timestamp': datetime.now().isoformat(),
                 'date': datetime.now().strftime('%Y-%m-%d'),
                 'scan_log': scan_log,
@@ -229,8 +254,24 @@ def run_mag7_scan(threshold=0.2):
                     'avg_ff': float(df['best_ff'].mean())
                 }
             }
+            
+            # Save IV rankings separately for IV Rankings page
+            if iv_rankings_data:
+                iv_rankings_file = 'mag7_iv_rankings_latest.json'
+                iv_rankings_result = {
+                    'timestamp': datetime.now().isoformat(),
+                    'date': datetime.now().strftime('%Y-%m-%d'),
+                    'universe': 'MAG7',
+                    'total_tickers': len(iv_rankings_data),
+                    'rankings': iv_rankings_data
+                }
+                with open(iv_rankings_file, 'w') as f:
+                    json.dump(iv_rankings_result, f, indent=2)
+                print(f"✅ IV Rankings saved to {iv_rankings_file}")
+            
+            return result_data
         else:
-            return {
+            result_data = {
                 'timestamp': datetime.now().isoformat(),
                 'date': datetime.now().strftime('%Y-%m-%d'),
                 'scan_log': scan_log,
@@ -242,6 +283,22 @@ def run_mag7_scan(threshold=0.2):
                     'avg_ff': 0
                 }
             }
+            
+            # Save IV rankings even if no opportunities
+            if iv_rankings_data:
+                iv_rankings_file = 'mag7_iv_rankings_latest.json'
+                iv_rankings_result = {
+                    'timestamp': datetime.now().isoformat(),
+                    'date': datetime.now().strftime('%Y-%m-%d'),
+                    'universe': 'MAG7',
+                    'total_tickers': len(iv_rankings_data),
+                    'rankings': iv_rankings_data
+                }
+                with open(iv_rankings_file, 'w') as f:
+                    json.dump(iv_rankings_result, f, indent=2)
+                print(f"✅ IV Rankings saved to {iv_rankings_file}")
+            
+            return result_data
             
     finally:
         scanner.disconnect()
@@ -263,6 +320,9 @@ if __name__ == "__main__":
             json.dump(results, f, indent=2)
         
         print(f"Latest results saved to: scan_results_latest.json")
+        
+        # Also save IV rankings if available (this is a hack - need to pass from function)
+        # For now, we'll just note that IV rankings are saved inside run_mag7_scan
         
         print()
         print("=" * 80)
