@@ -36,10 +36,10 @@ def connect_to_ib(host='127.0.0.1', port=7497, client_id=1):
     ib = IB()
     try:
         ib.connect(host, port, clientId=client_id)
-        print(f"✅ Connected to IB on {host}:{port}")
+        print(f"[OK] Connected to IB on {host}:{port}")
         return ib
     except Exception as e:
-        print(f"❌ Failed to connect to IB: {e}")
+        print(f"[ERROR] Failed to connect to IB: {e}")
         print("\nMake sure:")
         print("1. TWS or IB Gateway is running")
         print("2. API connections are enabled (File > Global Configuration > API > Settings)")
@@ -155,12 +155,12 @@ def identify_calendar_spreads(option_positions, ib):
                     }
                 })
                 
-                print(f"  ✓ Found: {quantity}x {symbol} ${strike} {right} calendar spread")
+                print(f"  [+] Found: {quantity}x {symbol} ${strike} {right} calendar spread")
                 print(f"    Front: {front_contract.lastTradeDateOrContractMonth} @ ${get_option_price(front_ticker):.2f}")
                 print(f"    Back:  {back_contract.lastTradeDateOrContractMonth} @ ${get_option_price(back_ticker):.2f}")
     
     if not calendar_spreads:
-        print("  ℹ️  No calendar spreads found in current positions")
+        print("  [INFO] No calendar spreads found in current positions")
     
     return calendar_spreads
 
@@ -260,8 +260,8 @@ def export_to_json(calendar_spreads, filename='trades.json'):
     with open(filename, 'w') as f:
         json.dump(trades, f, indent=2)
     
-    print(f"\n✅ Exported to {filename}")
-    print(f"\n📋 To import into Trade Tracker:")
+    print(f"\n[OK] Exported to {filename}")
+    print(f"\n[INSTRUCTIONS] To import into Trade Tracker:")
     print(f"   1. Copy {filename} content")
     print(f"   2. Go to Trade Tracker page")
     print(f"   3. Click 'Import from JSON' button")
@@ -290,31 +290,31 @@ def main():
         option_positions = get_option_positions(ib)
         
         if not option_positions:
-            print("\n⚠️  No option positions found")
+            print("\n[WARNING] No option positions found")
             return
         
         # Identify calendar spreads
         calendar_spreads = identify_calendar_spreads(option_positions, ib)
         
         if not calendar_spreads:
-            print("\n⚠️  No calendar spreads found in positions")
+            print("\n[WARNING] No calendar spreads found in positions")
             return
         
         # Export to JSON
         filename = export_to_json(calendar_spreads)
         
-        print(f"\n✅ Complete! Found {len(calendar_spreads)} calendar spreads")
+        print(f"\n[OK] Complete! Found {len(calendar_spreads)} calendar spreads")
         print(f"   JSON file: {os.path.abspath(filename)}")
         
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n[ERROR] Error: {e}")
         import traceback
         traceback.print_exc()
     
     finally:
         if ib and ib.isConnected():
             ib.disconnect()
-            print("\n👋 Disconnected from IB")
+            print("\n[INFO] Disconnected from IB")
 
 
 if __name__ == '__main__':
