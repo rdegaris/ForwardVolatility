@@ -54,7 +54,7 @@ def get_option_positions(ib):
     Returns:
         List of option positions
     """
-    print("\n📊 Fetching positions from IB...")
+    print("\n[INFO] Fetching positions from IB...")
     
     positions = ib.positions()
     
@@ -86,7 +86,7 @@ def identify_calendar_spreads(option_positions, ib):
     Returns:
         List of calendar spreads
     """
-    print("\n🔍 Identifying calendar spreads...")
+    print("\n[INFO] Identifying calendar spreads...")
     
     # Group positions by symbol, strike, and right (CALL/PUT)
     groups = defaultdict(list)
@@ -218,7 +218,7 @@ def export_to_json(calendar_spreads, filename='trades.json'):
       entryDate: string (YYYY-MM-DD)
     }
     """
-    print(f"\n💾 Exporting {len(calendar_spreads)} calendar spreads to {filename}...")
+    print(f"\n[INFO] Exporting {len(calendar_spreads)} calendar spreads to {filename}...")
     
     trades = []
     
