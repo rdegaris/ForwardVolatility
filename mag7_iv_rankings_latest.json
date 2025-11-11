@@ -1,0 +1,64 @@
+{
+  "timestamp": "2025-11-11T09:42:39.684989",
+  "date": "2025-11-11",
+  "universe": "MAG7",
+  "total_tickers": 7,
+  "rankings": [
+    {
+      "ticker": "NVDA",
+      "price": 192.8,
+      "iv": 52.71245779523973,
+      "ma_200": 150.22189999999998,
+      "above_ma_200": true,
+      "universe": "MAG7"
+    },
+    {
+      "ticker": "TSLA",
+      "price": 434.55,
+      "iv": 49.46620831995078,
+      "ma_200": 338.2229,
+      "above_ma_200": true,
+      "universe": "MAG7"
+    },
+    {
+      "ticker": "META",
+      "price": 624.35,
+      "iv": 30.604684762328834,
+      "ma_200": 678.4907000000001,
+      "above_ma_200": false,
+      "universe": "MAG7"
+    },
+    {
+      "ticker": "GOOGL",
+      "price": 289.4,
+      "iv": 29.79091501159528,
+      "ma_200": 195.79659999999996,
+      "above_ma_200": true,
+      "universe": "MAG7"
+    },
+    {
+      "ticker": "AMZN",
+      "price": 248.38,
+      "iv": 28.21960018677049,
+      "ma_200": 215.05095000000009,
+      "above_ma_200": true,
+      "universe": "MAG7"
+    },
+    {
+      "ticker": "AAPL",
+      "price": 273.23,
+      "iv": 21.563855250732683,
+      "ma_200": 224.8470999999998,
+      "above_ma_200": true,
+      "universe": "MAG7"
+    },
+    {
+      "ticker": "MSFT",
+      "price": 504.62,
+      "iv": 20.578011535612827,
+      "ma_200": 463.5890000000001,
+      "above_ma_200": true,
+      "universe": "MAG7"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "timestamp": "2025-11-11T08:48:49.122767",
+  "date": "2025-11-11",
+  "scan_log": [
+    "================================================================================",
+    "S&P MIDCAP 400 FORWARD VOLATILITY SCANNER",
+    "================================================================================",
+    "",
+    "Scanning: 594 S&P MidCap 400 stocks",
+    "Threshold: 0.2",
+    "Strategy: Scan top 100 by near-term IV",
+    ""
+  ],
+  "opportunities": [],
+  "summary": {
+    "total_opportunities": 0,
+    "tickers_scanned": 594,
+    "best_ff": 0,
+    "avg_ff": 0
+  }
+}

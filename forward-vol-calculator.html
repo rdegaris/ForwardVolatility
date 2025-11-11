@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forward Volatility / Forward Factor Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .calculator-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .calculator-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .calculator-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .calculator-header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .calculator-body {
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .inputs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .input-group input {
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-hint {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.25rem;
+            min-height: 1.2rem;
+        }
+
+        .calculate-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .calculate-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .calculate-button:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid #c62828;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .results-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #f0f0f0;
+            display: none;
+        }
+
+        .results-section.show {
+            display: block;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+
+        .result-value.positive {
+            color: #4CAF50;
+        }
+
+        .result-value.negative {
+            color: #ff6b6b;
+        }
+
+        .result-subtitle {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .calculation-details {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+            font-weight: 600;
+        }
+
+        .interpretation {
+            background: #f0f7ff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .interpretation h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .interpretation p {
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .inputs-grid,
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .calculator-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .result-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="calculator-header">
+            <h1>Forward Volatility / Forward Factor Calculator</h1>
+            <p>Calculate forward volatility and forward factor between two dates</p>
+        </div>
+
+        <div class="calculator-body">
+            <h2 class="section-title">Inputs</h2>
+            
+            <div class="inputs-grid">
+                <div class="input-group">
+                    <label for="frontIV">Front IV (%)</label>
+                    <input type="number" id="frontIV" step="0.01" min="1" max="1000" placeholder="61.87">
+                    <span class="input-hint">IV in percent (1-1000)</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="backIV">Back IV (%)</label>
+                    <input type="number" id="backIV" step="0.01" min="1" max="1000" placeholder="52.11">
+                    <span class="input-hint">IV in percent (1-1000)</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="frontDate">Front Date</label>
+                    <input type="date" id="frontDate">
+                    <span class="input-hint" id="frontDTE"></span>
+                </div>
+
+                <div class="input-group">
+                    <label for="backDate">Back Date</label>
+                    <input type="date" id="backDate">
+                    <span class="input-hint" id="backDTE"></span>
+                </div>
+            </div>
+
+            <button class="calculate-button" onclick="calculate()">Calculate</button>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <div class="results-section" id="resultsSection">
+                <h2 class="section-title">Results</h2>
+                
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h3>Forward Volatility</h3>
+                        <div class="result-value" id="forwardVolValue">--</div>
+                        <div class="result-subtitle" id="dateRange">Between -- and --</div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>Forward Factor</h3>
+                        <div class="result-value" id="forwardFactorValue">--</div>
+                        <div class="result-subtitle">(Front IV / Forward Vol) - 1</div>
+                    </div>
+                </div>
+
+                <div class="calculation-details">
+                    <h4>Calculation Details</h4>
+                    <div id="detailsContent"></div>
+                </div>
+
+                <div class="interpretation" id="interpretation">
+                    <h4>Interpretation</h4>
+                    <p id="interpretationText"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update DTE display when dates change
+        document.getElementById('frontDate').addEventListener('change', updateDTE);
+        document.getElementById('backDate').addEventListener('change', updateDTE);
+
+        function updateDTE() {
+            const frontDate = document.getElementById('frontDate').value;
+            const backDate = document.getElementById('backDate').value;
+
+            if (frontDate) {
+                const dte = calculateDTE(frontDate);
+                document.getElementById('frontDTE').textContent = `${dte} DTE`;
+            }
+
+            if (backDate) {
+                const dte = calculateDTE(backDate);
+                document.getElementById('backDTE').textContent = `${dte} DTE`;
+            }
+        }
+
+        function calculateDTE(dateStr) {
+            const targetDate = new Date(dateStr);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const diffTime = targetDate.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            document.getElementById('resultsSection').classList.remove('show');
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        function calculate() {
+            hideError();
+
+            // Get inputs
+            const frontIV = parseFloat(document.getElementById('frontIV').value);
+            const backIV = parseFloat(document.getElementById('backIV').value);
+            const frontDate = document.getElementById('frontDate').value;
+            const backDate = document.getElementById('backDate').value;
+
+            // Validate inputs
+            if (isNaN(frontIV) || isNaN(backIV)) {
+                showError('Please enter valid IV values');
+                return;
+            }
+
+            if (frontIV <= 0 || frontIV > 1000 || backIV <= 0 || backIV > 1000) {
+                showError('IV must be between 1 and 1000');
+                return;
+            }
+
+            if (!frontDate || !backDate) {
+                showError('Please select both dates');
+                return;
+            }
+
+            const frontDTE = calculateDTE(frontDate);
+            const backDTE = calculateDTE(backDate);
+
+            if (frontDTE <= 0 || backDTE <= 0) {
+                showError('Dates must be in the future');
+                return;
+            }
+
+            if (frontDTE >= backDTE) {
+                showError('Front date must be before back date');
+                return;
+            }
+
+            // Calculate forward volatility
+            const sigma1 = frontIV / 100;
+            const sigma2 = backIV / 100;
+            const T1 = frontDTE / 365;
+            const T2 = backDTE / 365;
+
+            const forwardVariance = (sigma2 * sigma2 * T2 - sigma1 * sigma1 * T1) / (T2 - T1);
+
+            if (forwardVariance < 0) {
+                showError('Negative forward variance - front IV too high or back IV too low');
+                return;
+            }
+
+            const forwardVol = Math.sqrt(forwardVariance);
+            const forwardFactor = (sigma1 - forwardVol) / forwardVol;
+
+            // Display results
+            displayResults({
+                forwardVol: forwardVol * 100,
+                forwardFactor: forwardFactor * 100,
+                frontIV,
+                backIV,
+                frontDTE,
+                backDTE,
+                frontDate,
+                backDate
+            });
+        }
+
+        function displayResults(data) {
+            // Show results section
+            document.getElementById('resultsSection').classList.add('show');
+
+            // Forward Volatility
+            document.getElementById('forwardVolValue').textContent = data.forwardVol.toFixed(2) + '%';
+            document.getElementById('dateRange').textContent = 
+                `Between ${formatDate(data.frontDate)} and ${formatDate(data.backDate)}`;
+
+            // Forward Factor
+            const ffElement = document.getElementById('forwardFactorValue');
+            ffElement.textContent = (data.forwardFactor > 0 ? '+' : '') + data.forwardFactor.toFixed(2) + '%';
+            ffElement.className = 'result-value ' + (data.forwardFactor > 0 ? 'positive' : 'negative');
+
+            // Calculation Details
+            const detailsHTML = `
+                <div class="detail-row">
+                    <span>Front DTE:</span>
+                    <span>${data.frontDTE} days</span>
+                </div>
+                <div class="detail-row">
+                    <span>Back DTE:</span>
+                    <span>${data.backDTE} days</span>
+                </div>
+                <div class="detail-row">
+                    <span>Time Spread:</span>
+                    <span>${data.backDTE - data.frontDTE} days</span>
+                </div>
+                <div class="detail-row">
+                    <span>Front IV:</span>
+                    <span>${data.frontIV}%</span>
+                </div>
+                <div class="detail-row">
+                    <span>Back IV:</span>
+                    <span>${data.backIV}%</span>
+                </div>
+                <div class="detail-row">
+                    <span>Forward Volatility:</span>
+                    <span>${data.forwardVol.toFixed(2)}%</span>
+                </div>
+            `;
+            document.getElementById('detailsContent').innerHTML = detailsHTML;
+
+            // Interpretation
+            let interpretation = '';
+            if (data.forwardFactor > 40) {
+                interpretation = `
+                    ✅ <strong>Strong Opportunity:</strong> Forward Factor above 40% indicates front-month IV is significantly elevated. 
+                    Consider calendar spreads to capture the volatility term structure edge.
+                `;
+            } else if (data.forwardFactor > 20) {
+                interpretation = `
+                    ⚠️ <strong>Moderate Opportunity:</strong> Forward Factor above 20% suggests a potential calendar spread opportunity.
+                    Front-month IV is elevated relative to forward volatility.
+                `;
+            } else if (data.forwardFactor > 0) {
+                interpretation = `
+                    📊 <strong>Positive FF:</strong> Front IV is higher than forward vol, but the edge may be small.
+                    Consider other factors before entering a trade.
+                `;
+            } else {
+                interpretation = `
+                    ❌ <strong>Negative FF:</strong> Front IV is lower than forward volatility. 
+                    Calendar spreads are not favorable in this term structure.
+                `;
+            }
+            document.getElementById('interpretationText').innerHTML = interpretation;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,330 @@
+"""
+Daily Forward Volatility Scanner - Master Script
+
+Runs all daily scans and syncs with IB positions:
+- MAG7 scanner
+- NASDAQ 100 scanner  
+- MidCap 400 scanner
+- IB positions fetcher
+- Upload results to web repositories
+
+Usage:
+    python daily_run.py                    # Run everything
+    python daily_run.py --scans-only       # Run scans only (no IB)
+    python daily_run.py --ib-only          # Fetch IB positions only
+    python daily_run.py --mag7             # Run MAG7 only
+    python daily_run.py --nasdaq100        # Run NASDAQ100 only
+    python daily_run.py --midcap400        # Run MidCap400 only
+    python daily_run.py --no-upload        # Don't upload to web repos
+"""
+
+import subprocess
+import sys
+import os
+from datetime import datetime
+import argparse
+import json
+import logging
+from pathlib import Path
+
+
+class Colors:
+    """ANSI color codes for terminal output."""
+    HEADER = '\033[95m'
+    BLUE = '\033[94m'
+    CYAN = '\033[96m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    END = '\033[0m'
+    BOLD = '\033[1m'
+
+
+def print_header(message):
+    """Print formatted header."""
+    print(f"\n{Colors.BOLD}{Colors.CYAN}{'=' * 70}{Colors.END}")
+    print(f"{Colors.BOLD}{Colors.CYAN}{message.center(70)}{Colors.END}")
+    print(f"{Colors.BOLD}{Colors.CYAN}{'=' * 70}{Colors.END}\n")
+
+
+def print_section(message):
+    """Print formatted section header."""
+    print(f"\n{Colors.BOLD}{Colors.BLUE}▶ {message}{Colors.END}")
+    print(f"{Colors.BLUE}{'-' * 70}{Colors.END}")
+
+
+def print_success(message):
+    """Print success message."""
+    print(f"{Colors.GREEN}✓ {message}{Colors.END}")
+
+
+def print_error(message):
+    """Print error message."""
+    print(f"{Colors.RED}✗ {message}{Colors.END}")
+
+
+def print_warning(message):
+    """Print warning message."""
+    print(f"{Colors.YELLOW}⚠ {message}{Colors.END}")
+
+
+def print_info(message):
+    """Print info message."""
+    print(f"{Colors.CYAN}ℹ {message}{Colors.END}")
+
+
+def run_command(command, description):
+    """
+    Run a shell command and return success status.
+    
+    Args:
+        command: Command to run (string or list)
+        description: Description of what's being run
+    
+    Returns:
+        True if successful, False otherwise
+    """
+    print_info(f"Running: {description}")
+    
+    try:
+        if isinstance(command, str):
+            result = subprocess.run(command, shell=True, capture_output=True, text=True)
+        else:
+            result = subprocess.run(command, capture_output=True, text=True)
+        
+        if result.returncode == 0:
+            print_success(f"Completed: {description}")
+            if result.stdout:
+                print(result.stdout)
+            return True
+        else:
+            print_error(f"Failed: {description}")
+            if result.stderr:
+                print(f"Error: {result.stderr}")
+            return False
+    
+    except Exception as e:
+        print_error(f"Exception running {description}: {e}")
+        return False
+
+
+def run_mag7_scan():
+    """Run MAG7 scanner."""
+    print_section("Running MAG7 Scanner")
+    return run_command(
+        [sys.executable, "run_mag7_scan.py"],
+        "MAG7 scan"
+    )
+
+
+def run_nasdaq100_scan():
+    """Run NASDAQ 100 scanner."""
+    print_section("Running NASDAQ 100 Scanner")
+    return run_command(
+        [sys.executable, "run_nasdaq100_scan.py"],
+        "NASDAQ 100 scan"
+    )
+
+
+def run_midcap400_scan():
+    """Run MidCap 400 scanner."""
+    print_section("Running MidCap 400 Scanner")
+    return run_command(
+        [sys.executable, "run_midcap400_scan.py"],
+        "MidCap 400 scan"
+    )
+
+
+def fetch_ib_positions():
+    """Fetch IB positions and export to JSON."""
+    print_section("Fetching IB Positions")
+    
+    # Check if IB connection scripts exist
+    if not os.path.exists("fetch_ib_positions.py"):
+        print_warning("fetch_ib_positions.py not found, skipping IB sync")
+        return False
+    
+    success = run_command(
+        [sys.executable, "fetch_ib_positions.py"],
+        "IB positions fetch"
+    )
+    
+    if success and os.path.exists("trades.json"):
+        print_success(f"IB positions exported to trades.json")
+        
+        # Show summary
+        try:
+            with open("trades.json", 'r') as f:
+                trades = json.load(f)
+            print_info(f"Found {len(trades)} calendar spread positions")
+            for trade in trades:
+                pnl = ((trade['backCurrentPrice'] - trade['backEntryPrice']) - 
+                       (trade['frontCurrentPrice'] - trade['frontEntryPrice'])) * trade['quantity'] * 100
+                print(f"  • {trade['quantity']}x {trade['symbol']} ${trade['strike']} {trade['callOrPut']} - P&L: ${pnl:.2f}")
+        except:
+            pass
+    
+    return success
+
+
+def upload_to_web_repos():
+    """Upload scan results to web repositories."""
+    print_section("Uploading Results to Web Repositories")
+    
+    # Check if web repo exists
+    web_path = os.path.join("..", "forward-volatility-web", "public", "data")
+    
+    if not os.path.exists(web_path):
+        print_warning(f"Web repo path not found: {web_path}")
+        print_info("Skipping upload - make sure forward-volatility-web is in parent directory")
+        return False
+    
+    # Copy latest scan results
+    files_to_copy = [
+        ("scan_results_latest.json", "mag7_results_latest.json"),
+        ("nasdaq100_results_latest.json", "nasdaq100_results_latest.json"),
+        ("midcap400_results_latest.json", "midcap400_results_latest.json"),
+    ]
+    
+    copied = 0
+    for src, dst in files_to_copy:
+        if os.path.exists(src):
+            try:
+                import shutil
+                dst_path = os.path.join(web_path, dst)
+                shutil.copy2(src, dst_path)
+                print_success(f"Copied {src} → {dst}")
+                copied += 1
+            except Exception as e:
+                print_error(f"Failed to copy {src}: {e}")
+    
+    if copied > 0:
+        print_info(f"Copied {copied} result files to web repo")
+        
+        # Git commit and push (optional - user can do manually)
+        print_info("Remember to commit and push changes in forward-volatility-web repo")
+        return True
+    else:
+        print_warning("No scan result files found to copy")
+        return False
+
+
+def main():
+    """Main execution function."""
+    parser = argparse.ArgumentParser(
+        description="Daily Forward Volatility Scanner - Run all scans and IB sync"
+    )
+    parser.add_argument('--scans-only', action='store_true', help='Run scans only (skip IB)')
+    parser.add_argument('--ib-only', action='store_true', help='Fetch IB positions only (skip scans)')
+    parser.add_argument('--mag7', action='store_true', help='Run MAG7 scanner only')
+    parser.add_argument('--nasdaq100', action='store_true', help='Run NASDAQ100 scanner only')
+    parser.add_argument('--midcap400', action='store_true', help='Run MidCap400 scanner only')
+    parser.add_argument('--no-upload', action='store_true', help='Skip uploading to web repos')
+    
+    args = parser.parse_args()
+    
+    # Setup logging
+    log_dir = Path("logs")
+    log_dir.mkdir(exist_ok=True)
+    
+    log_file = log_dir / f"daily_run_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler()
+        ]
+    )
+    
+    logging.info("="*70)
+    logging.info(f"Daily Forward Volatility Scanner Started")
+    logging.info(f"Log file: {log_file}")
+    logging.info("="*70)
+    
+    # Print header
+    print_header(f"Daily Forward Volatility Scanner - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    
+    results = {
+        'mag7': None,
+        'nasdaq100': None,
+        'midcap400': None,
+        'ib_positions': None,
+        'upload': None
+    }
+    
+    # Determine what to run
+    run_all = not any([args.scans_only, args.ib_only, args.mag7, args.nasdaq100, args.midcap400])
+    
+    # Run scans
+    if args.ib_only:
+        pass  # Skip scans
+    elif args.mag7:
+        results['mag7'] = run_mag7_scan()
+    elif args.nasdaq100:
+        results['nasdaq100'] = run_nasdaq100_scan()
+    elif args.midcap400:
+        results['midcap400'] = run_midcap400_scan()
+    elif args.scans_only or run_all:
+        results['mag7'] = run_mag7_scan()
+        results['nasdaq100'] = run_nasdaq100_scan()
+        results['midcap400'] = run_midcap400_scan()
+    
+    # Fetch IB positions
+    if not args.scans_only:
+        if args.ib_only or run_all:
+            results['ib_positions'] = fetch_ib_positions()
+    
+    # Upload to web repos
+    if not args.no_upload and not args.ib_only:
+        if run_all or args.scans_only or any([args.mag7, args.nasdaq100, args.midcap400]):
+            results['upload'] = upload_to_web_repos()
+    
+    # Print summary
+    print_header("Execution Summary")
+    
+    summary_items = []
+    if results['mag7'] is not None:
+        summary_items.append(('MAG7 Scan', results['mag7']))
+    if results['nasdaq100'] is not None:
+        summary_items.append(('NASDAQ 100 Scan', results['nasdaq100']))
+    if results['midcap400'] is not None:
+        summary_items.append(('MidCap 400 Scan', results['midcap400']))
+    if results['ib_positions'] is not None:
+        summary_items.append(('IB Positions Fetch', results['ib_positions']))
+    if results['upload'] is not None:
+        summary_items.append(('Web Upload', results['upload']))
+    
+    for name, success in summary_items:
+        if success:
+            print_success(f"{name}: Success")
+        elif success is False:
+            print_error(f"{name}: Failed")
+        else:
+            print_info(f"{name}: Skipped")
+    
+    # Overall status
+    failures = sum(1 for _, success in summary_items if success is False)
+    successes = sum(1 for _, success in summary_items if success is True)
+    
+    print()
+    if failures == 0 and successes > 0:
+        print_success(f"All {successes} tasks completed successfully!")
+    elif failures > 0:
+        print_warning(f"{successes} succeeded, {failures} failed")
+    else:
+        print_info("No tasks were executed")
+    
+    print(f"\n{Colors.BOLD}Finished at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}{Colors.END}\n")
+    
+    logging.info("="*70)
+    logging.info(f"Daily run completed - {successes} succeeded, {failures} failed")
+    logging.info(f"Log saved to: {log_file}")
+    logging.info("="*70)
+    
+    return 0 if failures == 0 else 1
+
+
+if __name__ == '__main__':
+    sys.exit(main())

@@ -130,6 +130,8 @@ class IBScanner:
         self.connected = False
         self.check_earnings = check_earnings and EARNINGS_CHECKER_AVAILABLE
         self.earnings_checker = EarningsChecker() if self.check_earnings else None
+        self.price_cache = {}  # Cache for stock prices
+        self.ma_200_cache = {}  # Cache for 200-day MA
     
     def connect(self):
         """Connect to IB Gateway or TWS."""
@@ -159,6 +161,10 @@ class IBScanner:
     
     def get_stock_price(self, ticker: str) -> Optional[float]:
         """Get current stock price."""
+        # Check cache first
+        if ticker in self.price_cache:
+            return self.price_cache[ticker]
+        
         try:
             stock = Stock(ticker, 'SMART', 'USD')
             self.ib.qualifyContracts(stock)
@@ -168,10 +174,12 @@ class IBScanner:
             
             price = ticker_data.marketPrice()
             if price and price > 0:
+                self.price_cache[ticker] = price
                 return price
             
             # Try last price if market price not available
             if ticker_data.last and ticker_data.last > 0:
+                self.price_cache[ticker] = ticker_data.last
                 return ticker_data.last
             
             return None
@@ -185,6 +193,10 @@ class IBScanner:
         Returns:
             200-day MA price, or None if not available
         """
+        # Check cache first
+        if ticker in self.ma_200_cache:
+            return self.ma_200_cache[ticker]
+        
         try:
             stock = Stock(ticker, 'SMART', 'USD')
             self.ib.qualifyContracts(stock)
@@ -204,6 +216,7 @@ class IBScanner:
                 # Calculate average of close prices
                 closes = [bar.close for bar in bars[-200:]]
                 ma_200 = sum(closes) / len(closes)
+                self.ma_200_cache[ticker] = ma_200
                 return ma_200
             
             return None
@@ -356,6 +369,17 @@ class IBScanner:
                 if debug:
                     print(f"    [DEBUG] Put has price but no IV: ${put_ticker.last}")
             
+            # Get bid/ask prices for midpoint calculation
+            call_bid = call_ticker.bid if call_ticker.bid and call_ticker.bid > 0 else None
+            call_ask = call_ticker.ask if call_ticker.ask and call_ticker.ask > 0 else None
+            call_last = call_ticker.last if call_ticker.last and call_ticker.last > 0 else None
+            call_mid = (call_bid + call_ask) / 2 if call_bid and call_ask else call_last
+            
+            put_bid = put_ticker.bid if put_ticker.bid and put_ticker.bid > 0 else None
+            put_ask = put_ticker.ask if put_ticker.ask and put_ticker.ask > 0 else None
+            put_last = put_ticker.last if put_ticker.last and put_ticker.last > 0 else None
+            put_mid = (put_bid + put_ask) / 2 if put_bid and put_ask else put_last
+            
             # Cancel market data subscriptions
             self.ib.cancelMktData(call)
             self.ib.cancelMktData(put)
@@ -380,7 +404,13 @@ class IBScanner:
                 'call_iv': call_iv,
                 'put_iv': put_iv,
                 'avg_iv': avg_iv,
-                'atm_strike': atm_strike
+                'atm_strike': atm_strike,
+                'call_bid': call_bid,
+                'call_ask': call_ask,
+                'call_mid': call_mid,
+                'put_bid': put_bid,
+                'put_ask': put_ask,
+                'put_mid': put_mid
             }
             
         except Exception as e:
@@ -534,6 +564,20 @@ class IBScanner:
                     'put_iv2': round(iv_data2['put_iv'], 2) if iv_data2['put_iv'] else None,
                     'avg_iv1': round(iv_data1['avg_iv'], 2),
                     'avg_iv2': round(iv_data2['avg_iv'], 2),
+                    # Option prices (front month)
+                    'call1_bid': round(iv_data1.get('call_bid'), 2) if iv_data1.get('call_bid') else None,
+                    'call1_ask': round(iv_data1.get('call_ask'), 2) if iv_data1.get('call_ask') else None,
+                    'call1_mid': round(iv_data1.get('call_mid'), 2) if iv_data1.get('call_mid') else None,
+                    'put1_bid': round(iv_data1.get('put_bid'), 2) if iv_data1.get('put_bid') else None,
+                    'put1_ask': round(iv_data1.get('put_ask'), 2) if iv_data1.get('put_ask') else None,
+                    'put1_mid': round(iv_data1.get('put_mid'), 2) if iv_data1.get('put_mid') else None,
+                    # Option prices (back month)
+                    'call2_bid': round(iv_data2.get('call_bid'), 2) if iv_data2.get('call_bid') else None,
+                    'call2_ask': round(iv_data2.get('call_ask'), 2) if iv_data2.get('call_ask') else None,
+                    'call2_mid': round(iv_data2.get('call_mid'), 2) if iv_data2.get('call_mid') else None,
+                    'put2_bid': round(iv_data2.get('put_bid'), 2) if iv_data2.get('put_bid') else None,
+                    'put2_ask': round(iv_data2.get('put_ask'), 2) if iv_data2.get('put_ask') else None,
+                    'put2_mid': round(iv_data2.get('put_mid'), 2) if iv_data2.get('put_mid') else None,
                     # Forward factor ratios
                     'ff_call': round(ff_ratio_call, 3) if ff_ratio_call else None,
                     'ff_put': round(ff_ratio_put, 3) if ff_ratio_put else None,
@@ -606,7 +650,7 @@ def rank_tickers_by_iv(scanner: IBScanner, tickers: List[str], top_n: Optional[i
             else:
                 print("⚠️  No IV data")
             
-            time.sleep(0.3)  # Rate limiting
+            time.sleep(0.05)  # Reduced rate limiting for faster scans
             
         except Exception as e:
             print(f"❌ Error: {e}")
