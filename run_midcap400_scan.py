@@ -139,8 +139,25 @@ def run_midcap400_scan(threshold=0.2, rank_by_iv=True, top_n_iv=100):
             
             ff_call = opp['ff_call'] if opp['ff_call'] is not None else 0
             ff_put = opp['ff_put'] if opp['ff_put'] is not None else 0
+            above_ma_200 = opp.get('above_ma_200', True)  # Default to True if not available
             
-            if ff_call > ff_put:
+            # If FF values are close (within 5%), prefer the side that aligns with trend
+            ff_diff = abs(ff_call - ff_put)
+            max_ff = max(ff_call, ff_put)
+            
+            if max_ff > 0 and ff_diff / max_ff < 0.05:
+                # FF values are similar - use trend to decide
+                if above_ma_200:
+                    spread_type = "CALL"  # Bullish trend -> CALL spread
+                    front_iv = opp['call_iv1'] / 100 if opp['call_iv1'] else opp['avg_iv1'] / 100
+                    back_iv = opp['call_iv2'] / 100 if opp['call_iv2'] else opp['avg_iv2'] / 100
+                    ff_display = ff_call
+                else:
+                    spread_type = "PUT"  # Bearish trend -> PUT spread
+                    front_iv = opp['put_iv1'] / 100 if opp['put_iv1'] else opp['avg_iv1'] / 100
+                    back_iv = opp['put_iv2'] / 100 if opp['put_iv2'] else opp['avg_iv2'] / 100
+                    ff_display = ff_put
+            elif ff_call > ff_put:
                 spread_type = "CALL"
                 front_iv = opp['call_iv1'] / 100 if opp['call_iv1'] else opp['avg_iv1'] / 100
                 back_iv = opp['call_iv2'] / 100 if opp['call_iv2'] else opp['avg_iv2'] / 100
@@ -153,8 +170,26 @@ def run_midcap400_scan(threshold=0.2, rank_by_iv=True, top_n_iv=100):
             
             front_dte = opp['dte1']
             back_dte = opp['dte2']
-            front_price = 0.4 * stock_price * front_iv * (front_dte / 365) ** 0.5
-            back_price = 0.4 * stock_price * back_iv * (back_dte / 365) ** 0.5
+            
+            # Use actual midpoint prices if available, otherwise estimate
+            if spread_type == "CALL":
+                front_mid = opp.get('call1_mid')
+                back_mid = opp.get('call2_mid')
+            else:
+                front_mid = opp.get('put1_mid')
+                back_mid = opp.get('put2_mid')
+            
+            if front_mid and back_mid:
+                # Use actual market midpoint prices
+                front_price = front_mid
+                back_price = back_mid
+                price_source = "market midpoint"
+            else:
+                # Estimate using simplified ATM formula
+                front_price = 0.4 * stock_price * front_iv * (front_dte / 365) ** 0.5
+                back_price = 0.4 * stock_price * back_iv * (back_dte / 365) ** 0.5
+                price_source = "estimated"
+            
             net_debit = back_price - front_price
             net_debit_total = net_debit * 100
             
@@ -173,6 +208,7 @@ def run_midcap400_scan(threshold=0.2, rank_by_iv=True, top_n_iv=100):
                 'back_price': back_price,
                 'net_debit': net_debit,
                 'net_debit_total': net_debit_total,
+                'price_source': price_source,
                 'best_case': best_case * 100,
                 'typical_case': typical_case * 100,
                 'adverse_case': adverse_case * 100,

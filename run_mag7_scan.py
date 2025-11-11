@@ -33,8 +33,25 @@ def calculate_trade_details(row):
     
     ff_call = row['ff_call'] if pd.notna(row['ff_call']) else 0
     ff_put = row['ff_put'] if pd.notna(row['ff_put']) else 0
+    above_ma_200 = row.get('above_ma_200', True)  # Default to True if not available
     
-    if ff_call > ff_put:
+    # If FF values are close (within 5%), prefer the side that aligns with trend
+    ff_diff = abs(ff_call - ff_put)
+    max_ff = max(ff_call, ff_put)
+    
+    if max_ff > 0 and ff_diff / max_ff < 0.05:
+        # FF values are similar - use trend to decide
+        if above_ma_200:
+            spread_type = "CALL"  # Bullish trend -> CALL spread
+            front_iv = row['call_iv1'] / 100 if pd.notna(row['call_iv1']) else row['avg_iv1'] / 100
+            back_iv = row['call_iv2'] / 100 if pd.notna(row['call_iv2']) else row['avg_iv2'] / 100
+            ff_display = ff_call
+        else:
+            spread_type = "PUT"  # Bearish trend -> PUT spread
+            front_iv = row['put_iv1'] / 100 if pd.notna(row['put_iv1']) else row['avg_iv1'] / 100
+            back_iv = row['put_iv2'] / 100 if pd.notna(row['put_iv2']) else row['avg_iv2'] / 100
+            ff_display = ff_put
+    elif ff_call > ff_put:
         spread_type = "CALL"
         front_iv = row['call_iv1'] / 100 if pd.notna(row['call_iv1']) else row['avg_iv1'] / 100
         back_iv = row['call_iv2'] / 100 if pd.notna(row['call_iv2']) else row['avg_iv2'] / 100
@@ -47,8 +64,26 @@ def calculate_trade_details(row):
     
     front_dte = row['dte1']
     back_dte = row['dte2']
-    front_price = 0.4 * stock_price * front_iv * (front_dte / 365) ** 0.5
-    back_price = 0.4 * stock_price * back_iv * (back_dte / 365) ** 0.5
+    
+    # Use actual midpoint prices if available, otherwise estimate
+    if spread_type == "CALL":
+        front_mid = row.get('call1_mid')
+        back_mid = row.get('call2_mid')
+    else:
+        front_mid = row.get('put1_mid')
+        back_mid = row.get('put2_mid')
+    
+    if pd.notna(front_mid) and pd.notna(back_mid):
+        # Use actual market midpoint prices
+        front_price = front_mid
+        back_price = back_mid
+        price_source = "market midpoint"
+    else:
+        # Estimate using simplified ATM formula
+        front_price = 0.4 * stock_price * front_iv * (front_dte / 365) ** 0.5
+        back_price = 0.4 * stock_price * back_iv * (back_dte / 365) ** 0.5
+        price_source = "estimated"
+    
     net_debit = back_price - front_price
     net_debit_total = net_debit * 100
     
@@ -67,6 +102,7 @@ def calculate_trade_details(row):
         'back_price': back_price,
         'net_debit': net_debit,
         'net_debit_total': net_debit_total,
+        'price_source': price_source,
         'best_case': best_case * 100,
         'typical_case': typical_case * 100,
         'adverse_case': adverse_case * 100,
