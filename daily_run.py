@@ -49,28 +49,28 @@ def print_header(message):
 
 def print_section(message):
     """Print formatted section header."""
-    print(f"\n{Colors.BOLD}{Colors.BLUE}▶ {message}{Colors.END}")
+    print(f"\n{Colors.BOLD}{Colors.BLUE}> {message}{Colors.END}")
     print(f"{Colors.BLUE}{'-' * 70}{Colors.END}")
 
 
 def print_success(message):
     """Print success message."""
-    print(f"{Colors.GREEN}✓ {message}{Colors.END}")
+    print(f"{Colors.GREEN}[OK] {message}{Colors.END}")
 
 
 def print_error(message):
     """Print error message."""
-    print(f"{Colors.RED}✗ {message}{Colors.END}")
+    print(f"{Colors.RED}[FAILED] {message}{Colors.END}")
 
 
 def print_warning(message):
     """Print warning message."""
-    print(f"{Colors.YELLOW}⚠ {message}{Colors.END}")
+    print(f"{Colors.YELLOW}[WARNING] {message}{Colors.END}")
 
 
 def print_info(message):
     """Print info message."""
-    print(f"{Colors.CYAN}ℹ {message}{Colors.END}")
+    print(f"{Colors.CYAN}[INFO] {message}{Colors.END}")
 
 
 def run_command(command, description):
