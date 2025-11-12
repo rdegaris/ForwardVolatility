@@ -37,7 +37,7 @@ class EarningsChecker:
         self.finnhub_api_key = os.environ.get('FINNHUB_API_KEY', 'd3rcvl1r01qopgh82hs0d3rcvl1r01qopgh82hsg')
         
         if self.use_finnhub and not self.finnhub_api_key:
-            print("⚠️  WARNING: FINNHUB_API_KEY not set in environment. Using manual calendar only.")
+            print("[WARNING] FINNHUB_API_KEY not set in environment. Using manual calendar only.")
             self.use_finnhub = False
     
     def get_earnings_date(self, ticker: str) -> Optional[datetime]:
@@ -77,13 +77,13 @@ class EarningsChecker:
                             try:
                                 earnings_date = datetime.strptime(date_str, '%Y-%m-%d')
                                 self.cache[ticker] = earnings_date
-                                print(f"  📅 {ticker} earnings from Finnhub: {date_str}")
+                                print(f"  [INFO] {ticker} earnings from Finnhub: {date_str}")
                                 return earnings_date
                             except ValueError:
                                 pass
                 
             except Exception as e:
-                print(f"  ⚠️  Finnhub API error for {ticker}: {e}")
+                print(f"  [WARNING] Finnhub API error for {ticker}: {e}")
         
         # Fallback to manual calendar
         if ticker in self.calendar:
@@ -94,13 +94,13 @@ class EarningsChecker:
                 # Only return if it's in the future
                 if earnings_date > datetime.now():
                     self.cache[ticker] = earnings_date
-                    print(f"  📅 {ticker} earnings from manual calendar: {date_str}")
+                    print(f"  [INFO] {ticker} earnings from manual calendar: {date_str}")
                     return earnings_date
                 else:
                     # Earnings date has passed - needs updating
-                    print(f"  ⚠️  WARNING: {ticker} earnings date {date_str} has passed - update earnings_calendar.py!")
+                    print(f"  [WARNING] {ticker} earnings date {date_str} has passed - update earnings_calendar.py!")
             except ValueError:
-                print(f"  ⚠️  ERROR: Invalid date format for {ticker} in earnings_calendar.py")
+                print(f"  [ERROR] Invalid date format for {ticker} in earnings_calendar.py")
         
         self.cache[ticker] = None
         return None
@@ -169,12 +169,12 @@ class EarningsChecker:
                     earnings_date = self.cache.get(ticker)
                     date_str = earnings_date.strftime('%Y-%m-%d') if earnings_date else "Unknown"
                     back_str = datetime.strptime(expiry2, '%Y%m%d').strftime('%Y-%m-%d')
-                    print(f"  ⚠️  EXCLUDED {ticker}: Earnings on {date_str} (before back expiry {back_str})")
+                    print(f"  [EXCLUDED] {ticker}: Earnings on {date_str} (before back expiry {back_str})")
             else:
                 filtered.append(opp)
         
         if verbose and excluded:
-            print(f"\n🚫 Excluded {len(excluded)} ticker(s) due to earnings before back expiry: {', '.join(set(excluded))}")
+            print(f"\n[INFO] Excluded {len(excluded)} ticker(s) due to earnings before back expiry: {', '.join(set(excluded))}")
         
         return filtered
 
@@ -198,9 +198,9 @@ def check_earnings(ticker: str, back_expiry: str, verbose: bool = True) -> bool:
         if has_earnings:
             earnings_date = checker.cache.get(ticker)
             date_str = earnings_date.strftime('%Y-%m-%d') if earnings_date else "Unknown"
-            print(f"⚠️  {ticker}: Earnings on {date_str} - EXCLUDE")
+            print(f"[WARNING] {ticker}: Earnings on {date_str} - EXCLUDE")
         else:
-            print(f"✓ {ticker}: Safe - no earnings before back expiry")
+            print(f"[OK] {ticker}: Safe - no earnings before back expiry")
     
     return has_earnings
 

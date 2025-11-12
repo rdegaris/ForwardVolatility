@@ -238,8 +238,8 @@ def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=30):
         json.dump(result, f, indent=2)
     
     log("")
-    log(f"✅ Results saved to {output_file}")
-    log(f"📊 Total opportunities: {result['summary']['total_opportunities']}")
+    log(f"[OK] Results saved to {output_file}")
+    log(f"[INFO] Total opportunities: {result['summary']['total_opportunities']}")
     
     # Save IV rankings separately for IV Rankings page
     if iv_rankings_data:
@@ -253,7 +253,7 @@ def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=30):
         }
         with open(iv_rankings_file, 'w') as f:
             json.dump(iv_rankings_result, f, indent=2)
-        log(f"✅ IV Rankings saved to {iv_rankings_file}")
+        log(f"[OK] IV Rankings saved to {iv_rankings_file}")
     
     return result
 

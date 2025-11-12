@@ -241,13 +241,13 @@ def run_midcap400_scan(threshold=0.2, rank_by_iv=True, top_n_iv=100):
     with open(filename, 'w') as f:
         json.dump(result, f, indent=2)
     
-    print(f"\n✅ Results saved to: {filename}")
+    print(f"\n[OK] Results saved to: {filename}")
     
     # Save latest file
     with open("midcap400_results_latest.json", 'w') as f:
         json.dump(result, f, indent=2)
     
-    print(f"✅ Latest results saved to: midcap400_results_latest.json")
+    print(f"[OK] Latest results saved to: midcap400_results_latest.json")
     
     # Save IV rankings separately for IV Rankings page
     if iv_rankings_data:
@@ -261,7 +261,7 @@ def run_midcap400_scan(threshold=0.2, rank_by_iv=True, top_n_iv=100):
         }
         with open(iv_rankings_file, 'w') as f:
             json.dump(iv_rankings_result, f, indent=2)
-        print(f"✅ IV Rankings saved to {iv_rankings_file}")
+        print(f"[OK] IV Rankings saved to {iv_rankings_file}")
     
     print()
     print("=" * 80)

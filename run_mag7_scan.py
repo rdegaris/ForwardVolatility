@@ -305,7 +305,7 @@ def run_mag7_scan(threshold=0.2):
                 }
                 with open(iv_rankings_file, 'w') as f:
                     json.dump(iv_rankings_result, f, indent=2)
-                print(f"✅ IV Rankings saved to {iv_rankings_file}")
+                print(f"[OK] IV Rankings saved to {iv_rankings_file}")
             
             return result_data
         else:
@@ -334,7 +334,7 @@ def run_mag7_scan(threshold=0.2):
                 }
                 with open(iv_rankings_file, 'w') as f:
                     json.dump(iv_rankings_result, f, indent=2)
-                print(f"✅ IV Rankings saved to {iv_rankings_file}")
+                print(f"[OK] IV Rankings saved to {iv_rankings_file}")
             
             return result_data
             
