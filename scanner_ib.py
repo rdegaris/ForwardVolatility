@@ -437,7 +437,7 @@ class IBScanner:
         # Display price and MA info
         print(f"  Price: ${current_price:.2f}")
         if ma_200:
-            trend = "↑ ABOVE" if above_ma_200 else "↓ BELOW"
+            trend = "ABOVE" if above_ma_200 else "BELOW"
             print(f"  200-day MA: ${ma_200:.2f} ({trend})")
         
         # Get option chains
