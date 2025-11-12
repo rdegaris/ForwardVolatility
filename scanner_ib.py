@@ -640,20 +640,20 @@ def rank_tickers_by_iv(scanner: IBScanner, tickers: List[str], top_n: Optional[i
         try:
             price = scanner.get_stock_price(ticker)
             if not price:
-                print("❌ No price data")
+                print("[ERROR] No price data")
                 continue
             
             iv = scanner.get_near_term_iv(ticker, price)
             if iv:
                 ticker_ivs.append((ticker, iv, price))
-                print(f"✅ IV: {iv:.1f}%")
+                print(f"[OK] IV: {iv:.1f}%")
             else:
-                print("⚠️  No IV data")
+                print("[WARNING] No IV data")
             
             time.sleep(0.05)  # Reduced rate limiting for faster scans
             
         except Exception as e:
-            print(f"❌ Error: {e}")
+            print(f"[ERROR] Error: {e}")
     
     # Sort by IV descending
     ticker_ivs.sort(key=lambda x: x[1], reverse=True)
@@ -704,9 +704,9 @@ def scan_batch(scanner: IBScanner, tickers: List[str], threshold: float = 0.2,
         all_opportunities.extend(opportunities)
         
         if opportunities:
-            print(f"  ✅ Found {len(opportunities)} opportunity(ies)")
+            print(f"  [+] Found {len(opportunities)} opportunity(ies)")
         else:
-            print(f"  ⚪ No opportunities")
+            print(f"  [-] No opportunities")
     
     return all_opportunities
 
