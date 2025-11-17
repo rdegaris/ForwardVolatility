@@ -66,6 +66,7 @@ def get_option_positions(ib):
                 'contract': contract,
                 'position': position.position,  # Positive = long, negative = short
                 'avgCost': position.avgCost,
+                'unrealizedPnL': position.unrealizedPnL,
             })
     
     print(f"Found {len(option_positions)} option positions")
@@ -143,12 +144,14 @@ def identify_calendar_spreads(option_positions, ib):
                         'position': front['position'],
                         'avgCost': abs(front['avgCost']),
                         'currentPrice': get_option_price(front_ticker),
+                        'unrealizedPnL': front['unrealizedPnL'],
                     },
                     'back': {
                         'contract': back_contract,
                         'position': back['position'],
                         'avgCost': abs(back['avgCost']),
                         'currentPrice': get_option_price(back_ticker),
+                        'unrealizedPnL': back['unrealizedPnL'],
                     },
                     'underlying': {
                         'currentPrice': get_stock_price(underlying_ticker),
@@ -228,6 +231,12 @@ def export_to_json(calendar_spreads, filename='trades.json'):
         front_entry = spread['front']['avgCost']
         back_entry = spread['back']['avgCost']
         
+        # Calculate total unrealized P&L for the spread
+        # Calendar spread: long back - short front, so back PnL - front PnL
+        front_pnl = spread['front']['unrealizedPnL']
+        back_pnl = spread['back']['unrealizedPnL']
+        total_unrealized_pnl = back_pnl - front_pnl
+        
         trade = {
             'id': f"ib_{int(datetime.now().timestamp())}_{i}",
             'symbol': spread['symbol'],
@@ -237,12 +246,15 @@ def export_to_json(calendar_spreads, filename='trades.json'):
             'frontExpiration': format_date(spread['front']['contract'].lastTradeDateOrContractMonth),
             'frontEntryPrice': round(front_entry, 2),
             'frontCurrentPrice': round(spread['front']['currentPrice'], 2),
+            'frontUnrealizedPnL': round(front_pnl, 2),
             'backExpiration': format_date(spread['back']['contract'].lastTradeDateOrContractMonth),
             'backEntryPrice': round(back_entry, 2),
             'backCurrentPrice': round(spread['back']['currentPrice'], 2),
+            'backUnrealizedPnL': round(back_pnl, 2),
             'underlyingEntryPrice': round(spread['underlying']['currentPrice'], 2),  # Using current as we don't have historical
             'underlyingCurrentPrice': round(spread['underlying']['currentPrice'], 2),
             'entryDate': date.today().strftime('%Y-%m-%d'),
+            'unrealizedPnL': round(total_unrealized_pnl, 2),
         }
         
         trades.append(trade)
