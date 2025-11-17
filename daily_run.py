@@ -132,7 +132,7 @@ def run_midcap400_scan():
 
 
 def run_earnings_crush_scan():
-    """Run Earnings Crush scanner."""
+    """Run Earnings Crush scanner using IB."""
     print_section("Running Earnings Crush Scanner")
     
     # Path to earnings crush calculator
@@ -142,16 +142,17 @@ def run_earnings_crush_scan():
         print_warning("Earnings crush calculator not found, skipping")
         return False
     
-    scan_script = earnings_crush_path / 'run_earnings_scan.py'
+    # Use IB-based scanner (uses Finnhub for earnings, IB for all pricing)
+    scan_script = earnings_crush_path / 'run_earnings_scan_ib.py'
     
     if not scan_script.exists():
-        print_warning(f"run_earnings_scan.py not found in {earnings_crush_path}, skipping")
+        print_warning(f"run_earnings_scan_ib.py not found in {earnings_crush_path}, skipping")
         return False
     
     # Run the earnings crush scan
     success = run_command(
         [sys.executable, "-u", str(scan_script)],
-        "Earnings Crush scan"
+        "Earnings Crush scan (Finnhub + IB)"
     )
     
     return success
@@ -208,6 +209,13 @@ def upload_to_web_repos():
         ("midcap400_results_latest.json", "midcap400_results_latest.json"),
         ("trades.json", "trades.json"),
     ]
+    
+    # Also copy earnings crush results if they exist
+    earnings_crush_path = Path(__file__).parent.parent.parent / 'EarningsCrush' / 'earnings-crush-calculator'
+    if earnings_crush_path.exists():
+        earnings_results = earnings_crush_path / 'earnings_crush_latest.json'
+        if earnings_results.exists():
+            files_to_copy.append((str(earnings_results), "earnings_crush_latest.json"))
     
     copied = 0
     for src, dst in files_to_copy:
