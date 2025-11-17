@@ -131,6 +131,32 @@ def run_midcap400_scan():
     )
 
 
+def run_earnings_crush_scan():
+    """Run Earnings Crush scanner."""
+    print_section("Running Earnings Crush Scanner")
+    
+    # Path to earnings crush calculator
+    earnings_crush_path = Path(__file__).parent.parent.parent / 'EarningsCrush' / 'earnings-crush-calculator'
+    
+    if not earnings_crush_path.exists():
+        print_warning("Earnings crush calculator not found, skipping")
+        return False
+    
+    scan_script = earnings_crush_path / 'run_earnings_scan.py'
+    
+    if not scan_script.exists():
+        print_warning(f"run_earnings_scan.py not found in {earnings_crush_path}, skipping")
+        return False
+    
+    # Run the earnings crush scan
+    success = run_command(
+        [sys.executable, "-u", str(scan_script)],
+        "Earnings Crush scan"
+    )
+    
+    return success
+
+
 def fetch_ib_positions():
     """Fetch IB positions and export to JSON."""
     print_section("Fetching IB Positions")
@@ -216,6 +242,7 @@ def main():
     parser.add_argument('--mag7', action='store_true', help='Run MAG7 scanner only')
     parser.add_argument('--nasdaq100', action='store_true', help='Run NASDAQ100 scanner only')
     parser.add_argument('--midcap400', action='store_true', help='Run MidCap400 scanner only')
+    parser.add_argument('--earnings-crush', action='store_true', help='Run Earnings Crush scanner only')
     parser.add_argument('--no-upload', action='store_true', help='Skip uploading to web repos')
     
     args = parser.parse_args()
@@ -247,12 +274,13 @@ def main():
         'mag7': None,
         'nasdaq100': None,
         'midcap400': None,
+        'earnings_crush': None,
         'ib_positions': None,
         'upload': None
     }
     
     # Determine what to run
-    run_all = not any([args.scans_only, args.ib_only, args.mag7, args.nasdaq100, args.midcap400])
+    run_all = not any([args.scans_only, args.ib_only, args.mag7, args.nasdaq100, args.midcap400, args.earnings_crush])
     
     # Run scans
     if args.ib_only:
@@ -263,10 +291,13 @@ def main():
         results['nasdaq100'] = run_nasdaq100_scan()
     elif args.midcap400:
         results['midcap400'] = run_midcap400_scan()
+    elif args.earnings_crush:
+        results['earnings_crush'] = run_earnings_crush_scan()
     elif args.scans_only or run_all:
         results['mag7'] = run_mag7_scan()
         results['nasdaq100'] = run_nasdaq100_scan()
         results['midcap400'] = run_midcap400_scan()
+        results['earnings_crush'] = run_earnings_crush_scan()
     
     # Fetch IB positions
     if not args.scans_only:
@@ -275,7 +306,7 @@ def main():
     
     # Upload to web repos
     if not args.no_upload and not args.ib_only:
-        if run_all or args.scans_only or any([args.mag7, args.nasdaq100, args.midcap400]):
+        if run_all or args.scans_only or any([args.mag7, args.nasdaq100, args.midcap400, args.earnings_crush]):
             results['upload'] = upload_to_web_repos()
     
     # Print summary
@@ -288,6 +319,8 @@ def main():
         summary_items.append(('NASDAQ 100 Scan', results['nasdaq100']))
     if results['midcap400'] is not None:
         summary_items.append(('MidCap 400 Scan', results['midcap400']))
+    if results['earnings_crush'] is not None:
+        summary_items.append(('Earnings Crush Scan', results['earnings_crush']))
     if results['ib_positions'] is not None:
         summary_items.append(('IB Positions Fetch', results['ib_positions']))
     if results['upload'] is not None:
