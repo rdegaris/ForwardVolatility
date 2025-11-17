@@ -137,7 +137,7 @@ class IBScanner:
         """Connect to IB Gateway or TWS."""
         try:
             print(f"Connecting to Interactive Brokers at {self.host}:{self.port}...")
-            self.ib.connect(self.host, self.port, clientId=self.client_id)
+            self.ib.connect(self.host, self.port, clientId=self.client_id, timeout=10)
             self.connected = True
             print("  Connected successfully!")
             return True
@@ -231,10 +231,14 @@ class IBScanner:
             Dict with 'price', 'ma_200', 'above_ma_200'
         """
         try:
+            print(f"    Getting price for {ticker}...", flush=True)
             price = self.get_stock_price(ticker)
             if not price:
+                print(f"    No price available for {ticker}", flush=True)
                 return None
+            print(f"    Price: ${price:.2f}", flush=True)
             
+            print(f"    Getting 200-day MA...", flush=True)
             ma_200 = self.get_200day_ma(ticker)
             
             above_ma_200 = None
@@ -253,6 +257,7 @@ class IBScanner:
     def get_option_chains(self, ticker: str) -> List[str]:
         """Get available option expiration dates."""
         try:
+            print(f"    Getting option chains for {ticker}...", flush=True)
             stock = Stock(ticker, 'SMART', 'USD')
             self.ib.qualifyContracts(stock)
             
@@ -340,10 +345,19 @@ class IBScanner:
                 print(f"    [DEBUG] Put: {put.localSymbol if hasattr(put, 'localSymbol') else 'qualified'}")
             
             # Request market data with generic tick for IV
+            if debug:
+                print(f"    [DEBUG] Requesting market data...")
+            print(f"    Requesting market data for {ticker} {expiry} strike {atm_strike}...", flush=True)
             call_ticker = self.ib.reqMktData(call, '106', False, False)  # 106 = option IV
             put_ticker = self.ib.reqMktData(put, '106', False, False)
             
-            self.ib.sleep(3)  # Wait for data
+            if debug:
+                print(f"    [DEBUG] Waiting for IV data (3 sec)...")
+            print(f"    Waiting for IV data...", flush=True)
+            self.ib.sleep(2)  # Reduced from 3 to 2 seconds
+            if debug:
+                print(f"    [DEBUG] Data received")
+            print(f"    IV data received", flush=True)
             
             # Try multiple methods to get IV
             call_iv = None
@@ -441,12 +455,13 @@ class IBScanner:
             print(f"  200-day MA: ${ma_200:.2f} ({trend})")
         
         # Get option chains
+        print(f"  -> Fetching option expirations...")
         expirations = self.get_option_chains(ticker)
         if len(expirations) < 2:
             print(f"  Not enough expiration dates")
             return opportunities
         
-        print(f"  Found {len(expirations)} expiration dates")
+        print(f"  Found {len(expirations)} expiration dates: {', '.join(expirations[:5])}{'...' if len(expirations) > 5 else ''}")
         
         # Define target DTE pairs with tolerance
         # Format: (target_dte1, target_dte2, tolerance)
@@ -498,10 +513,12 @@ class IBScanner:
             if dte1 < 1 or dte2 < 1 or dte2 <= dte1:
                 continue
             
-            print(f"  Checking {expiry1} (DTE={dte1}) vs {expiry2} (DTE={dte2}) [Target: {target_dte1}/{target_dte2}]...")
+            print(f"  Checking {expiry1} (DTE={dte1}) vs {expiry2} (DTE={dte2}) [Target: {target_dte1}/{target_dte2}]...", flush=True)
             
+            print(f"    -> Fetching IV for {expiry1}...", flush=True)
             iv_data1 = self.get_atm_iv(ticker, expiry1, current_price, debug=True)
             time.sleep(0.5)
+            print(f"    -> Fetching IV for {expiry2}...")
             iv_data2 = self.get_atm_iv(ticker, expiry2, current_price, debug=True)
             
             if iv_data1 is None or iv_data2 is None:
@@ -535,6 +552,10 @@ class IBScanner:
                 max_ff = ff_ratio_call
             if ff_ratio_put and ff_ratio_put > max_ff:
                 max_ff = ff_ratio_put
+            
+            call_str = f"{ff_ratio_call:.3f}" if ff_ratio_call else "N/A"
+            put_str = f"{ff_ratio_put:.3f}" if ff_ratio_put else "N/A"
+            print(f"    -> FF: avg={ff_ratio_avg:.3f}, call={call_str}, put={put_str}, max={max_ff:.3f}")
             
             if max_ff is not None and max_ff >= threshold:
                 # Get earnings date if available

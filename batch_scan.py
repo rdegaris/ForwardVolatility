@@ -46,21 +46,21 @@ def batch_scan(tickers, threshold=0.2, max_tickers=None, rank_by_iv=True, top_n_
         
         # Rank by IV if requested
         if rank_by_iv:
-            print(f"\n🔍 Pre-ranking {len(initial_list)} tickers by near-term IV...")
+            print(f"\n[RANK] Pre-ranking {len(initial_list)} tickers by near-term IV...")
             ranked = rank_tickers_by_iv(scanner, initial_list, top_n=top_n_iv)
             scan_list = [ticker for ticker, iv, price in ranked]
-            print(f"\n✅ Will scan {len(scan_list)} tickers (sorted by IV)")
+            print(f"\n[OK] Will scan {len(scan_list)} tickers (sorted by IV)")
         else:
             scan_list = initial_list
         
         print()
-        print(f"Scanning {len(scan_list)} tickers with FF threshold > {threshold}")
-        print(f"Earnings filtering: ENABLED")
-        print("-" * 80)
+        print(f"Scanning {len(scan_list)} tickers with FF threshold > {threshold}", flush=True)
+        print(f"Earnings filtering: ENABLED", flush=True)
+        print("-" * 80, flush=True)
         print()
         
         for i, ticker in enumerate(scan_list, 1):
-            print(f"[{i}/{len(scan_list)}] {ticker}...")
+            print(f"[{i}/{len(scan_list)}] {ticker}...", flush=True)
             
             try:
                 opportunities = scanner.scan_ticker(ticker, threshold=threshold)
@@ -69,19 +69,19 @@ def batch_scan(tickers, threshold=0.2, max_tickers=None, rank_by_iv=True, top_n_
                 if opportunities:
                     tickers_with_opps += 1
                     all_opportunities.extend(opportunities)
-                    print(f"  ✅ Found {len(opportunities)} opportunity(ies)")
+                    print(f"  [OK] Found {len(opportunities)} opportunity(ies)", flush=True)
                 else:
-                    print(f"  ⚪ No opportunities")
+                    print(f"  [--] No opportunities", flush=True)
                 
                 # Rate limit between tickers
                 if i < len(scan_list):
                     time.sleep(1)
                 
             except KeyboardInterrupt:
-                print("\n\nScan interrupted by user")
+                print("\n\nScan interrupted by user", flush=True)
                 break
             except Exception as e:
-                print(f"  ❌ Error: {e}")
+                print(f"  [ERROR] Error: {e}", flush=True)
                 continue
         
         print()
@@ -228,29 +228,29 @@ def print_trade_suggestions(df, top_n=3):
         adverse_case = -net_debit * 0.30  # 30% loss
         max_loss = -net_debit  # 100% loss
         
-        print(f"  📊 RECOMMENDED: {spread_type} CALENDAR SPREAD")
+        print(f"  [TRADE] RECOMMENDED: {spread_type} CALENDAR SPREAD")
         print(f"     Forward Factor: {ff_display:.3f} ({ff_display*100:.1f}%)")
         print(f"     Front IV: {front_iv*100:.2f}% | Back IV: {back_iv*100:.2f}%")
         print()
-        print(f"  💰 PRICING ({price_source}, per contract):")
+        print(f"  [PRICING] ({price_source}, per contract):")
         print(f"     Front {spread_type}: ${front_price:.2f} (${front_price*100:.0f})")
         print(f"     Back {spread_type}:  ${back_price:.2f} (${back_price*100:.0f})")
         print(f"     Net Debit:      ${net_debit:.2f} (${net_debit_total:.0f})")
         print()
-        print(f"  📈 POTENTIAL OUTCOMES (1 contract):")
-        print(f"     🎯 Best Case (stock near ${strike:.0f}):  +${best_case*100:.0f} ({best_case/net_debit*100:.0f}%)")
-        print(f"     ✅ Typical (±2% move):                  +${typical_case*100:.0f} ({typical_case/net_debit*100:.0f}%)")
-        print(f"     🛑 Adverse (±5% move):                  ${adverse_case*100:.0f} ({adverse_case/net_debit*100:.0f}%)")
-        print(f"     ⚠️  Max Loss (spread collapse):          ${max_loss*100:.0f} ({max_loss/net_debit*100:.0f}%)")
+        print(f"  [OUTCOMES] POTENTIAL OUTCOMES (1 contract):")
+        print(f"     [BEST] Best Case (stock near ${strike:.0f}):  +${best_case*100:.0f} ({best_case/net_debit*100:.0f}%)")
+        print(f"     [OK] Typical (±2% move):                  +${typical_case*100:.0f} ({typical_case/net_debit*100:.0f}%)")
+        print(f"     [BAD] Adverse (±5% move):                  ${adverse_case*100:.0f} ({adverse_case/net_debit*100:.0f}%)")
+        print(f"     [WARN] Max Loss (spread collapse):          ${max_loss*100:.0f} ({max_loss/net_debit*100:.0f}%)")
         
         print()
         print(f"  Alternative (Blended): FF = {row['ff_avg']:.3f}")
         print(f"     Front IV: {row['avg_iv1']:.2f}% | Back IV: {row['avg_iv2']:.2f}%")
         print()
-        print(f"  💡 Trade Setup:")
-        print(f"     • Sell: {row['expiry1']} ${strike:.0f} {spread_type}")
-        print(f"     • Buy:  {row['expiry2']} ${strike:.0f} {spread_type}")
-        print(f"     • Hold until: {row['expiry1']} (exit 15 min before close)")
+        print(f"  [SETUP] Trade Setup:")
+        print(f"     - Sell: {row['expiry1']} ${strike:.0f} {spread_type}")
+        print(f"     - Buy:  {row['expiry2']} ${strike:.0f} {spread_type}")
+        print(f"     - Hold until: {row['expiry1']} (exit 15 min before close)")
         print()
         print("=" * 80)
         print()
@@ -273,17 +273,17 @@ def main():
     
     if choice == "1":
         tickers = get_mag7()
-        print(f"\n📊 Scanning Magnificent 7: {', '.join(tickers)}")
+        print(f"\n[SCAN] Scanning Magnificent 7: {', '.join(tickers)}")
     elif choice == "2":
         tickers = get_tech_heavy_list()
-        print(f"\n📊 Scanning {len(tickers)} Tech-Heavy stocks")
+        print(f"\n[SCAN] Scanning {len(tickers)} Tech-Heavy stocks")
     elif choice == "3":
         tickers = get_nasdaq_100_list()
-        print(f"\n📊 Scanning all {len(tickers)} Nasdaq 100 stocks")
+        print(f"\n[SCAN] Scanning all {len(tickers)} Nasdaq 100 stocks")
     elif choice == "4":
         tickers_input = input("Enter tickers (comma-separated): ")
         tickers = [t.strip().upper() for t in tickers_input.split(',')]
-        print(f"\n📊 Scanning custom list: {', '.join(tickers)}")
+        print(f"\n[SCAN] Scanning custom list: {', '.join(tickers)}")
     else:
         print("Invalid choice, using Magnificent 7")
         tickers = get_mag7()
@@ -304,7 +304,7 @@ def main():
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         filename = f"batch_scan_{timestamp}.csv"
         df.to_csv(filename, index=False)
-        print(f"✅ Results saved to: {filename}")
+        print(f"[OK] Results saved to: {filename}")
         print()
         
         # Display results

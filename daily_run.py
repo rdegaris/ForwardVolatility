@@ -88,19 +88,15 @@ def run_command(command, description):
     
     try:
         if isinstance(command, str):
-            result = subprocess.run(command, shell=True, capture_output=True, text=True)
+            result = subprocess.run(command, shell=True, text=True, bufsize=0)
         else:
-            result = subprocess.run(command, capture_output=True, text=True)
+            result = subprocess.run(command, text=True, bufsize=0)
         
         if result.returncode == 0:
             print_success(f"Completed: {description}")
-            if result.stdout:
-                print(result.stdout)
             return True
         else:
             print_error(f"Failed: {description}")
-            if result.stderr:
-                print(f"Error: {result.stderr}")
             return False
     
     except Exception as e:
@@ -112,7 +108,7 @@ def run_mag7_scan():
     """Run MAG7 scanner."""
     print_section("Running MAG7 Scanner")
     return run_command(
-        [sys.executable, "run_mag7_scan.py"],
+        [sys.executable, "-u", "run_mag7_scan.py"],
         "MAG7 scan"
     )
 
@@ -121,7 +117,7 @@ def run_nasdaq100_scan():
     """Run NASDAQ 100 scanner."""
     print_section("Running NASDAQ 100 Scanner")
     return run_command(
-        [sys.executable, "run_nasdaq100_scan.py"],
+        [sys.executable, "-u", "run_nasdaq100_scan.py"],
         "NASDAQ 100 scan"
     )
 
@@ -130,7 +126,7 @@ def run_midcap400_scan():
     """Run MidCap 400 scanner."""
     print_section("Running MidCap 400 Scanner")
     return run_command(
-        [sys.executable, "run_midcap400_scan.py"],
+        [sys.executable, "-u", "run_midcap400_scan.py"],
         "MidCap 400 scan"
     )
 
@@ -145,7 +141,7 @@ def fetch_ib_positions():
         return False
     
     success = run_command(
-        [sys.executable, "fetch_ib_positions.py"],
+        [sys.executable, "-u", "fetch_ib_positions.py"],
         "IB positions fetch"
     )
     
