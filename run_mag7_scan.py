@@ -139,12 +139,20 @@ def run_mag7_scan(threshold=0.2):
                 ma_200 = scanner.get_200day_ma(ticker)
                 above_ma_200 = price > ma_200 if ma_200 else None
                 
+                # Get next earnings date
+                earnings_date = None
+                if scanner.earnings_checker:
+                    earnings_dt = scanner.earnings_checker.get_earnings_date(ticker)
+                    if earnings_dt:
+                        earnings_date = earnings_dt.strftime('%Y-%m-%d')
+                
                 iv_rankings_data.append({
                     'ticker': ticker,
                     'price': float(price) if price else None,
                     'iv': float(iv) if iv else None,
                     'ma_200': float(ma_200) if pd.notna(ma_200) else None,
                     'above_ma_200': bool(above_ma_200) if pd.notna(above_ma_200) else None,
+                    'next_earnings': earnings_date,
                     'universe': 'MAG7'
                 })
             print(f"Ranked {len(iv_rankings_data)} tickers by IV")
@@ -172,6 +180,7 @@ def run_mag7_scan(threshold=0.2):
     
     try:
         for i, ticker in enumerate(tickers, 1):
+            start_time = time.time()
             log_entry = f"[{i}/{len(tickers)}] {ticker}..."
             print(log_entry)
             scan_log.append(log_entry)
@@ -179,13 +188,14 @@ def run_mag7_scan(threshold=0.2):
             try:
                 opportunities = scanner.scan_ticker(ticker, threshold=threshold)
                 
+                elapsed = time.time() - start_time
                 if opportunities:
                     all_opportunities.extend(opportunities)
-                    msg = f"  Found {len(opportunities)} opportunity(ies)"
+                    msg = f"  Found {len(opportunities)} opportunity(ies) ({elapsed:.1f}s)"
                     print(msg)
                     scan_log.append(msg)
                 else:
-                    msg = f"  No opportunities"
+                    msg = f"  No opportunities ({elapsed:.1f}s)"
                     print(msg)
                     scan_log.append(msg)
                 
