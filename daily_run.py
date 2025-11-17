@@ -180,6 +180,7 @@ def upload_to_web_repos():
         ("scan_results_latest.json", "mag7_results_latest.json"),
         ("nasdaq100_results_latest.json", "nasdaq100_results_latest.json"),
         ("midcap400_results_latest.json", "midcap400_results_latest.json"),
+        ("trades.json", "trades.json"),
     ]
     
     copied = 0
