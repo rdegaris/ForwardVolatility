@@ -66,7 +66,6 @@ def get_option_positions(ib):
                 'contract': contract,
                 'position': position.position,  # Positive = long, negative = short
                 'avgCost': position.avgCost,
-                'unrealizedPnL': position.unrealizedPnL,
             })
     
     print(f"Found {len(option_positions)} option positions")
@@ -134,6 +133,15 @@ def identify_calendar_spreads(option_positions, ib):
                 underlying_ticker = ib.reqMktData(underlying, '', False, False)
                 ib.sleep(1)
                 
+                front_current = get_option_price(front_ticker)
+                back_current = get_option_price(back_ticker)
+                
+                # Calculate unrealized P&L
+                # For short front: PnL = (avgCost - currentPrice) * abs(position) * 100
+                # For long back: PnL = (currentPrice - avgCost) * position * 100
+                front_pnl = (abs(front['avgCost']) - front_current) * abs(front['position']) * 100
+                back_pnl = (back_current - abs(back['avgCost'])) * abs(back['position']) * 100
+                
                 calendar_spreads.append({
                     'symbol': symbol,
                     'strike': strike,
@@ -143,15 +151,15 @@ def identify_calendar_spreads(option_positions, ib):
                         'contract': front_contract,
                         'position': front['position'],
                         'avgCost': abs(front['avgCost']),
-                        'currentPrice': get_option_price(front_ticker),
-                        'unrealizedPnL': front['unrealizedPnL'],
+                        'currentPrice': front_current,
+                        'unrealizedPnL': front_pnl,
                     },
                     'back': {
                         'contract': back_contract,
                         'position': back['position'],
                         'avgCost': abs(back['avgCost']),
-                        'currentPrice': get_option_price(back_ticker),
-                        'unrealizedPnL': back['unrealizedPnL'],
+                        'currentPrice': back_current,
+                        'unrealizedPnL': back_pnl,
                     },
                     'underlying': {
                         'currentPrice': get_stock_price(underlying_ticker),
