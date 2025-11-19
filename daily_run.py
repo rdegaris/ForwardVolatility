@@ -311,13 +311,13 @@ def main():
             results['upload'] = upload_to_web_repos()
     
     # Print summary
-    print_header("Execution Summary")nasdaq100, args.midcap400, args.earnings_crush]):
-            results['upload'] = upload_to_web_repos()
-    
-    # Print summary
     print_header("Execution Summary")
     
-    summary_items = []dcap400']))
+    summary_items = []
+    if results['nasdaq100'] is not None:
+        summary_items.append(('NASDAQ 100 Scan', results['nasdaq100']))
+    if results['midcap400'] is not None:
+        summary_items.append(('MidCap 400 Scan', results['midcap400']))
     if results['earnings_crush'] is not None:
         summary_items.append(('Earnings Crush Scan', results['earnings_crush']))
     if results['ib_positions'] is not None:
