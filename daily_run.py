@@ -2,7 +2,6 @@
 Daily Forward Volatility Scanner - Master Script
 
 Runs all daily scans and syncs with IB positions:
-- MAG7 scanner
 - NASDAQ 100 scanner  
 - MidCap 400 scanner
 - IB positions fetcher
@@ -12,7 +11,6 @@ Usage:
     python daily_run.py                    # Run everything
     python daily_run.py --scans-only       # Run scans only (no IB)
     python daily_run.py --ib-only          # Fetch IB positions only
-    python daily_run.py --mag7             # Run MAG7 only
     python daily_run.py --nasdaq100        # Run NASDAQ100 only
     python daily_run.py --midcap400        # Run MidCap400 only
     python daily_run.py --no-upload        # Don't upload to web repos
@@ -204,7 +202,6 @@ def upload_to_web_repos():
     
     # Copy latest scan results
     files_to_copy = [
-        ("scan_results_latest.json", "mag7_results_latest.json"),
         ("nasdaq100_results_latest.json", "nasdaq100_results_latest.json"),
         ("midcap400_results_latest.json", "midcap400_results_latest.json"),
         ("trades.json", "trades.json"),
@@ -247,7 +244,6 @@ def main():
     )
     parser.add_argument('--scans-only', action='store_true', help='Run scans only (skip IB)')
     parser.add_argument('--ib-only', action='store_true', help='Fetch IB positions only (skip scans)')
-    parser.add_argument('--mag7', action='store_true', help='Run MAG7 scanner only')
     parser.add_argument('--nasdaq100', action='store_true', help='Run NASDAQ100 scanner only')
     parser.add_argument('--midcap400', action='store_true', help='Run MidCap400 scanner only')
     parser.add_argument('--earnings-crush', action='store_true', help='Run Earnings Crush scanner only')
@@ -288,22 +284,18 @@ def main():
     }
     
     # Determine what to run
-    run_all = not any([args.scans_only, args.ib_only, args.mag7, args.nasdaq100, args.midcap400, args.earnings_crush])
+    run_all = not any([args.scans_only, args.ib_only, args.nasdaq100, args.midcap400, args.earnings_crush])
     
     # Run scans
     if args.ib_only:
         pass  # Skip scans
-    elif args.mag7:
-        results['mag7'] = run_mag7_scan()
     elif args.nasdaq100:
         results['nasdaq100'] = run_nasdaq100_scan()
     elif args.midcap400:
         results['midcap400'] = run_midcap400_scan()
     elif args.earnings_crush:
         results['earnings_crush'] = run_earnings_crush_scan()
-    elif args.scans_only or run_all:
-        results['mag7'] = run_mag7_scan()
-        results['nasdaq100'] = run_nasdaq100_scan()
+    elif args.scans_only or run_all:100_scan()
         results['midcap400'] = run_midcap400_scan()
         results['earnings_crush'] = run_earnings_crush_scan()
     
@@ -318,15 +310,13 @@ def main():
             results['upload'] = upload_to_web_repos()
     
     # Print summary
+    print_header("Execution Summary")nasdaq100, args.midcap400, args.earnings_crush]):
+            results['upload'] = upload_to_web_repos()
+    
+    # Print summary
     print_header("Execution Summary")
     
-    summary_items = []
-    if results['mag7'] is not None:
-        summary_items.append(('MAG7 Scan', results['mag7']))
-    if results['nasdaq100'] is not None:
-        summary_items.append(('NASDAQ 100 Scan', results['nasdaq100']))
-    if results['midcap400'] is not None:
-        summary_items.append(('MidCap 400 Scan', results['midcap400']))
+    summary_items = []dcap400']))
     if results['earnings_crush'] is not None:
         summary_items.append(('Earnings Crush Scan', results['earnings_crush']))
     if results['ib_positions'] is not None:
