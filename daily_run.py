@@ -295,7 +295,8 @@ def main():
         results['midcap400'] = run_midcap400_scan()
     elif args.earnings_crush:
         results['earnings_crush'] = run_earnings_crush_scan()
-    elif args.scans_only or run_all:100_scan()
+    elif args.scans_only or run_all:
+        results['nasdaq100'] = run_nasdaq100_scan()
         results['midcap400'] = run_midcap400_scan()
         results['earnings_crush'] = run_earnings_crush_scan()
     
@@ -306,7 +307,7 @@ def main():
     
     # Upload to web repos
     if not args.no_upload and not args.ib_only:
-        if run_all or args.scans_only or any([args.mag7, args.nasdaq100, args.midcap400, args.earnings_crush]):
+        if run_all or args.scans_only or any([args.nasdaq100, args.midcap400, args.earnings_crush]):
             results['upload'] = upload_to_web_repos()
     
     # Print summary
