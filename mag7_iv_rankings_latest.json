@@ -1,55 +1,52 @@
 {
-  "timestamp": "2025-11-17T09:14:52.751182",
-  "date": "2025-11-17",
+  "timestamp": "2025-11-18T10:19:29.823324",
+  "date": "2025-11-18",
   "universe": "MAG7",
-  "total_tickers": 6,
+  "total_tickers": 5,
   "rankings": [
     {
-      "ticker": "TSLA",
-      "price": 422.72,
-      "iv": 52.6723627355691,
-      "ma_200": 338.58555000000007,
-      "above_ma_200": true,
-      "universe": "MAG7"
-    },
-    {
-      "ticker": "GOOGL",
-      "price": 289.14,
-      "iv": 33.98533411422021,
-      "ma_200": 197.48194999999996,
-      "above_ma_200": true,
+      "ticker": "META",
+      "price": 597.54,
+      "iv": 36.53895952176607,
+      "ma_200": 676.5235000000002,
+      "above_ma_200": false,
+      "next_earnings": null,
       "universe": "MAG7"
     },
     {
       "ticker": "AMZN",
-      "price": 233.01999999999998,
-      "iv": 33.1656290672689,
-      "ma_200": 215.06395000000012,
+      "price": 224.1,
+      "iv": 36.337280614655846,
+      "ma_200": 214.9982000000001,
       "above_ma_200": true,
+      "next_earnings": null,
       "universe": "MAG7"
     },
     {
-      "ticker": "META",
-      "price": 606.63,
-      "iv": 33.07105444814634,
-      "ma_200": 677.0447500000002,
-      "above_ma_200": false,
+      "ticker": "GOOGL",
+      "price": 286.55,
+      "iv": 36.33443131644294,
+      "ma_200": 197.88995,
+      "above_ma_200": true,
+      "next_earnings": null,
       "universe": "MAG7"
     },
     {
       "ticker": "MSFT",
-      "price": 510.39,
-      "iv": 23.76622862186107,
-      "ma_200": 465.18649999999997,
+      "price": 492.22,
+      "iv": 27.12542993652779,
+      "ma_200": 465.58109999999994,
       "above_ma_200": true,
+      "next_earnings": null,
       "universe": "MAG7"
     },
     {
       "ticker": "AAPL",
-      "price": 269.21,
-      "iv": 23.215600609264907,
-      "ma_200": 225.54204999999985,
+      "price": 268.08,
+      "iv": 24.920696739453263,
+      "ma_200": 225.73494999999986,
       "above_ma_200": true,
+      "next_earnings": null,
       "universe": "MAG7"
     }
   ]
