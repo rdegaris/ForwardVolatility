@@ -125,16 +125,22 @@ def identify_calendar_spreads(option_positions, ib):
                 
                 front_ticker = ib.reqMktData(front_contract, '', False, False)
                 back_ticker = ib.reqMktData(back_contract, '', False, False)
-                ib.sleep(2)  # Wait for data
+                ib.sleep(3)  # Wait longer for data
                 
                 # Get underlying price
                 underlying = Stock(symbol, 'SMART', 'USD')
                 ib.qualifyContracts(underlying)
                 underlying_ticker = ib.reqMktData(underlying, '', False, False)
-                ib.sleep(1)
+                ib.sleep(2)  # Wait for underlying data
                 
                 front_current = get_option_price(front_ticker)
                 back_current = get_option_price(back_ticker)
+                underlying_price = get_stock_price(underlying_ticker)
+                
+                # Skip if we couldn't get valid prices
+                if front_current is None or back_current is None or underlying_price is None:
+                    print(f"  [WARN] Skipping {symbol} ${strike} {right} - could not get valid market data")
+                    continue
                 
                 # Calculate unrealized P&L
                 # For short front: PnL = (avgCost - currentPrice) * abs(position) * 100
@@ -162,7 +168,7 @@ def identify_calendar_spreads(option_positions, ib):
                         'unrealizedPnL': back_pnl,
                     },
                     'underlying': {
-                        'currentPrice': get_stock_price(underlying_ticker),
+                        'currentPrice': underlying_price,
                     }
                 })
                 
@@ -178,24 +184,35 @@ def identify_calendar_spreads(option_positions, ib):
 
 def get_option_price(ticker):
     """Get current option price from ticker, prefer last price, fall back to mid."""
-    if ticker.last and ticker.last > 0:
+    import math
+    
+    # Debug: print what we're getting
+    print(f"      Debug - last:{ticker.last}, bid:{ticker.bid}, ask:{ticker.ask}, close:{ticker.close}")
+    
+    if ticker.last and not math.isnan(ticker.last) and ticker.last > 0:
         return ticker.last
-    elif ticker.bid and ticker.ask:
-        return (ticker.bid + ticker.ask) / 2
-    elif ticker.close and ticker.close > 0:
+    elif ticker.bid and ticker.ask and not math.isnan(ticker.bid) and not math.isnan(ticker.ask):
+        mid = (ticker.bid + ticker.ask) / 2
+        if mid > 0:
+            return mid
+    elif ticker.close and not math.isnan(ticker.close) and ticker.close > 0:
         return ticker.close
-    return 0.0
+    elif ticker.modelGreeks and ticker.modelGreeks.optPrice:
+        # Try model price as last resort
+        return ticker.modelGreeks.optPrice
+    return None
 
 
 def get_stock_price(ticker):
     """Get current stock price from ticker."""
-    if ticker.last and ticker.last > 0:
+    import math
+    if ticker.last and not math.isnan(ticker.last) and ticker.last > 0:
         return ticker.last
-    elif ticker.bid and ticker.ask:
+    elif ticker.bid and ticker.ask and not math.isnan(ticker.bid) and not math.isnan(ticker.ask):
         return (ticker.bid + ticker.ask) / 2
-    elif ticker.close and ticker.close > 0:
+    elif ticker.close and not math.isnan(ticker.close) and ticker.close > 0:
         return ticker.close
-    return 0.0
+    return None
 
 
 def format_date(ib_date_str):
