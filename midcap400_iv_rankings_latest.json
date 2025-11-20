@@ -1,382 +1,134 @@
 {
-  "timestamp": "2025-11-17T10:59:10.094876",
-  "date": "2025-11-17",
+  "timestamp": "2025-11-20T15:23:28.302346",
+  "date": "2025-11-20",
   "universe": "S&P MidCap 400",
-  "total_tickers": 47,
+  "total_tickers": 16,
   "rankings": [
     {
       "ticker": "MRVL",
-      "price": 84.06,
-      "iv": 91.80508005441595,
-      "ma_200": 75.37164999999999,
-      "above_ma_200": true,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "AEO",
-      "price": 17.81,
-      "iv": 89.99191075661615,
-      "ma_200": 13.1183,
+      "price": 76.215,
+      "iv": 101.89941591124092,
+      "ma_200": 74.85560000000001,
       "above_ma_200": true,
       "universe": "S&P MidCap 400"
     },
     {
       "ticker": "ANF",
-      "price": 70.06,
-      "iv": 87.63314603498681,
-      "ma_200": 84.56509999999999,
+      "price": 67.85,
+      "iv": 97.46587607603546,
+      "ma_200": 83.87880000000003,
       "above_ma_200": false,
+      "universe": "S&P MidCap 400"
+    },
+    {
+      "ticker": "AEO",
+      "price": 17.54,
+      "iv": 94.97009589905028,
+      "ma_200": 13.144599999999995,
+      "above_ma_200": true,
       "universe": "S&P MidCap 400"
     },
     {
       "ticker": "MP",
-      "price": 56.78,
-      "iv": 79.30237881969332,
-      "ma_200": 44.742,
-      "above_ma_200": true,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "CLOV",
-      "price": 2.405,
-      "iv": 78.32797397501551,
-      "ma_200": 3.231675,
-      "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "RH",
-      "price": 146.13,
-      "iv": 75.68129228164963,
-      "ma_200": 218.89109999999997,
-      "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "SIG",
-      "price": 97.38,
-      "iv": 74.00393319867929,
-      "ma_200": 75.74864999999998,
-      "above_ma_200": true,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "HL",
-      "price": 14.225,
-      "iv": 72.85974682326086,
-      "ma_200": 7.668875000000001,
+      "price": 55.62,
+      "iv": 80.28343138383093,
+      "ma_200": 45.28554999999999,
       "above_ma_200": true,
       "universe": "S&P MidCap 400"
     },
     {
       "ticker": "URBN",
-      "price": 61.2,
-      "iv": 71.99209985326065,
-      "ma_200": 64.27950000000004,
+      "price": 60.74,
+      "iv": 80.27622534136177,
+      "ma_200": 64.36110000000004,
       "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "DKS",
-      "price": 212.74,
-      "iv": 70.99298200202966,
-      "ma_200": 208.7090500000001,
-      "above_ma_200": true,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "JBLU",
-      "price": 4.09,
-      "iv": 67.27228112421176,
-      "ma_200": 4.916900000000002,
-      "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "CC",
-      "price": 11.54,
-      "iv": 66.89875511376287,
-      "ma_200": 13.549950000000013,
-      "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "CIEN",
-      "price": 192.38,
-      "iv": 62.43970462092936,
-      "ma_200": 100.23405000000002,
-      "above_ma_200": true,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "TGT",
-      "price": 89.8,
-      "iv": 60.74779553629159,
-      "ma_200": 100.48365000000004,
-      "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "BURL",
-      "price": 279.84,
-      "iv": 58.87729077085023,
-      "ma_200": 255.6851499999999,
-      "above_ma_200": true,
       "universe": "S&P MidCap 400"
     },
     {
       "ticker": "RIG",
-      "price": 4.165,
-      "iv": 58.501087765564684,
-      "ma_200": 3.039299999999999,
+      "price": 3.8602,
+      "iv": 70.97702334594862,
+      "ma_200": 3.0414,
       "above_ma_200": true,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "RKT",
-      "price": 16.68,
-      "iv": 57.88329054480382,
-      "ma_200": 15.203000000000007,
-      "above_ma_200": true,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "PENN",
-      "price": 14.28,
-      "iv": 54.311108504241226,
-      "ma_200": 17.58315,
-      "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "VFC",
-      "price": 14.54,
-      "iv": 54.25783767144217,
-      "ma_200": 14.889100000000012,
-      "above_ma_200": false,
       "universe": "S&P MidCap 400"
     },
     {
       "ticker": "SATS",
-      "price": 67.89,
-      "iv": 54.04893120440503,
-      "ma_200": 39.448899999999995,
+      "price": 67.74,
+      "iv": 57.88997332661344,
+      "ma_200": 40.05729999999999,
       "above_ma_200": true,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "CELH",
-      "price": 40.54,
-      "iv": 51.984337855471466,
-      "ma_200": 43.89534999999998,
-      "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "ANET",
-      "price": 128.21,
-      "iv": 50.9999428043688,
-      "ma_200": 111.69485,
-      "above_ma_200": true,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "MPW",
-      "price": 5.2,
-      "iv": 47.077510295380286,
-      "ma_200": 4.91015,
-      "above_ma_200": true,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "SHAK",
-      "price": 89.54,
-      "iv": 46.86082660864059,
-      "ma_200": 106.50894999999997,
-      "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "WEN",
-      "price": 8.44,
-      "iv": 46.243199987608016,
-      "ma_200": 11.598499999999996,
-      "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "NRG",
-      "price": 165.29,
-      "iv": 44.04677006881006,
-      "ma_200": 139.35805,
-      "above_ma_200": true,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "GNRC",
-      "price": 143.51,
-      "iv": 43.04155659034461,
-      "ma_200": 150.40594999999996,
-      "above_ma_200": false,
       "universe": "S&P MidCap 400"
     },
     {
       "ticker": "B",
-      "price": 37.97,
-      "iv": 43.01459795519479,
-      "ma_200": 23.561350000000008,
+      "price": 35.97,
+      "iv": 44.8362400054871,
+      "ma_200": 23.862150000000007,
       "above_ma_200": true,
       "universe": "S&P MidCap 400"
     },
     {
       "ticker": "DECK",
-      "price": 81.82,
-      "iv": 41.94605187519385,
-      "ma_200": 112.32234999999999,
+      "price": 81.16,
+      "iv": 42.407412490454135,
+      "ma_200": 110.99544999999998,
       "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "HOG",
-      "price": 24.25,
-      "iv": 41.23438686509955,
-      "ma_200": 25.620899999999985,
-      "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "TPR",
-      "price": 101.04,
-      "iv": 40.256649131487876,
-      "ma_200": 91.48144999999995,
-      "above_ma_200": true,
       "universe": "S&P MidCap 400"
     },
     {
       "ticker": "MGM",
-      "price": 31.605,
-      "iv": 39.92235336708384,
-      "ma_200": 33.84324999999999,
+      "price": 30.51,
+      "iv": 40.78017837640736,
+      "ma_200": 33.7938,
       "above_ma_200": false,
       "universe": "S&P MidCap 400"
     },
     {
-      "ticker": "MOS",
-      "price": 25.08,
-      "iv": 39.67233062458458,
-      "ma_200": 31.185749999999995,
+      "ticker": "TGT",
+      "price": 83.7,
+      "iv": 36.394661693836554,
+      "ma_200": 99.74345000000001,
       "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "EXPE",
-      "price": 252.89,
-      "iv": 37.97409639837629,
-      "ma_200": 189.97435000000002,
-      "above_ma_200": true,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "SNV",
-      "price": 45.68,
-      "iv": 36.98034828065854,
-      "ma_200": 48.55009999999995,
-      "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "HRL",
-      "price": 22.32,
-      "iv": 36.95747874934214,
-      "ma_200": 28.013099999999998,
-      "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "NUE",
-      "price": 149.43,
-      "iv": 35.33703021745342,
-      "ma_200": 132.01890000000006,
-      "above_ma_200": true,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "PHM",
-      "price": 115.83,
-      "iv": 33.69269671844674,
-      "ma_200": 112.9268,
-      "above_ma_200": true,
       "universe": "S&P MidCap 400"
     },
     {
       "ticker": "EQT",
-      "price": 59.71,
-      "iv": 32.63673862977491,
-      "ma_200": 53.36575000000002,
+      "price": 55.95,
+      "iv": 35.69747521988977,
+      "ma_200": 53.444800000000015,
       "above_ma_200": true,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "CPB",
-      "price": 31.11,
-      "iv": 30.075395268886385,
-      "ma_200": 34.30525,
-      "above_ma_200": false,
       "universe": "S&P MidCap 400"
     },
     {
       "ticker": "NTR",
-      "price": 57.875,
-      "iv": 28.947669766018347,
-      "ma_200": 56.25655000000002,
-      "above_ma_200": true,
+      "price": 55.06,
+      "iv": 31.90948864242828,
+      "ma_200": 56.31450000000002,
+      "above_ma_200": false,
       "universe": "S&P MidCap 400"
     },
     {
-      "ticker": "MS",
-      "price": 162.6,
-      "iv": 28.06365258346506,
-      "ma_200": 138.11604999999997,
-      "above_ma_200": true,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "TSCO",
-      "price": 54.08,
-      "iv": 27.811429148418426,
-      "ma_200": 54.96170000000003,
+      "ticker": "CPB",
+      "price": 30.69,
+      "iv": 31.749023876407257,
+      "ma_200": 34.20225,
       "above_ma_200": false,
       "universe": "S&P MidCap 400"
     },
     {
       "ticker": "WMB",
-      "price": 60.3,
-      "iv": 27.102850635745142,
-      "ma_200": 58.88125000000004,
+      "price": 59.0,
+      "iv": 27.135071156117007,
+      "ma_200": 58.92010000000004,
       "above_ma_200": true,
       "universe": "S&P MidCap 400"
     },
     {
       "ticker": "PM",
-      "price": 152.69,
-      "iv": 26.17756972770835,
-      "ma_200": 163.4216000000001,
-      "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "SPGI",
-      "price": 488.53,
-      "iv": 23.817784213574136,
-      "ma_200": 511.72275000000013,
-      "above_ma_200": false,
-      "universe": "S&P MidCap 400"
-    },
-    {
-      "ticker": "CL",
-      "price": 79.01,
-      "iv": 21.21471751395427,
-      "ma_200": 86.86789999999999,
+      "price": 155.65,
+      "iv": 26.564488141340682,
+      "ma_200": 163.79750000000007,
       "above_ma_200": false,
       "universe": "S&P MidCap 400"
     }

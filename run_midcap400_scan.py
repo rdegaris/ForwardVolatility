@@ -8,13 +8,14 @@ from midcap400 import get_midcap400_list
 from scanner_ib import IBScanner, rank_tickers_by_iv
 import pandas as pd
 
-def run_midcap400_scan(threshold=0.2, rank_by_iv=True, top_n_iv=100):
+def run_midcap400_scan(threshold=0.2, rank_by_iv=True, top_n_iv=100, rank_n_iv=150):
     """Run scan on S&P MidCap 400 stocks and save formatted results.
     
     Args:
         threshold: FF threshold (default 0.2)
         rank_by_iv: Pre-rank by near-term IV (default True)
         top_n_iv: If ranking, scan top N tickers (default 100, None = scan all)
+        rank_n_iv: How many to rank before selecting top N (default 150, speeds up vs ranking all 400+)
     """
     
     scan_log = []
@@ -44,11 +45,12 @@ def run_midcap400_scan(threshold=0.2, rank_by_iv=True, top_n_iv=100):
     # Get IV rankings first (for IV Rankings page)
     iv_rankings_data = None
     if rank_by_iv:
-        print("Ranking all tickers by near-term IV...")
+        print(f"Ranking first {rank_n_iv} tickers by near-term IV...")
         scanner = IBScanner(check_earnings=False)
         scanner.connect()
         try:
-            ranked = rank_tickers_by_iv(scanner, tickers, top_n=None)  # Rank all
+            # Only rank first rank_n_iv tickers to speed up (vs all 400+)
+            ranked = rank_tickers_by_iv(scanner, tickers[:rank_n_iv], top_n=None)  # Rank subset
             iv_rankings_data = []
             for ticker, iv, price in ranked:
                 # Get 200-day MA
