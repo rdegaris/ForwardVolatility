@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "id": "ib_1763752214_0",
+    "symbol": "AMD",
+    "strike": 237.5,
+    "callOrPut": "CALL",
+    "quantity": 1,
+    "frontExpiration": "2025-11-21",
+    "frontEntryPrice": 10.64,
+    "frontCurrentPrice": 0.01,
+    "frontUnrealizedPnL": 1062.95,
+    "backExpiration": "2025-11-28",
+    "backEntryPrice": 12.61,
+    "backCurrentPrice": 0.37,
+    "backUnrealizedPnL": -1224.05,
+    "underlyingEntryPrice": 206.09,
+    "underlyingCurrentPrice": 206.09,
+    "entryDate": "2025-11-21",
+    "unrealizedPnL": -2287.0
+  }
+]

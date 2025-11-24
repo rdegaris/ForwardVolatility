@@ -143,10 +143,14 @@ def identify_calendar_spreads(option_positions, ib):
                     continue
                 
                 # Calculate unrealized P&L
-                # For short front: PnL = (avgCost - currentPrice) * abs(position) * 100
-                # For long back: PnL = (currentPrice - avgCost) * position * 100
-                front_pnl = (abs(front['avgCost']) - front_current) * abs(front['position']) * 100
-                back_pnl = (back_current - abs(back['avgCost'])) * abs(back['position']) * 100
+                # avgCost from IB is already total cost in cents, current prices are per share
+                # For short front: PnL = (entry - current) * contracts * 100
+                # For long back: PnL = (current - entry) * contracts * 100
+                front_entry_per_share = abs(front['avgCost']) / abs(front['position']) / 100
+                back_entry_per_share = abs(back['avgCost']) / abs(back['position']) / 100
+                
+                front_pnl = (front_entry_per_share - front_current) * abs(front['position']) * 100
+                back_pnl = (back_current - back_entry_per_share) * abs(back['position']) * 100
                 
                 calendar_spreads.append({
                     'symbol': symbol,
@@ -251,10 +255,10 @@ def export_to_json(calendar_spreads, filename='trades.json'):
     trades = []
     
     for i, spread in enumerate(calendar_spreads):
-        # Calculate entry prices (net debit for calendar spread)
-        # Entry: Paid for back - Received for front
-        front_entry = spread['front']['avgCost']
-        back_entry = spread['back']['avgCost']
+        # Calculate entry prices per share (avgCost is total in cents)
+        # Convert to per-share price in dollars
+        front_entry = abs(spread['front']['avgCost']) / abs(spread['front']['position']) / 100
+        back_entry = abs(spread['back']['avgCost']) / abs(spread['back']['position']) / 100
         
         # Calculate total unrealized P&L for the spread
         # Calendar spread: long back - short front, so back PnL - front PnL
