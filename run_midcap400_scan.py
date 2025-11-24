@@ -278,7 +278,7 @@ def run_midcap400_scan(threshold=0.2, rank_by_iv=True, top_n_iv=100):
 
 if __name__ == "__main__":
     # Configuration
-    threshold = 0.2  # 20% forward factor threshold
+    threshold = 0.15  # 15% forward factor threshold (lower than NASDAQ due to lower IVs)
     rank_by_iv = True  # Pre-rank by IV
     top_n_iv = 100  # Scan top 100 by IV (from 594 total)
     

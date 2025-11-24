@@ -352,9 +352,9 @@ class IBScanner:
             put_ticker = self.ib.reqMktData(put, '106', False, False)
             
             if debug:
-                print(f"    [DEBUG] Waiting for IV data (1 sec)...")
+                print(f"    [DEBUG] Waiting for IV data (2 sec)...")
             print(f"    Waiting for IV data...", flush=True)
-            self.ib.sleep(1)  # Reduced from 2 to 1 second for speed
+            self.ib.sleep(2)  # 2 seconds for better IV data quality, especially for less liquid stocks
             if debug:
                 print(f"    [DEBUG] Data received")
             print(f"    IV data received", flush=True)
