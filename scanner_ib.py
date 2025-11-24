@@ -363,7 +363,7 @@ class IBScanner:
             call_iv = None
             put_iv = None
             
-            # Method 1: modelGreeks
+            # Method 1: modelGreeks (pre-calculated by IB for liquid options)
             if call_ticker.modelGreeks and call_ticker.modelGreeks.impliedVol:
                 call_iv = call_ticker.modelGreeks.impliedVol * 100  # Convert to percentage
                 if debug:
@@ -374,14 +374,37 @@ class IBScanner:
                 if debug:
                     print(f"    [DEBUG] Put IV (modelGreeks): {put_iv:.2f}%")
             
-            # Method 2: Try last price if IV not available (for very ITM/OTM)
+            # Method 2: Calculate IV from option price if modelGreeks not available
+            # This is critical for less liquid MidCap stocks where IB doesn't provide modelGreeks
             if not call_iv and call_ticker.last and call_ticker.last > 0:
                 if debug:
-                    print(f"    [DEBUG] Call has price but no IV: ${call_ticker.last}")
+                    print(f"    [DEBUG] Call has price ${call_ticker.last} but no modelGreeks, requesting IV calculation...")
+                try:
+                    # Request IB to calculate IV from the market price
+                    calc_iv = self.ib.calculateImpliedVolatility(call, call_ticker.last, current_price)
+                    self.ib.sleep(1)  # Wait for calculation
+                    if calc_iv and hasattr(calc_iv, 'impliedVolatility') and calc_iv.impliedVolatility:
+                        call_iv = calc_iv.impliedVolatility * 100
+                        if debug:
+                            print(f"    [DEBUG] Call IV (calculated): {call_iv:.2f}%")
+                except Exception as e:
+                    if debug:
+                        print(f"    [DEBUG] Failed to calculate call IV: {e}")
             
             if not put_iv and put_ticker.last and put_ticker.last > 0:
                 if debug:
-                    print(f"    [DEBUG] Put has price but no IV: ${put_ticker.last}")
+                    print(f"    [DEBUG] Put has price ${put_ticker.last} but no modelGreeks, requesting IV calculation...")
+                try:
+                    # Request IB to calculate IV from the market price
+                    calc_iv = self.ib.calculateImpliedVolatility(put, put_ticker.last, current_price)
+                    self.ib.sleep(1)  # Wait for calculation
+                    if calc_iv and hasattr(calc_iv, 'impliedVolatility') and calc_iv.impliedVolatility:
+                        put_iv = calc_iv.impliedVolatility * 100
+                        if debug:
+                            print(f"    [DEBUG] Put IV (calculated): {put_iv:.2f}%")
+                except Exception as e:
+                    if debug:
+                        print(f"    [DEBUG] Failed to calculate put IV: {e}")
             
             # Get bid/ask prices for midpoint calculation
             call_bid = call_ticker.bid if call_ticker.bid and call_ticker.bid > 0 else None
