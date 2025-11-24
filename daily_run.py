@@ -221,7 +221,7 @@ def upload_to_web_repos():
                 import shutil
                 dst_path = os.path.join(web_path, dst)
                 shutil.copy2(src, dst_path)
-                print_success(f"Copied {src} → {dst}")
+                print_success(f"Copied {src} -> {dst}")
                 copied += 1
             except Exception as e:
                 print_error(f"Failed to copy {src}: {e}")
