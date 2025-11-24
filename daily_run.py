@@ -212,6 +212,7 @@ def upload_to_web_repos():
     if earnings_crush_path.exists():
         earnings_results = earnings_crush_path / 'earnings_crush_latest.json'
         if earnings_results.exists():
+            # Copy to both locations: /data/ for Home page and root for EarningsCrush page
             files_to_copy.append((str(earnings_results), "earnings_crush_latest.json"))
     
     copied = 0
@@ -219,10 +220,18 @@ def upload_to_web_repos():
         if os.path.exists(src):
             try:
                 import shutil
+                # Copy to /data/ directory
                 dst_path = os.path.join(web_path, dst)
                 shutil.copy2(src, dst_path)
-                print_success(f"Copied {src} -> {dst}")
+                print_success(f"Copied {src} -> data/{dst}")
                 copied += 1
+                
+                # Also copy earnings_crush_latest.json to root public folder for EarningsCrush page
+                if dst == "earnings_crush_latest.json":
+                    root_dst = os.path.join(web_path, "..", dst)
+                    shutil.copy2(src, root_dst)
+                    print_success(f"Copied {src} -> {dst} (root)")
+                    
             except Exception as e:
                 print_error(f"Failed to copy {src}: {e}")
     
