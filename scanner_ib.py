@@ -274,7 +274,7 @@ class IBScanner:
             return []
     
     def get_near_term_iv(self, ticker: str, current_price: float) -> Optional[float]:
-        """Get near-term (7-21 day) IV for quick ranking.
+        """Get near-term IV for quick ranking. Accepts 7-90 day expirations.
         
         Returns:
             Average IV as a percentage, or None if not available
@@ -284,18 +284,17 @@ class IBScanner:
             if not expirations:
                 return None
             
-            # Find expiration closest to 14 days (2 weeks)
-            target_dte = 14
+            # Find the nearest expiration in the 7-90 day range
+            # Prefer shorter DTEs but accept monthly expirations (30/60/90)
             best_expiry = None
-            min_diff = float('inf')
+            best_dte = None
             
             for exp in expirations:
                 dte = calculate_dte(exp)
-                if 7 <= dte <= 21:  # Within 1-3 week range
-                    diff = abs(dte - target_dte)
-                    if diff < min_diff:
+                if 7 <= dte <= 90:  # Accept 1 week to 3 months
+                    if best_expiry is None or dte < best_dte:
                         best_expiry = exp
-                        min_diff = diff
+                        best_dte = dte
             
             if not best_expiry:
                 return None
