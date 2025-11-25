@@ -86,17 +86,31 @@ def run_command(command, description):
     
     try:
         if isinstance(command, str):
-            result = subprocess.run(command, shell=True, text=True, bufsize=0)
+            result = subprocess.run(
+                command, 
+                shell=True, 
+                text=True, 
+                bufsize=0,
+                capture_output=False  # Let output stream to console
+            )
         else:
-            result = subprocess.run(command, text=True, bufsize=0)
+            result = subprocess.run(
+                command, 
+                text=True, 
+                bufsize=0,
+                capture_output=False  # Let output stream to console
+            )
         
         if result.returncode == 0:
             print_success(f"Completed: {description}")
             return True
         else:
-            print_error(f"Failed: {description}")
+            print_error(f"Failed: {description} (exit code: {result.returncode})")
             return False
     
+    except KeyboardInterrupt:
+        print_warning(f"Interrupted: {description}")
+        return False
     except Exception as e:
         print_error(f"Exception running {description}: {e}")
         return False

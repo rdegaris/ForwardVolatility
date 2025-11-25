@@ -133,22 +133,29 @@ class IBScanner:
         self.price_cache = {}  # Cache for stock prices
         self.ma_200_cache = {}  # Cache for 200-day MA
     
-    def connect(self):
-        """Connect to IB Gateway or TWS."""
-        try:
-            print(f"Connecting to Interactive Brokers at {self.host}:{self.port}...")
-            self.ib.connect(self.host, self.port, clientId=self.client_id, timeout=10)
-            self.connected = True
-            print("  Connected successfully!")
-            return True
-        except Exception as e:
-            print(f"  Connection failed: {e}")
-            print("\nMake sure:")
-            print("  1. IB Gateway or TWS is running")
-            print("  2. API connections are enabled in settings")
-            print("  3. Port number is correct:")
-            print("     - TWS Paper: 7497")
-            print("     - TWS Live: 7496")
+    def connect(self, max_retries=3):
+        """Connect to IB Gateway or TWS with retry logic."""
+        for attempt in range(max_retries):
+            try:
+                if attempt > 0:
+                    wait_time = 2 ** attempt  # Exponential backoff: 2, 4, 8 seconds
+                    print(f"  Retrying in {wait_time} seconds (attempt {attempt + 1}/{max_retries})...")
+                    time.sleep(wait_time)
+                
+                print(f"Connecting to Interactive Brokers at {self.host}:{self.port}...")
+                self.ib.connect(self.host, self.port, clientId=self.client_id, timeout=10)
+                self.connected = True
+                print("  Connected successfully!")
+                return True
+            except Exception as e:
+                print(f"  Connection failed: {e}")
+                if attempt == max_retries - 1:
+                    print("\nMake sure:")
+                    print("  1. IB Gateway or TWS is running")
+                    print("  2. API connections are enabled in settings")
+                    print("  3. Port number is correct:")
+                    print("     - TWS Paper: 7497")
+                    print("     - TWS Live: 7496")
             print("     - Gateway Paper: 4002")
             print("     - Gateway Live: 4001")
             return False
