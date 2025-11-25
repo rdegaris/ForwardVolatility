@@ -461,6 +461,117 @@ class IBScanner:
                 print(f"\n    [DEBUG] Exception: {e}")
             return None
     
+    def get_atm_iv_batch(self, ticker: str, expiry1: str, expiry2: str, current_price: float, debug: bool = False) -> tuple:
+        """Get ATM implied volatility for two expirations in a single batch request.
+        
+        This is faster than calling get_atm_iv twice because it requests all 4 options
+        (call1, put1, call2, put2) at once and waits only once for all data.
+        
+        Returns:
+            Tuple of (iv_data1, iv_data2) or (None, None) on error
+        """
+        try:
+            stock = Stock(ticker, 'SMART', 'USD')
+            self.ib.qualifyContracts(stock)
+            
+            chains = self.ib.reqSecDefOptParams(stock.symbol, '', stock.secType, stock.conId)
+            if not chains:
+                return None, None
+            
+            strikes = chains[0].strikes
+            atm_strike = min(strikes, key=lambda x: abs(x - current_price))
+            
+            if debug:
+                print(f"\n    [DEBUG] Batch request: ATM Strike {atm_strike} for {expiry1} and {expiry2}")
+            
+            # Create all 4 option contracts
+            call1 = Option(ticker, expiry1, atm_strike, 'C', 'SMART')
+            put1 = Option(ticker, expiry1, atm_strike, 'P', 'SMART')
+            call2 = Option(ticker, expiry2, atm_strike, 'C', 'SMART')
+            put2 = Option(ticker, expiry2, atm_strike, 'P', 'SMART')
+            
+            self.ib.qualifyContracts(call1, put1, call2, put2)
+            
+            # Request all market data at once
+            print(f"    Requesting batch IV data for {expiry1} and {expiry2}...", flush=True)
+            call1_ticker = self.ib.reqMktData(call1, '106', False, False)
+            put1_ticker = self.ib.reqMktData(put1, '106', False, False)
+            call2_ticker = self.ib.reqMktData(call2, '106', False, False)
+            put2_ticker = self.ib.reqMktData(put2, '106', False, False)
+            
+            # Wait once for all data
+            print(f"    Waiting for batch IV data...", flush=True)
+            self.ib.sleep(2)
+            print(f"    Batch IV data received", flush=True)
+            
+            # Extract IV from all tickers
+            def extract_iv(ticker_data, contract, label):
+                iv = None
+                if ticker_data.modelGreeks and ticker_data.modelGreeks.impliedVol:
+                    iv = ticker_data.modelGreeks.impliedVol * 100
+                    if debug:
+                        print(f"    [DEBUG] {label} IV (modelGreeks): {iv:.2f}%")
+                elif ticker_data.last and ticker_data.last > 0:
+                    try:
+                        calc_iv = self.ib.calculateImpliedVolatility(contract, ticker_data.last, current_price)
+                        self.ib.sleep(0.5)
+                        if calc_iv and hasattr(calc_iv, 'impliedVolatility') and calc_iv.impliedVolatility:
+                            iv = calc_iv.impliedVolatility * 100
+                            if debug:
+                                print(f"    [DEBUG] {label} IV (calculated): {iv:.2f}%")
+                    except:
+                        pass
+                return iv, ticker_data
+            
+            call1_iv, _ = extract_iv(call1_ticker, call1, f"{expiry1} Call")
+            put1_iv, _ = extract_iv(put1_ticker, put1, f"{expiry1} Put")
+            call2_iv, _ = extract_iv(call2_ticker, call2, f"{expiry2} Call")
+            put2_iv, _ = extract_iv(put2_ticker, put2, f"{expiry2} Put")
+            
+            # Cancel all subscriptions
+            self.ib.cancelMktData(call1)
+            self.ib.cancelMktData(put1)
+            self.ib.cancelMktData(call2)
+            self.ib.cancelMktData(put2)
+            
+            # Build iv_data dicts
+            def build_iv_data(call_iv, put_iv, call_ticker, put_ticker):
+                ivs = [iv for iv in [call_iv, put_iv] if iv and iv > 0]
+                if not ivs:
+                    return None
+                avg_iv = sum(ivs) / len(ivs)
+                
+                call_bid = call_ticker.bid if call_ticker.bid and call_ticker.bid > 0 else None
+                call_ask = call_ticker.ask if call_ticker.ask and call_ticker.ask > 0 else None
+                call_mid = (call_bid + call_ask) / 2 if call_bid and call_ask else (call_ticker.last if call_ticker.last else None)
+                
+                put_bid = put_ticker.bid if put_ticker.bid and put_ticker.bid > 0 else None
+                put_ask = put_ticker.ask if put_ticker.ask and put_ticker.ask > 0 else None
+                put_mid = (put_bid + put_ask) / 2 if put_bid and put_ask else (put_ticker.last if put_ticker.last else None)
+                
+                return {
+                    'call_iv': call_iv,
+                    'put_iv': put_iv,
+                    'avg_iv': avg_iv,
+                    'atm_strike': atm_strike,
+                    'call_bid': call_bid,
+                    'call_ask': call_ask,
+                    'call_mid': call_mid,
+                    'put_bid': put_bid,
+                    'put_ask': put_ask,
+                    'put_mid': put_mid
+                }
+            
+            iv_data1 = build_iv_data(call1_iv, put1_iv, call1_ticker, put1_ticker)
+            iv_data2 = build_iv_data(call2_iv, put2_iv, call2_ticker, put2_ticker)
+            
+            return iv_data1, iv_data2
+            
+        except Exception as e:
+            if debug:
+                print(f"\n    [DEBUG] Batch exception: {e}")
+            return None, None
+    
     def scan_ticker(self, ticker: str, threshold: float = 0.4) -> List[Dict]:
         """Scan a ticker for forward volatility opportunities."""
         opportunities = []
@@ -544,11 +655,8 @@ class IBScanner:
             
             print(f"  Checking {expiry1} (DTE={dte1}) vs {expiry2} (DTE={dte2}) [Target: {target_dte1}/{target_dte2}]...", flush=True)
             
-            print(f"    -> Fetching IV for {expiry1}...", flush=True)
-            iv_data1 = self.get_atm_iv(ticker, expiry1, current_price, debug=True)
-            time.sleep(0.5)
-            print(f"    -> Fetching IV for {expiry2}...")
-            iv_data2 = self.get_atm_iv(ticker, expiry2, current_price, debug=True)
+            # Use batch method to fetch both expirations at once (saves ~2s per pair)
+            iv_data1, iv_data2 = self.get_atm_iv_batch(ticker, expiry1, expiry2, current_price, debug=True)
             
             if iv_data1 is None or iv_data2 is None:
                 print("  -> No IV data\n")
