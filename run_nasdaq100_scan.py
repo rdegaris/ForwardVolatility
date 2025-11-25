@@ -260,4 +260,9 @@ def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=30):
 if __name__ == "__main__":
     import sys
     threshold = float(sys.argv[1]) if len(sys.argv) > 1 else 0.2
-    run_nasdaq100_scan(threshold=threshold)
+    try:
+        run_nasdaq100_scan(threshold=threshold)
+        sys.exit(0)  # Explicit success exit code
+    except Exception as e:
+        print(f"[ERROR] Scan failed: {e}")
+        sys.exit(1)
