@@ -26,6 +26,27 @@ import logging
 from pathlib import Path
 
 
+def get_venv_python():
+    """Get the venv Python executable, handling Task Scheduler context.
+    
+    When running from Task Scheduler, sys.executable may return the system Python
+    even if the script was launched with the venv Python. This function explicitly
+    looks for the venv Python in the script's directory.
+    """
+    script_dir = Path(__file__).parent
+    venv_python = script_dir / '.venv' / 'Scripts' / 'python.exe'
+    
+    if venv_python.exists():
+        return str(venv_python)
+    
+    # Fallback to sys.executable if venv not found
+    return sys.executable
+
+
+# Use venv Python for all subprocess calls
+PYTHON_EXE = get_venv_python()
+
+
 class Colors:
     """ANSI color codes for terminal output."""
     HEADER = '\033[95m'
@@ -91,21 +112,33 @@ def run_command(command, description):
                 shell=True, 
                 text=True, 
                 bufsize=0,
-                capture_output=False  # Let output stream to console
+                capture_output=True  # Capture output to log errors
             )
         else:
             result = subprocess.run(
                 command, 
                 text=True, 
                 bufsize=0,
-                capture_output=False  # Let output stream to console
+                capture_output=True  # Capture output to log errors
             )
+        
+        # Always print stdout if there is any
+        if result.stdout:
+            print(result.stdout)
         
         if result.returncode == 0:
             print_success(f"Completed: {description}")
             return True
         else:
             print_error(f"Failed: {description} (exit code: {result.returncode})")
+            # Print stderr to help debug
+            if result.stderr:
+                print(f"{Colors.RED}STDERR:{Colors.END}")
+                print(result.stderr)
+            # Also print stdout in case error details are there
+            if result.stdout and "error" in result.stdout.lower():
+                print(f"{Colors.YELLOW}STDOUT (contains error):{Colors.END}")
+                print(result.stdout[-2000:] if len(result.stdout) > 2000 else result.stdout)
             return False
     
     except KeyboardInterrupt:
@@ -113,6 +146,8 @@ def run_command(command, description):
         return False
     except Exception as e:
         print_error(f"Exception running {description}: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 
@@ -120,7 +155,7 @@ def run_mag7_scan():
     """Run MAG7 scanner."""
     print_section("Running MAG7 Scanner")
     return run_command(
-        [sys.executable, "-u", "run_mag7_scan.py"],
+        [PYTHON_EXE, "-u", "run_mag7_scan.py"],
         "MAG7 scan"
     )
 
@@ -129,7 +164,7 @@ def run_nasdaq100_scan():
     """Run NASDAQ 100 scanner."""
     print_section("Running NASDAQ 100 Scanner")
     return run_command(
-        [sys.executable, "-u", "run_nasdaq100_scan.py"],
+        [PYTHON_EXE, "-u", "run_nasdaq100_scan.py"],
         "NASDAQ 100 scan"
     )
 
@@ -138,7 +173,7 @@ def run_midcap400_scan():
     """Run MidCap 400 scanner."""
     print_section("Running MidCap 400 Scanner")
     return run_command(
-        [sys.executable, "-u", "run_midcap400_scan.py"],
+        [PYTHON_EXE, "-u", "run_midcap400_scan.py"],
         "MidCap 400 scan"
     )
 
@@ -163,7 +198,7 @@ def run_earnings_crush_scan():
     
     # Run the earnings crush scan
     success = run_command(
-        [sys.executable, "-u", str(scan_script)],
+        [PYTHON_EXE, "-u", str(scan_script)],
         "Earnings Crush scan (Finnhub + IB)"
     )
     
@@ -180,7 +215,7 @@ def fetch_ib_positions():
         return False
     
     success = run_command(
-        [sys.executable, "-u", "fetch_ib_positions.py"],
+        [PYTHON_EXE, "-u", "fetch_ib_positions.py"],
         "IB positions fetch"
     )
     
