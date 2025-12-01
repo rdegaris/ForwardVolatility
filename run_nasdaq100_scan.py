@@ -1,79 +1,68 @@
 """
-Run NASDAQ 100 scan and save for web display
+Run NASDAQ 100 scan and save for web display.
+
+Uses adaptive single-pass scanner:
+1. Gets IV for each stock in a single pass
+2. Uses adaptive threshold (scans stocks in top percentile of IVs seen)
+3. Immediately scans for FF opportunities when IV qualifies
+
+This is faster than the old two-pass approach.
 """
 import json
 from datetime import datetime
-from batch_scan import batch_scan
 from nasdaq100 import get_nasdaq_100_list
-from scanner_ib import IBScanner, rank_tickers_by_iv
+from adaptive_scanner import adaptive_batch_scan
 import pandas as pd
+import sys
 
-def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=30):
-    """Run scan on NASDAQ 100 stocks and save formatted results.
+
+def run_nasdaq100_scan(ff_threshold=0.2, min_iv_threshold=30.0, adaptive_percentile=0.25):
+    """Run adaptive scan on NASDAQ 100 stocks and save formatted results.
     
     Args:
-        threshold: FF threshold (default 0.2)
-        rank_by_iv: Pre-rank by near-term IV (default True)
-        top_n_iv: If ranking, scan top N tickers (default 30, None = scan all)
+        ff_threshold: FF threshold for opportunities (default 0.2)
+        min_iv_threshold: Minimum IV to consider scanning (default 30%)
+        adaptive_percentile: Scan stocks in top X percentile (default 0.25 = top 25%)
     """
     
     scan_log = []
     
     def log(msg):
-        print(msg)
+        print(msg, flush=True)
         scan_log.append(msg)
     
     log("=" * 80)
-    log("NASDAQ 100 FORWARD VOLATILITY SCANNER")
+    log("NASDAQ 100 FORWARD VOLATILITY SCANNER (Adaptive Single-Pass)")
     log("=" * 80)
     log("")
     
     tickers = get_nasdaq_100_list()
     log(f"Scanning: {len(tickers)} NASDAQ 100 stocks")
-    log(f"Threshold: {threshold}")
-    if rank_by_iv:
-        log(f"Strategy: Scan top {top_n_iv if top_n_iv else 'all'} by near-term IV")
+    log(f"FF Threshold: {ff_threshold}")
+    log(f"Min IV Threshold: {min_iv_threshold}%")
+    log(f"Strategy: Adaptive - scan top {adaptive_percentile * 100:.0f}% by IV as we go")
     log("")
     
-    # Get IV rankings first (for IV Rankings page)
-    iv_rankings_data = None
-    if rank_by_iv:
-        log("Ranking all tickers by near-term IV...")
-        scanner = IBScanner(check_earnings=False)
-        scanner.connect()
-        try:
-            ranked = rank_tickers_by_iv(scanner, tickers, top_n=None)  # Rank all to find best opportunities
-            iv_rankings_data = []
-            for ticker, iv, price in ranked:
-                # Get 200-day MA
-                ma_200 = scanner.get_200day_ma(ticker)
-                above_ma_200 = price > ma_200 if ma_200 else None
-                
-                iv_rankings_data.append({
-                    'ticker': ticker,
-                    'price': float(price) if price else None,
-                    'iv': float(iv) if iv else None,
-                    'ma_200': float(ma_200) if pd.notna(ma_200) else None,
-                    'above_ma_200': bool(above_ma_200) if pd.notna(above_ma_200) else None,
-                    'universe': 'NASDAQ 100'
-                })
-            log(f"Ranked {len(iv_rankings_data)} tickers by IV")
-            log("")
-        finally:
-            scanner.disconnect()
-    
-    # Run batch scan with IV ranking
-    df = batch_scan(tickers, threshold=threshold, rank_by_iv=rank_by_iv, top_n_iv=top_n_iv)
+    # Run adaptive single-pass scan
+    df, iv_rankings = adaptive_batch_scan(
+        tickers,
+        min_iv_threshold=min_iv_threshold,
+        adaptive_percentile=adaptive_percentile,
+        ff_threshold=ff_threshold,
+        port=7497
+    )
     
     if df is None or df.empty:
         result = {
             'timestamp': datetime.now().isoformat(),
             'date': datetime.now().strftime('%Y-%m-%d'),
+            'scan_type': 'adaptive',
             'scan_log': scan_log,
             'opportunities': [],
             'summary': {
                 'total_opportunities': 0,
                 'tickers_scanned': len(tickers),
+                'tickers_with_iv': len(iv_rankings) if iv_rankings else 0,
                 'best_ff': 0,
                 'avg_ff': 0
             }
@@ -113,13 +102,10 @@ def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=30):
             # Calculate trade details
             stock_price = opp['price']
             
-            # Use the actual ATM strike from the scan if available, otherwise calculate
+            # Use the actual ATM strike from the scan if available
             if pd.notna(row.get('strike1')) and pd.notna(row.get('strike2')):
-                # Use the strike from the front expiry (they should be the same or very close)
                 strike = float(row['strike1'])
             else:
-                # Fallback: Use appropriate strike interval based on stock price
-                # IB uses: $0.50 for stocks <$25, $1 for $25-$200, $5 for $200-$500, $10 for >$500
                 if stock_price < 25:
                     strike_interval = 0.5
                 elif stock_price < 200:
@@ -128,26 +114,23 @@ def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=30):
                     strike_interval = 5.0
                 else:
                     strike_interval = 10.0
-                
                 strike = round(stock_price / strike_interval) * strike_interval
             
             ff_call = opp['ff_call'] if opp['ff_call'] is not None else 0
             ff_put = opp['ff_put'] if opp['ff_put'] is not None else 0
-            above_ma_200 = opp.get('above_ma_200', True)  # Default to True if not available
+            above_ma_200 = opp.get('above_ma_200', True)
             
-            # If FF values are close (within 5%), prefer the side that aligns with trend
             ff_diff = abs(ff_call - ff_put)
             max_ff = max(ff_call, ff_put)
             
             if max_ff > 0 and ff_diff / max_ff < 0.05:
-                # FF values are similar - use trend to decide
                 if above_ma_200:
-                    spread_type = "CALL"  # Bullish trend -> CALL spread
+                    spread_type = "CALL"
                     front_iv = opp['call_iv1'] / 100 if opp['call_iv1'] else opp['avg_iv1'] / 100
                     back_iv = opp['call_iv2'] / 100 if opp['call_iv2'] else opp['avg_iv2'] / 100
                     ff_display = ff_call
                 else:
-                    spread_type = "PUT"  # Bearish trend -> PUT spread
+                    spread_type = "PUT"
                     front_iv = opp['put_iv1'] / 100 if opp['put_iv1'] else opp['avg_iv1'] / 100
                     back_iv = opp['put_iv2'] / 100 if opp['put_iv2'] else opp['avg_iv2'] / 100
                     ff_display = ff_put
@@ -165,24 +148,9 @@ def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=30):
             front_dte = opp['dte1']
             back_dte = opp['dte2']
             
-            # Use actual midpoint prices if available, otherwise estimate
-            if spread_type == "CALL":
-                front_mid = opp.get('call1_mid')
-                back_mid = opp.get('call2_mid')
-            else:
-                front_mid = opp.get('put1_mid')
-                back_mid = opp.get('put2_mid')
-            
-            if front_mid and back_mid:
-                # Use actual market midpoint prices
-                front_price = front_mid
-                back_price = back_mid
-                price_source = "market midpoint"
-            else:
-                # Estimate using simplified ATM formula
-                front_price = 0.4 * stock_price * front_iv * (front_dte / 365) ** 0.5
-                back_price = 0.4 * stock_price * back_iv * (back_dte / 365) ** 0.5
-                price_source = "estimated"
+            # Estimate option prices
+            front_price = 0.4 * stock_price * front_iv * (front_dte / 365) ** 0.5
+            back_price = 0.4 * stock_price * back_iv * (back_dte / 365) ** 0.5
             
             net_debit = back_price - front_price
             net_debit_total = net_debit * 100
@@ -202,7 +170,7 @@ def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=30):
                 'back_price': back_price,
                 'net_debit': net_debit,
                 'net_debit_total': net_debit_total,
-                'price_source': price_source,
+                'price_source': 'estimated',
                 'best_case': best_case * 100,
                 'typical_case': typical_case * 100,
                 'adverse_case': adverse_case * 100,
@@ -215,18 +183,19 @@ def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=30):
             
             opportunities.append(opp)
         
-        # Sort by ticker
-        opportunities.sort(key=lambda x: x['ticker'])
+        # Sort by best FF
+        opportunities.sort(key=lambda x: x['best_ff'], reverse=True)
         
-        # Create result structure
         result = {
             'timestamp': datetime.now().isoformat(),
             'date': datetime.now().strftime('%Y-%m-%d'),
+            'scan_type': 'adaptive',
             'scan_log': scan_log,
             'opportunities': opportunities,
             'summary': {
                 'total_opportunities': len(opportunities),
                 'tickers_scanned': len(tickers),
+                'tickers_with_iv': len(iv_rankings) if iv_rankings else 0,
                 'best_ff': float(df['best_ff'].max()),
                 'avg_ff': float(df['best_ff'].mean())
             }
@@ -242,14 +211,18 @@ def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=30):
     log(f"[INFO] Total opportunities: {result['summary']['total_opportunities']}")
     
     # Save IV rankings separately for IV Rankings page
-    if iv_rankings_data:
+    if iv_rankings:
+        # Add universe tag
+        for r in iv_rankings:
+            r['universe'] = 'NASDAQ 100'
+        
         iv_rankings_file = 'nasdaq100_iv_rankings_latest.json'
         iv_rankings_result = {
             'timestamp': datetime.now().isoformat(),
             'date': datetime.now().strftime('%Y-%m-%d'),
             'universe': 'NASDAQ 100',
-            'total_tickers': len(iv_rankings_data),
-            'rankings': iv_rankings_data
+            'total_tickers': len(iv_rankings),
+            'rankings': iv_rankings
         }
         with open(iv_rankings_file, 'w') as f:
             json.dump(iv_rankings_result, f, indent=2)
@@ -257,12 +230,15 @@ def run_nasdaq100_scan(threshold=0.2, rank_by_iv=True, top_n_iv=30):
     
     return result
 
+
 if __name__ == "__main__":
     import sys
     threshold = float(sys.argv[1]) if len(sys.argv) > 1 else 0.2
     try:
-        run_nasdaq100_scan(threshold=threshold)
-        sys.exit(0)  # Explicit success exit code
+        run_nasdaq100_scan(ff_threshold=threshold)
+        sys.exit(0)
     except Exception as e:
         print(f"[ERROR] Scan failed: {e}")
+        import traceback
+        traceback.print_exc()
         sys.exit(1)

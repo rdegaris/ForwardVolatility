@@ -1,66 +1,85 @@
 """
-Run S&P MidCap 400 scan using adaptive single-pass scanner.
-
-This is faster than the two-pass approach because it:
-1. Gets IV for each stock in a single pass
-2. Uses adaptive threshold (scans stocks in top percentile of IVs seen)
-3. Immediately scans for FF opportunities when IV qualifies
+Run S&P MidCap 400 scan and save for web display
 """
 import json
-import sys
 from datetime import datetime
+from batch_scan import batch_scan
 from midcap400 import get_midcap400_list
-from adaptive_scanner import adaptive_batch_scan
+from scanner_ib import IBScanner, rank_tickers_by_iv
 import pandas as pd
 
-
-def run_midcap400_scan(ff_threshold=0.2, min_iv_threshold=35.0, adaptive_percentile=0.20):
-    """Run adaptive scan on S&P MidCap 400 stocks.
+def run_midcap400_scan(threshold=0.2, rank_by_iv=True, top_n_iv=100):
+    """Run scan on S&P MidCap 400 stocks and save formatted results.
     
     Args:
-        ff_threshold: FF threshold for opportunities (default 0.2)
-        min_iv_threshold: Minimum IV to consider (default 35% - higher than NASDAQ due to less liquidity)
-        adaptive_percentile: Scan stocks in top X percentile (default 0.20 = top 20%)
+        threshold: FF threshold (default 0.2)
+        rank_by_iv: Pre-rank by near-term IV (default True)
+        top_n_iv: If ranking, scan top N tickers (default 100, None = scan all)
     """
     
     scan_log = []
     
-    def log(msg):
-        print(msg, flush=True)
-        scan_log.append(msg)
-    
-    log("=" * 80)
-    log("S&P MIDCAP 400 FORWARD VOLATILITY SCANNER (Adaptive Single-Pass)")
-    log("=" * 80)
-    log("")
+    scan_log.append("=" * 80)
+    scan_log.append("S&P MIDCAP 400 FORWARD VOLATILITY SCANNER")
+    scan_log.append("=" * 80)
+    scan_log.append("")
     
     tickers = get_midcap400_list()
-    log(f"Scanning: {len(tickers)} S&P MidCap 400 stocks")
-    log(f"FF Threshold: {ff_threshold}")
-    log(f"Min IV Threshold: {min_iv_threshold}%")
-    log(f"Strategy: Adaptive - scan top {adaptive_percentile * 100:.0f}% by IV as we go")
-    log("")
+    scan_log.append(f"Scanning: {len(tickers)} S&P MidCap 400 stocks")
+    scan_log.append(f"Threshold: {threshold}")
     
-    # Run adaptive single-pass scan
-    df, iv_rankings = adaptive_batch_scan(
-        tickers,
-        min_iv_threshold=min_iv_threshold,
-        adaptive_percentile=adaptive_percentile,
-        ff_threshold=ff_threshold,
-        port=7497
-    )
+    if rank_by_iv and top_n_iv:
+        scan_log.append(f"Strategy: Scan top {top_n_iv} by near-term IV")
+    elif rank_by_iv:
+        scan_log.append("Strategy: Scan all, ranked by near-term IV")
+    else:
+        scan_log.append("Strategy: Scan all stocks")
+    
+    scan_log.append("")
+    
+    # Print to console
+    for line in scan_log:
+        print(line)
+    
+    # Get IV rankings first (for IV Rankings page)
+    iv_rankings_data = None
+    if rank_by_iv:
+        print("Ranking all tickers by near-term IV...")
+        scanner = IBScanner(check_earnings=False)
+        scanner.connect()
+        try:
+            ranked = rank_tickers_by_iv(scanner, tickers, top_n=None)  # Rank all to find best opportunities
+            iv_rankings_data = []
+            for ticker, iv, price in ranked:
+                # Get 200-day MA
+                ma_200 = scanner.get_200day_ma(ticker)
+                above_ma_200 = price > ma_200 if ma_200 else None
+                
+                iv_rankings_data.append({
+                    'ticker': ticker,
+                    'price': float(price) if price else None,
+                    'iv': float(iv) if iv else None,
+                    'ma_200': float(ma_200) if pd.notna(ma_200) else None,
+                    'above_ma_200': bool(above_ma_200) if pd.notna(above_ma_200) else None,
+                    'universe': 'S&P MidCap 400'
+                })
+            print(f"Ranked {len(iv_rankings_data)} tickers by IV")
+            print()
+        finally:
+            scanner.disconnect()
+    
+    # Run the batch scan
+    df = batch_scan(tickers, threshold=threshold, rank_by_iv=rank_by_iv, top_n_iv=top_n_iv)
     
     if df is None or df.empty:
         result = {
             'timestamp': datetime.now().isoformat(),
             'date': datetime.now().strftime('%Y-%m-%d'),
-            'scan_type': 'adaptive',
             'scan_log': scan_log,
             'opportunities': [],
             'summary': {
                 'total_opportunities': 0,
                 'tickers_scanned': len(tickers),
-                'tickers_with_iv': len(iv_rankings) if iv_rankings else 0,
                 'best_ff': 0,
                 'avg_ff': 0
             }
@@ -100,9 +119,13 @@ def run_midcap400_scan(ff_threshold=0.2, min_iv_threshold=35.0, adaptive_percent
             # Calculate trade details
             stock_price = opp['price']
             
+            # Use the actual ATM strike from the scan if available, otherwise calculate
             if pd.notna(row.get('strike1')) and pd.notna(row.get('strike2')):
+                # Use the strike from the front expiry (they should be the same or very close)
                 strike = float(row['strike1'])
             else:
+                # Fallback: Use appropriate strike interval based on stock price
+                # IB uses: $0.50 for stocks <$25, $1 for $25-$200, $5 for $200-$500, $10 for >$500
                 if stock_price < 25:
                     strike_interval = 0.5
                 elif stock_price < 200:
@@ -111,23 +134,26 @@ def run_midcap400_scan(ff_threshold=0.2, min_iv_threshold=35.0, adaptive_percent
                     strike_interval = 5.0
                 else:
                     strike_interval = 10.0
+                
                 strike = round(stock_price / strike_interval) * strike_interval
             
             ff_call = opp['ff_call'] if opp['ff_call'] is not None else 0
             ff_put = opp['ff_put'] if opp['ff_put'] is not None else 0
-            above_ma_200 = opp.get('above_ma_200', True)
+            above_ma_200 = opp.get('above_ma_200', True)  # Default to True if not available
             
+            # If FF values are close (within 5%), prefer the side that aligns with trend
             ff_diff = abs(ff_call - ff_put)
             max_ff = max(ff_call, ff_put)
             
             if max_ff > 0 and ff_diff / max_ff < 0.05:
+                # FF values are similar - use trend to decide
                 if above_ma_200:
-                    spread_type = "CALL"
+                    spread_type = "CALL"  # Bullish trend -> CALL spread
                     front_iv = opp['call_iv1'] / 100 if opp['call_iv1'] else opp['avg_iv1'] / 100
                     back_iv = opp['call_iv2'] / 100 if opp['call_iv2'] else opp['avg_iv2'] / 100
                     ff_display = ff_call
                 else:
-                    spread_type = "PUT"
+                    spread_type = "PUT"  # Bearish trend -> PUT spread
                     front_iv = opp['put_iv1'] / 100 if opp['put_iv1'] else opp['avg_iv1'] / 100
                     back_iv = opp['put_iv2'] / 100 if opp['put_iv2'] else opp['avg_iv2'] / 100
                     ff_display = ff_put
@@ -145,8 +171,24 @@ def run_midcap400_scan(ff_threshold=0.2, min_iv_threshold=35.0, adaptive_percent
             front_dte = opp['dte1']
             back_dte = opp['dte2']
             
-            front_price = 0.4 * stock_price * front_iv * (front_dte / 365) ** 0.5
-            back_price = 0.4 * stock_price * back_iv * (back_dte / 365) ** 0.5
+            # Use actual midpoint prices if available, otherwise estimate
+            if spread_type == "CALL":
+                front_mid = opp.get('call1_mid')
+                back_mid = opp.get('call2_mid')
+            else:
+                front_mid = opp.get('put1_mid')
+                back_mid = opp.get('put2_mid')
+            
+            if front_mid and back_mid:
+                # Use actual market midpoint prices
+                front_price = front_mid
+                back_price = back_mid
+                price_source = "market midpoint"
+            else:
+                # Estimate using simplified ATM formula
+                front_price = 0.4 * stock_price * front_iv * (front_dte / 365) ** 0.5
+                back_price = 0.4 * stock_price * back_iv * (back_dte / 365) ** 0.5
+                price_source = "estimated"
             
             net_debit = back_price - front_price
             net_debit_total = net_debit * 100
@@ -166,7 +208,7 @@ def run_midcap400_scan(ff_threshold=0.2, min_iv_threshold=35.0, adaptive_percent
                 'back_price': back_price,
                 'net_debit': net_debit,
                 'net_debit_total': net_debit_total,
-                'price_source': 'estimated',
+                'price_source': price_source,
                 'best_case': best_case * 100,
                 'typical_case': typical_case * 100,
                 'adverse_case': adverse_case * 100,
@@ -179,59 +221,71 @@ def run_midcap400_scan(ff_threshold=0.2, min_iv_threshold=35.0, adaptive_percent
             
             opportunities.append(opp)
         
-        opportunities.sort(key=lambda x: x['best_ff'], reverse=True)
-        
         result = {
             'timestamp': datetime.now().isoformat(),
             'date': datetime.now().strftime('%Y-%m-%d'),
-            'scan_type': 'adaptive',
             'scan_log': scan_log,
             'opportunities': opportunities,
             'summary': {
                 'total_opportunities': len(opportunities),
                 'tickers_scanned': len(tickers),
-                'tickers_with_iv': len(iv_rankings) if iv_rankings else 0,
                 'best_ff': float(df['best_ff'].max()),
                 'avg_ff': float(df['best_ff'].mean())
             }
         }
     
-    # Save to JSON
-    output_file = 'midcap400_results_latest.json'
-    with open(output_file, 'w') as f:
+    # Save timestamped file
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f"midcap400_results_{timestamp}.json"
+    
+    with open(filename, 'w') as f:
         json.dump(result, f, indent=2)
     
-    log("")
-    log(f"[OK] Results saved to {output_file}")
-    log(f"[INFO] Total opportunities: {result['summary']['total_opportunities']}")
+    print(f"\n[OK] Results saved to: {filename}")
     
-    # Save IV rankings
-    if iv_rankings:
-        for r in iv_rankings:
-            r['universe'] = 'S&P MidCap 400'
-        
+    # Save latest file
+    with open("midcap400_results_latest.json", 'w') as f:
+        json.dump(result, f, indent=2)
+    
+    print(f"[OK] Latest results saved to: midcap400_results_latest.json")
+    
+    # Save IV rankings separately for IV Rankings page
+    if iv_rankings_data:
         iv_rankings_file = 'midcap400_iv_rankings_latest.json'
         iv_rankings_result = {
             'timestamp': datetime.now().isoformat(),
             'date': datetime.now().strftime('%Y-%m-%d'),
             'universe': 'S&P MidCap 400',
-            'total_tickers': len(iv_rankings),
-            'rankings': iv_rankings
+            'total_tickers': len(iv_rankings_data),
+            'rankings': iv_rankings_data
         }
         with open(iv_rankings_file, 'w') as f:
             json.dump(iv_rankings_result, f, indent=2)
-        log(f"[OK] IV Rankings saved to {iv_rankings_file}")
+        print(f"[OK] IV Rankings saved to {iv_rankings_file}")
+    
+    print()
+    print("=" * 80)
+    print("SUMMARY")
+    print("=" * 80)
+    print(f"Opportunities found: {result['summary']['total_opportunities']}")
+    if result['summary']['total_opportunities'] > 0:
+        print(f"Best FF: {result['summary']['best_ff']:.3f}")
+        print(f"Average FF: {result['summary']['avg_ff']:.3f}")
+    print("=" * 80)
     
     return result
 
 
 if __name__ == "__main__":
-    threshold = float(sys.argv[1]) if len(sys.argv) > 1 else 0.2
+    import sys
+    # Configuration
+    threshold = 0.15  # 15% forward factor threshold (lower than NASDAQ due to lower IVs)
+    rank_by_iv = True  # Pre-rank by IV
+    top_n_iv = 100  # Scan top 100 by IV (from 594 total)
+    
     try:
-        run_midcap400_scan(ff_threshold=threshold)
-        sys.exit(0)
+        run_midcap400_scan(threshold=threshold, rank_by_iv=rank_by_iv, top_n_iv=top_n_iv)
+        sys.exit(0)  # Explicit success exit code
     except Exception as e:
         print(f"[ERROR] Scan failed: {e}")
-        import traceback
-        traceback.print_exc()
         sys.exit(1)
