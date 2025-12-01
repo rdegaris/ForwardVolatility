@@ -98,6 +98,7 @@ def print_info(message):
 def run_command(command, description):
     """
     Run a shell command and return success status.
+    Streams output in real-time for visibility.
     
     Args:
         command: Command to run (string or list)
@@ -107,41 +108,42 @@ def run_command(command, description):
         True if successful, False otherwise
     """
     print_info(f"Running: {description}")
+    sys.stdout.flush()
     
     try:
+        # Use Popen to stream output in real-time
         if isinstance(command, str):
-            result = subprocess.run(
+            process = subprocess.Popen(
                 command, 
                 shell=True, 
-                text=True, 
-                bufsize=0,
-                capture_output=True  # Capture output to log errors
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,  # Combine stderr into stdout
+                bufsize=1,  # Line buffered
             )
         else:
-            result = subprocess.run(
+            process = subprocess.Popen(
                 command, 
-                text=True, 
-                bufsize=0,
-                capture_output=True  # Capture output to log errors
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,  # Combine stderr into stdout
+                bufsize=1,  # Line buffered
             )
         
-        # Always print stdout if there is any
-        if result.stdout:
-            print(result.stdout)
+        # Stream output line by line in real-time
+        output_lines = []
+        for line in process.stdout:
+            print(line, end='', flush=True)  # Print immediately
+            output_lines.append(line)
         
-        if result.returncode == 0:
+        # Wait for process to complete
+        return_code = process.wait()
+        
+        if return_code == 0:
             print_success(f"Completed: {description}")
             return True
         else:
-            print_error(f"Failed: {description} (exit code: {result.returncode})")
-            # Print stderr to help debug
-            if result.stderr:
-                print(f"{Colors.RED}STDERR:{Colors.END}")
-                print(result.stderr)
-            # Also print stdout in case error details are there
-            if result.stdout and "error" in result.stdout.lower():
-                print(f"{Colors.YELLOW}STDOUT (contains error):{Colors.END}")
-                print(result.stdout[-2000:] if len(result.stdout) > 2000 else result.stdout)
+            print_error(f"Failed: {description} (exit code: {return_code})")
             return False
     
     except KeyboardInterrupt:
