@@ -129,7 +129,7 @@ def run_mag7_scan(threshold=0.2):
     # Get IV rankings first (for IV Rankings page)
     iv_rankings_data = None
     print("Ranking all tickers by near-term IV...")
-    scanner = IBScanner(port=7497, check_earnings=False)
+    scanner = IBScanner(port=7498, check_earnings=False)
     if scanner.connect():
         try:
             ranked = rank_tickers_by_iv(scanner, tickers, top_n=None)  # Rank all
@@ -161,11 +161,11 @@ def run_mag7_scan(threshold=0.2):
             scanner.disconnect()
     
     # Now run the actual scan
-    scanner = IBScanner(port=7497, check_earnings=True)
+    scanner = IBScanner(port=7498, check_earnings=True)
     
     if not scanner.connect():
         print("Could not connect to Interactive Brokers")
-        print("Make sure TWS or IB Gateway is running on port 7497")
+        print("Make sure TWS or IB Gateway is running on port 7498")
         return None
     
     # Pre-fetch earnings dates for all tickers from IB

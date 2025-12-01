@@ -20,11 +20,11 @@ def batch_scan(tickers, threshold=0.2, rank_by_iv=True, top_n_iv=None):
         DataFrame with opportunities, or None if no opportunities found
     """
     
-    scanner = IBScanner(port=7497, check_earnings=True)
+    scanner = IBScanner(port=7498, check_earnings=True)
     
     if not scanner.connect():
         print("Could not connect to Interactive Brokers")
-        print("Make sure TWS or IB Gateway is running on port 7497")
+        print("Make sure TWS or IB Gateway is running on port 7498")
         return None
     
     try:

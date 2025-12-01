@@ -319,7 +319,7 @@ def main():
     
     # Configuration
     HOST = '127.0.0.1'
-    PORT = 7497  # 7497 for TWS paper, 7496 for TWS live, 4002 for Gateway paper, 4001 for Gateway live
+    PORT = 7498  # 7498 for TWS paper, 7496 for TWS live, 4002 for Gateway paper, 4001 for Gateway live
     CLIENT_ID = 1
     
     ib = None

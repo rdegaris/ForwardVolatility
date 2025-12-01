@@ -45,11 +45,11 @@ def scan_iv_rankings(universe='all', top_n=None):
         print(f"Returning top: {top_n}")
     print()
     
-    scanner = IBScanner(port=7497, check_earnings=False)
+    scanner = IBScanner(port=7498, check_earnings=False)
     
     if not scanner.connect():
         print("❌ Could not connect to Interactive Brokers")
-        print("Make sure TWS or IB Gateway is running on port 7497")
+        print("Make sure TWS or IB Gateway is running on port 7498")
         return None
     
     try:

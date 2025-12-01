@@ -221,7 +221,7 @@ def adaptive_batch_scan(tickers: List[str],
                         min_iv_threshold: float = 30.0,
                         adaptive_percentile: float = 0.20,
                         ff_threshold: float = 0.2,
-                        port: int = 7497) -> Tuple[pd.DataFrame, List[Dict]]:
+                        port: int = 7498) -> Tuple[pd.DataFrame, List[Dict]]:
     """
     Run adaptive single-pass scan on a list of tickers.
     
@@ -230,7 +230,7 @@ def adaptive_batch_scan(tickers: List[str],
         min_iv_threshold: Minimum IV to consider (default 30%)
         adaptive_percentile: Scan stocks in top X percentile (default 0.20)
         ff_threshold: FF threshold for opportunities (default 0.2)
-        port: IB port (default 7497)
+        port: IB port (default 7498)
     
     Returns:
         Tuple of (opportunities DataFrame, IV rankings list)

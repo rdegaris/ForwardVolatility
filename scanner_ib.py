@@ -113,13 +113,13 @@ def print_bordered_table(df):
 class IBScanner:
     """Interactive Brokers Forward Volatility Scanner."""
     
-    def __init__(self, host='127.0.0.1', port=7497, client_id=1, check_earnings=True):
+    def __init__(self, host='127.0.0.1', port=7498, client_id=1, check_earnings=True):
         """
         Initialize IB connection.
         
         Args:
             host: IB Gateway/TWS host (default: localhost)
-            port: 7497 for TWS paper, 7496 for TWS live, 4002 for Gateway paper, 4001 for Gateway live
+            port: 7498 for TWS paper, 7496 for TWS live, 4002 for Gateway paper, 4001 for Gateway live
             client_id: Unique client ID
             check_earnings: Filter out tickers with earnings in trading window (default: True)
         """
