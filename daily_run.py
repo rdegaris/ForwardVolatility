@@ -33,13 +33,16 @@ def get_venv_python():
     even if the script was launched with the venv Python. This function explicitly
     looks for the venv Python in the script's directory.
     """
-    script_dir = Path(__file__).parent
+    script_dir = Path(__file__).parent.resolve()  # Use resolve() for absolute path
     venv_python = script_dir / '.venv' / 'Scripts' / 'python.exe'
     
     if venv_python.exists():
-        return str(venv_python)
+        result = str(venv_python)
+        print(f"[DEBUG] Using venv Python: {result}")
+        return result
     
     # Fallback to sys.executable if venv not found
+    print(f"[DEBUG] Venv not found at {venv_python}, using sys.executable: {sys.executable}")
     return sys.executable
 
 
