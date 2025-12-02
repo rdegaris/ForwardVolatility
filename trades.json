@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "id": "AEO-CAL-20251202",
+    "ticker": "AEO",
+    "strategy": "Calendar Spread",
+    "direction": "CALL",
+    "strike": 21,
+    "front_expiry": "2025-12-19",
+    "back_expiry": "2025-12-26",
+    "entry_date": "2025-12-02",
+    "entry_price": 0.10,
+    "quantity": 1,
+    "status": "open",
+    "notes": "MidCap 400 - Dec 19/26 calendar, 16/23 DTE"
+  }
+]
