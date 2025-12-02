@@ -284,6 +284,7 @@ def export_to_json(calendar_spreads, filename='trades.json'):
             'underlyingCurrentPrice': round(spread['underlying']['currentPrice'], 2),
             'entryDate': date.today().strftime('%Y-%m-%d'),
             'unrealizedPnL': round(total_unrealized_pnl, 2),
+            'status': 'open',
         }
         
         trades.append(trade)
