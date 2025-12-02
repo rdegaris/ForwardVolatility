@@ -1,16 +1,21 @@
 [
   {
-    "id": "AEO-CAL-20251202",
-    "ticker": "AEO",
-    "strategy": "Calendar Spread",
-    "direction": "CALL",
-    "strike": 21,
-    "front_expiry": "2025-12-19",
-    "back_expiry": "2025-12-26",
-    "entry_date": "2025-12-02",
-    "entry_price": 0.10,
-    "quantity": 1,
-    "status": "open",
-    "notes": "MidCap 400 - Dec 19/26 calendar, 16/23 DTE"
+    "id": "ib_1764706236_0",
+    "symbol": "AEO",
+    "strike": 21.0,
+    "callOrPut": "CALL",
+    "quantity": 10,
+    "frontExpiration": "2025-12-19",
+    "frontEntryPrice": 0.16,
+    "frontCurrentPrice": 1.7,
+    "frontUnrealizedPnL": -1540.67,
+    "backExpiration": "2025-12-26",
+    "backEntryPrice": 0.17,
+    "backCurrentPrice": 1.7,
+    "backUnrealizedPnL": 1528.33,
+    "underlyingEntryPrice": 20.84,
+    "underlyingCurrentPrice": 20.84,
+    "entryDate": "2025-12-02",
+    "unrealizedPnL": 3069.0
   }
 ]
