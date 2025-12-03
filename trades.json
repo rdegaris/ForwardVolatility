@@ -1,22 +1,22 @@
 [
   {
-    "id": "ib_1764779682_0",
+    "id": "ib_1764780645_0",
     "symbol": "AEO",
     "strike": 21.0,
     "callOrPut": "CALL",
     "quantity": 10,
     "frontExpiration": "2025-12-19",
-    "frontEntryPrice": 0.16,
-    "frontCurrentPrice": 3.09,
-    "frontUnrealizedPnL": -2930.67,
+    "frontEntryPrice": 1.59,
+    "frontCurrentPrice": 3.4,
+    "frontUnrealizedPnL": -1806.69,
     "backExpiration": "2025-12-26",
-    "backEntryPrice": 0.17,
-    "backCurrentPrice": 3.25,
-    "backUnrealizedPnL": 3078.33,
-    "underlyingEntryPrice": 24.0,
-    "underlyingCurrentPrice": 24.0,
+    "backEntryPrice": 1.72,
+    "backCurrentPrice": 3.5,
+    "backUnrealizedPnL": 1783.33,
+    "underlyingEntryPrice": 24.19,
+    "underlyingCurrentPrice": 24.19,
     "entryDate": "2025-12-03",
-    "unrealizedPnL": 6009.0,
+    "unrealizedPnL": 3590.03,
     "status": "open"
   }
 ]
