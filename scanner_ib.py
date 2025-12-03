@@ -182,13 +182,19 @@ class IBScanner:
             price = ticker_data.marketPrice()
             if price and price > 0:
                 self.price_cache[ticker] = price
+                # Cancel market data subscription to free up data lines
+                self.ib.cancelMktData(stock)
                 return price
             
             # Try last price if market price not available
             if ticker_data.last and ticker_data.last > 0:
                 self.price_cache[ticker] = ticker_data.last
+                # Cancel market data subscription to free up data lines
+                self.ib.cancelMktData(stock)
                 return ticker_data.last
             
+            # Cancel even if we didn't get a price
+            self.ib.cancelMktData(stock)
             return None
         except Exception as e:
             print(f"  Error getting price: {e}")
