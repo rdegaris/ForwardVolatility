@@ -7,6 +7,7 @@ from datetime import datetime
 from scanner_ib import IBScanner, rank_tickers_by_iv
 from nasdaq100 import get_nasdaq_100_list
 from midcap400 import get_midcap400_list, get_mag7
+from earnings_checker import EarningsChecker
 import time
 
 def scan_iv_rankings(universe='all', top_n=None):
@@ -67,6 +68,10 @@ def scan_iv_rankings(universe='all', top_n=None):
         print(f"Successfully ranked: {len(ranked)} tickers")
         print()
         
+        # Initialize earnings checker to get next earnings dates
+        print("Fetching earnings dates...")
+        earnings_checker = EarningsChecker()
+        
         # Format results
         results = []
         for item in ranked:
@@ -74,6 +79,15 @@ def scan_iv_rankings(universe='all', top_n=None):
             ticker_universe = 'MAG7' if item['ticker'] in get_mag7() else \
                             'NASDAQ100' if item['ticker'] in get_nasdaq_100_list() else \
                             'MIDCAP400'
+            
+            # Get next earnings date
+            next_earnings = None
+            try:
+                earnings_date = earnings_checker.get_earnings_date(item['ticker'])
+                if earnings_date:
+                    next_earnings = earnings_date.strftime('%Y-%m-%d')
+            except Exception as e:
+                pass  # Ignore earnings lookup errors
             
             result = {
                 'ticker': item['ticker'],
@@ -83,7 +97,8 @@ def scan_iv_rankings(universe='all', top_n=None):
                 'dte': item['dte'],
                 'ma_200': item.get('ma_200'),
                 'above_ma_200': item.get('above_ma_200'),
-                'universe': ticker_universe
+                'universe': ticker_universe,
+                'next_earnings': next_earnings
             }
             results.append(result)
         
@@ -123,12 +138,13 @@ def scan_iv_rankings(universe='all', top_n=None):
         print("=" * 80)
         print("TOP 20 BY IMPLIED VOLATILITY")
         print("=" * 80)
-        print(f"{'Rank':<6} {'Ticker':<8} {'Price':<10} {'IV':<10} {'Universe':<12} {'Trend':<8}")
+        print(f"{'Rank':<6} {'Ticker':<8} {'Price':<10} {'IV':<10} {'Earnings':<12} {'Trend':<8}")
         print("-" * 80)
         
         for i, r in enumerate(results[:20], 1):
             trend = "↑ ABOVE" if r.get('above_ma_200') else "↓ BELOW" if r.get('above_ma_200') is not None else "-"
-            print(f"{i:<6} {r['ticker']:<8} ${r['price']:<9.2f} {r['iv']:<9.1f}% {r['universe']:<12} {trend:<8}")
+            earnings = r.get('next_earnings', '-') or '-'
+            print(f"{i:<6} {r['ticker']:<8} ${r['price']:<9.2f} {r['iv']:<9.1f}% {earnings:<12} {trend:<8}")
         
         print("=" * 80)
         
