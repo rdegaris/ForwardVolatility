@@ -16,27 +16,41 @@ python daily_run.py
 REM Ignore exit code from daily_run.py (IB disconnect can cause seg fault)
 REM The scans and file copies have already completed by then
 
-REM Copy any additional files that might have been missed
+REM ALWAYS copy files to web folder (even if scans had errors)
 echo.
-echo Ensuring all results are copied to web...
-copy /Y *_results_latest.json "..\forward-volatility-web\public\data\" 2>nul
-copy /Y *_iv_rankings_latest.json "..\forward-volatility-web\public\data\" 2>nul
-copy /Y trades.json "..\forward-volatility-web\public\data\" 2>nul
+echo ========================================
+echo  Copying results to web folder...
+echo ========================================
 
-REM Copy earnings crush from EarningsCrush folder
+REM Copy scan results from calculator folder
+copy /Y nasdaq100_results_latest.json "..\forward-volatility-web\public\data\" 2>nul && echo   Copied nasdaq100_results_latest.json
+copy /Y midcap400_results_latest.json "..\forward-volatility-web\public\data\" 2>nul && echo   Copied midcap400_results_latest.json
+copy /Y nasdaq100_iv_rankings_latest.json "..\forward-volatility-web\public\data\" 2>nul && echo   Copied nasdaq100_iv_rankings_latest.json
+copy /Y midcap400_iv_rankings_latest.json "..\forward-volatility-web\public\data\" 2>nul && echo   Copied midcap400_iv_rankings_latest.json
+copy /Y trades.json "..\forward-volatility-web\public\data\" 2>nul && echo   Copied trades.json
+
+REM Copy earnings crush from EarningsCrush folder (NOT from calculator folder)
 if exist "..\..\EarningsCrush\earnings-crush-calculator\earnings_crush_latest.json" (
     copy /Y "..\..\EarningsCrush\earnings-crush-calculator\earnings_crush_latest.json" "..\forward-volatility-web\public\data\" 2>nul
     copy /Y "..\..\EarningsCrush\earnings-crush-calculator\earnings_crush_latest.json" "..\forward-volatility-web\public\" 2>nul
-    echo Copied earnings_crush_latest.json
+    echo   Copied earnings_crush_latest.json
 )
 
-REM Commit and push to deploy
+REM ALWAYS commit and push to deploy (even if some scans failed)
 echo.
-echo Committing to Git...
+echo ========================================
+echo  Committing and pushing to Git...
+echo ========================================
 cd ..\forward-volatility-web
 git add -A
-git commit -m "Daily scan update - %date%"
-git push
+git diff --cached --quiet
+if errorlevel 1 (
+    git commit -m "Daily scan update - %date%"
+    git push
+    echo   Pushed to GitHub - Vercel will deploy
+) else (
+    echo   No changes to commit
+)
 
 REM Return to calculator directory
 cd ..\forward-volatility-calculator
