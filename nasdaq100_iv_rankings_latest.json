@@ -1,237 +1,229 @@
 {
-  "timestamp": "2025-12-02T07:52:21.002596",
-  "date": "2025-12-02",
+  "timestamp": "2025-12-03T07:47:15.158789",
+  "date": "2025-12-03",
   "universe": "NASDAQ 100",
-  "total_tickers": 90,
+  "total_tickers": 88,
   "rankings": [
     {
-      "ticker": "MRVL",
-      "price": 93.29,
-      "iv": 101.67831703864805,
-      "ma_200": 74.05045000000001,
-      "above_ma_200": true,
-      "universe": "NASDAQ 100"
-    },
-    {
       "ticker": "LULU",
-      "price": 182.94,
-      "iv": 94.43255401020107,
-      "ma_200": 238.24315000000024,
+      "price": 181.22,
+      "iv": 97.46081318004818,
+      "ma_200": 237.28435000000025,
       "above_ma_200": false,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "LCID",
-      "price": 12.94,
-      "iv": 82.87385290848694,
-      "ma_200": 22.1767,
+      "price": 12.885,
+      "iv": 83.10142061173711,
+      "ma_200": 22.066825000000005,
       "above_ma_200": false,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "INTC",
-      "price": 43.2,
-      "iv": 66.65558173405138,
-      "ma_200": 25.9398,
+      "ticker": "RIVN",
+      "price": 17.29,
+      "iv": 80.97219268536203,
+      "ma_200": 13.444199999999999,
       "above_ma_200": true,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "SNPS",
+      "price": 455.64,
+      "iv": 71.09497688167816,
+      "ma_200": 488.5034499999998,
+      "above_ma_200": false,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "AVGO",
-      "price": 387.45,
-      "iv": 66.46764131613146,
-      "ma_200": 272.92069999999995,
+      "price": 376.89,
+      "iv": 69.23230939121326,
+      "ma_200": 273.6312,
       "above_ma_200": true,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "DLTR",
-      "price": 108.99,
-      "iv": 65.63847558799324,
-      "ma_200": 93.38835,
-      "above_ma_200": true,
+      "ticker": "ADBE",
+      "price": 322.52,
+      "iv": 68.16816226946315,
+      "ma_200": 370.7754500000002,
+      "above_ma_200": false,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "CRM",
-      "price": 235.69,
-      "iv": 64.48090794012214,
-      "ma_200": 260.58765,
+      "price": 234.81,
+      "iv": 64.82470387031802,
+      "ma_200": 260.1123,
       "above_ma_200": false,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "SMCI",
-      "price": 33.9,
-      "iv": 64.45369359578024,
-      "ma_200": 43.60354999999998,
+      "price": 33.08,
+      "iv": 64.65465535792984,
+      "ma_200": 43.48504999999997,
       "above_ma_200": false,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "ADBE",
-      "price": 321.39,
-      "iv": 63.20260667079766,
-      "ma_200": 371.47675000000027,
-      "above_ma_200": false,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "CRWD",
-      "price": 510.21,
-      "iv": 62.94184869092202,
-      "ma_200": 449.5781999999999,
-      "above_ma_200": true,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "AMD",
-      "price": 223.015,
-      "iv": 55.44930959343874,
-      "ma_200": 151.60170000000002,
-      "above_ma_200": true,
+      "ticker": "INTC",
+      "price": 43.54,
+      "iv": 62.15202418916914,
+      "ma_200": null,
+      "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "MRNA",
-      "price": 24.46,
-      "iv": 54.83829148214123,
-      "ma_200": 27.791949999999996,
+      "price": 24.51,
+      "iv": 60.64557314237332,
+      "ma_200": 27.733850000000007,
       "above_ma_200": false,
       "universe": "NASDAQ 100"
     },
     {
+      "ticker": "AMD",
+      "price": 217.05,
+      "iv": 54.23414660348157,
+      "ma_200": 152.07635000000002,
+      "above_ma_200": true,
+      "universe": "NASDAQ 100"
+    },
+    {
       "ticker": "PLTR",
-      "price": 173.17,
-      "iv": 50.97862215983021,
-      "ma_200": 141.11960000000002,
+      "price": 172.8,
+      "iv": 50.37706507106788,
+      "ma_200": 141.34790000000004,
       "above_ma_200": true,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "ON",
-      "price": 50.22,
-      "iv": 50.71036763654158,
-      "ma_200": 48.153900000000014,
+      "ticker": "CEG",
+      "price": 361.77,
+      "iv": 49.168604154839876,
+      "ma_200": 301.26385000000005,
       "above_ma_200": true,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "WBD",
-      "price": 24.15,
-      "iv": 49.84295386622774,
-      "ma_200": 13.522549999999994,
-      "above_ma_200": true,
+      "ticker": "ARM",
+      "price": 137.58,
+      "iv": 48.398230115748994,
+      "ma_200": 137.91174999999993,
+      "above_ma_200": false,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "MDB",
-      "price": 411.1,
-      "iv": 48.54697273166358,
-      "ma_200": 247.2315,
-      "above_ma_200": true,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "MCHP",
-      "price": 54.5,
-      "iv": 48.504221313361015,
+      "ticker": "TEAM",
+      "price": 153.73,
+      "iv": 48.37669120033718,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "GFS",
-      "price": 36.78,
-      "iv": 48.42489911889769,
-      "ma_200": 36.19870000000003,
+      "price": 37.4,
+      "iv": 48.12382214884427,
+      "ma_200": 36.157450000000026,
       "above_ma_200": true,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "TEAM",
-      "price": 155.72,
-      "iv": 48.31776950182907,
+      "ticker": "CHTR",
+      "price": 197.25,
+      "iv": 48.01628749059729,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "CEG",
-      "price": 361.41,
-      "iv": 48.25941429267703,
-      "ma_200": 301.0718500000001,
-      "above_ma_200": true,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "ARM",
-      "price": 138.25,
-      "iv": 47.71754035457455,
+      "ticker": "MCHP",
+      "price": 61.82,
+      "iv": 47.80168528879791,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "KLAC",
-      "price": 1182.68,
-      "iv": 43.559429789448004,
+      "ticker": "ON",
+      "price": 54.7,
+      "iv": 46.6380042678532,
+      "ma_200": 48.17395000000001,
+      "above_ma_200": true,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "DASH",
+      "price": 220.53,
+      "iv": 45.52020216942071,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "WBD",
+      "price": 24.3,
+      "iv": 44.734862189348405,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "CRWD",
+      "price": 505.33,
+      "iv": 41.603792936209324,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "MDB",
+      "price": 404.45,
+      "iv": 41.22354236969517,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "DLTR",
+      "price": 111.03,
+      "iv": 40.93825021863714,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "DDOG",
-      "price": 158.33499999999998,
-      "iv": 42.63387158933165,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "ODFL",
-      "price": 141.42,
-      "iv": 41.29604010354466,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "DASH",
-      "price": 205.79,
-      "iv": 40.9582240047227,
+      "price": 153.96,
+      "iv": 40.16087175902911,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "ZS",
-      "price": 243.0,
-      "iv": 39.37029293499128,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "NXPI",
-      "price": 207.72,
-      "iv": 39.16812280967845,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "ALGN",
-      "price": 147.82,
-      "iv": 38.08850374151956,
+      "price": 239.05,
+      "iv": 39.66619502135954,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "AMAT",
-      "price": 260.52,
-      "iv": 37.56333780420939,
+      "price": 262.98,
+      "iv": 39.1647069920357,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "CDW",
+      "price": 142.62,
+      "iv": 37.98473266852514,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
@@ -239,479 +231,471 @@
     {
       "ticker": "DXCM",
       "price": 64.53,
-      "iv": 37.4436887882458,
+      "iv": 37.81579544851268,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "CDNS",
-      "price": 315.72,
-      "iv": 37.01430252247909,
+      "ticker": "NXPI",
+      "price": 224.59,
+      "iv": 37.799271263279024,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "ASML",
-      "price": 1105.8899999999999,
-      "iv": 36.72875216941798,
+      "ticker": "ODFL",
+      "price": 146.77,
+      "iv": 37.60729948875044,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "NTES",
-      "price": 141.99,
-      "iv": 36.62977248251771,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "CDW",
-      "price": 143.12,
-      "iv": 35.71158778436377,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "ILMN",
-      "price": 128.38,
-      "iv": 35.62594650487498,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "CSGP",
-      "price": 67.75,
-      "iv": 35.40911406842739,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "PYPL",
-      "price": 63.35,
-      "iv": 33.79254319906827,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "COST",
-      "price": 911.97,
-      "iv": 33.57329561382093,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "CMCSA",
-      "price": 26.52,
-      "iv": 33.08153215080124,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "GOOGL",
-      "price": 316.01,
-      "iv": 32.822476034520534,
-      "ma_200": 203.34474999999995,
-      "above_ma_200": true,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "GOOG",
-      "price": 316.13,
-      "iv": 32.316271534637934,
-      "ma_200": 204.48454999999998,
-      "above_ma_200": true,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "BIIB",
-      "price": 179.32,
-      "iv": 32.22490621345831,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "TXN",
-      "price": 169.43,
-      "iv": 31.919268037118808,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "PAYX",
-      "price": 110.61,
-      "iv": 31.77867368403386,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "ABNB",
-      "price": 118.27,
-      "iv": 31.697622015477812,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "BKR",
-      "price": 48.94,
-      "iv": 31.188090741780076,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "PANW",
-      "price": 190.27,
-      "iv": 30.485830852327283,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "REGN",
-      "price": 737.02,
-      "iv": 30.307165121930957,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "QCOM",
-      "price": 169.44,
-      "iv": 30.266491745171002,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "WDAY",
-      "price": 212.65,
-      "iv": 30.250659354862307,
+      "ticker": "ALGN",
+      "price": 152.93,
+      "iv": 37.3522037716179,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "NFLX",
-      "price": 108.42,
-      "iv": 29.72291828618985,
+      "price": 102.98,
+      "iv": 37.14100147446105,
+      "ma_200": 113.43225000000004,
+      "above_ma_200": false,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "PYPL",
+      "price": 61.04,
+      "iv": 37.057755899392866,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "PDD",
-      "price": 118.07,
-      "iv": 29.715008353132532,
+      "ticker": "ILMN",
+      "price": 128.2,
+      "iv": 36.7798791884925,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "IDXX",
-      "price": 737.83,
-      "iv": 29.57134701965498,
+      "ticker": "MELI",
+      "price": 2118.93,
+      "iv": 36.46646679052237,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "SBUX",
-      "price": 84.88,
-      "iv": 28.899325408962635,
+      "ticker": "NTES",
+      "price": 140.14,
+      "iv": 35.33354813315378,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "FTNT",
-      "price": 82.28,
-      "iv": 28.771941984089395,
+      "ticker": "CMCSA",
+      "price": 27.25,
+      "iv": 35.3023099079904,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "META",
-      "price": 642.37,
-      "iv": 28.413808411714044,
+      "ticker": "COST",
+      "price": 917.13,
+      "iv": 34.230734632466415,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "GEHC",
-      "price": 79.93,
-      "iv": 27.948648906302598,
+      "ticker": "TXN",
+      "price": 179.17,
+      "iv": 34.17068438380352,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "PAYX",
+      "price": 111.44,
+      "iv": 34.09831975521823,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "CSGP",
+      "price": 68.25,
+      "iv": 33.75304477224399,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "BIIB",
+      "price": 181.34,
+      "iv": 33.21031312891303,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "QCOM",
+      "price": 172.2,
+      "iv": 32.15129374067174,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "GOOGL",
+      "price": 317.74,
+      "iv": 32.12324361173117,
+      "ma_200": 204.01364999999996,
+      "above_ma_200": true,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "ABNB",
+      "price": 118.53,
+      "iv": 31.700359044941877,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "GOOG",
+      "price": 318.05,
+      "iv": 31.08361165685064,
+      "ma_200": 205.14524999999995,
+      "above_ma_200": true,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "WDAY",
+      "price": 210.99,
+      "iv": 30.869372810319547,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "BKR",
+      "price": 50.51,
+      "iv": 30.791125737219353,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "REGN",
+      "price": 734.86,
+      "iv": 30.25427642561572,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "PANW",
+      "price": 190.48,
+      "iv": 30.071543232531784,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "ZM",
-      "price": 86.24,
-      "iv": 27.817778923751835,
+      "price": 85.6,
+      "iv": 29.99879715835028,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "SBUX",
+      "price": 85.75999999999999,
+      "iv": 29.66128893365681,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "AMGN",
+      "price": 340.57,
+      "iv": 29.479716867891497,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "IDXX",
+      "price": 727.82,
+      "iv": 29.08104294414755,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "META",
+      "price": 643.61,
+      "iv": 28.822612170743138,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "PDD",
+      "price": 119.14,
+      "iv": 28.09036421440424,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "FTNT",
+      "price": 81.65,
+      "iv": 28.024801994210975,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "VRSK",
-      "price": 224.21,
-      "iv": 27.72467299882329,
+      "price": 225.35,
+      "iv": 27.85512481428748,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "TMUS",
-      "price": 207.53,
-      "iv": 26.96883953749663,
+      "ticker": "GEHC",
+      "price": 81.87,
+      "iv": 27.272503374797292,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "ADI",
-      "price": 268.67,
-      "iv": 26.89930493690665,
+      "price": 273.7,
+      "iv": 27.034154449100278,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "PCAR",
-      "price": 104.53,
-      "iv": 26.891221390415605,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "CCEP",
-      "price": 91.93,
-      "iv": 26.799657231017644,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "ADSK",
-      "price": 307.85,
-      "iv": 26.384880109450464,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "CPRT",
-      "price": 38.96,
-      "iv": 26.33029816355753,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "VRTX",
-      "price": 430.31,
-      "iv": 26.16059029783639,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "KDP",
-      "price": 27.82,
-      "iv": 26.03142821368771,
+      "ticker": "TMUS",
+      "price": 207.37,
+      "iv": 26.83644571451442,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "GILD",
-      "price": 124.39,
-      "iv": 25.95752065914003,
+      "price": 124.26,
+      "iv": 26.788137568609965,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "ISRG",
-      "price": 565.17,
-      "iv": 25.832733564675532,
+      "ticker": "ADSK",
+      "price": 306.53,
+      "iv": 26.71456509671879,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "CTSH",
-      "price": 76.92,
-      "iv": 25.82479902247139,
+      "ticker": "CPRT",
+      "price": 39.01,
+      "iv": 26.47146490486151,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "BKNG",
+      "price": 5091.83,
+      "iv": 26.391583736338703,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "TTWO",
-      "price": 248.34,
-      "iv": 25.199623455796864,
+      "price": 243.42,
+      "iv": 26.027770453585784,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "ORLY",
-      "price": 99.31,
-      "iv": 24.8179537035436,
+      "ticker": "CTSH",
+      "price": 78.56,
+      "iv": 25.85854646079131,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "CTAS",
-      "price": 184.21,
-      "iv": 24.290658551039314,
+      "ticker": "KDP",
+      "price": 28.01,
+      "iv": 25.774206317885138,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "MDLZ",
-      "price": 55.58,
-      "iv": 23.586275439117944,
+      "ticker": "VRTX",
+      "price": 452.42,
+      "iv": 25.039571875283208,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "ISRG",
+      "price": 564.34,
+      "iv": 24.9086913717345,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "FAST",
-      "price": 40.03,
-      "iv": 23.30831268401822,
+      "price": 40.59,
+      "iv": 24.697299926677488,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "MDLZ",
+      "price": 56.06,
+      "iv": 24.52402043091787,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "MAR",
-      "price": 300.76,
-      "iv": 22.633696686022915,
+      "price": 307.39,
+      "iv": 24.43019131834474,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "MNST",
-      "price": 74.85,
-      "iv": 22.558811321600512,
+      "ticker": "CTAS",
+      "price": 183.45,
+      "iv": 24.37220930802798,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "MSFT",
-      "price": 491.15,
-      "iv": 21.887327396220492,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "CSX",
-      "price": 34.72,
-      "iv": 21.627286341571914,
+      "ticker": "ORLY",
+      "price": 99.49,
+      "iv": 23.187162240372288,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "KHC",
-      "price": 24.84,
-      "iv": 21.26969072599718,
+      "price": 24.91,
+      "iv": 23.083743694808515,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "HON",
-      "price": 190.98,
-      "iv": 21.050157789648654,
+      "ticker": "CSX",
+      "price": 35.29,
+      "iv": 21.695544483720234,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "PEP",
-      "price": 146.96,
-      "iv": 20.86355602096611,
+      "price": 148.88,
+      "iv": 21.67225571745431,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "AAPL",
-      "price": 285.1,
-      "iv": 20.473442328266923,
+      "ticker": "HON",
+      "price": 193.09,
+      "iv": 21.67180656944362,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
-      "ticker": "CSCO",
-      "price": 76.06,
-      "iv": 20.20469864418111,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "EXC",
-      "price": 45.04,
-      "iv": 19.963280503583576,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "XEL",
-      "price": 79.36,
-      "iv": 19.757028561413783,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ 100"
-    },
-    {
-      "ticker": "ADP",
-      "price": 255.95,
-      "iv": 19.07400919271878,
+      "ticker": "MNST",
+      "price": 74.715,
+      "iv": 21.61992996897938,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "AEP",
-      "price": 119.63,
-      "iv": 18.97725446370402,
+      "price": 119.07,
+      "iv": 20.204957835715533,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "AAPL",
+      "price": 287.34000000000003,
+      "iv": 19.948481025202078,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "EXC",
+      "price": 44.92,
+      "iv": 19.56750351917621,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "ADP",
+      "price": 256.9,
+      "iv": 18.926358954802982,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
     },
     {
       "ticker": "ROST",
-      "price": 177.35,
-      "iv": 18.254581852386913,
+      "price": 177.3,
+      "iv": 18.067791965947112,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ 100"
+    },
+    {
+      "ticker": "XEL",
+      "price": 78.99,
+      "iv": 17.774665181298342,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
@@ -719,7 +703,7 @@
     {
       "ticker": "EA",
       "price": 203.0,
-      "iv": 1.1495186823019317,
+      "iv": 3.6268488853426666,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "NASDAQ 100"
