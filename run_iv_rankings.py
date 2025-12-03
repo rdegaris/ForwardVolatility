@@ -7,8 +7,27 @@ from datetime import datetime
 from scanner_ib import IBScanner, rank_tickers_by_iv
 from nasdaq100 import get_nasdaq_100_list
 from midcap400 import get_midcap400_list, get_mag7
-from earnings_checker import EarningsChecker
 import time
+
+def load_earnings_from_scans():
+    """Load earnings dates from main scan result files."""
+    earnings_map = {}
+    
+    for filename in ['nasdaq100_results_latest.json', 'midcap400_results_latest.json', 'mag7_results_latest.json']:
+        try:
+            with open(filename, 'r') as f:
+                data = json.load(f)
+                for opp in data.get('opportunities', []):
+                    ticker = opp.get('ticker')
+                    earnings = opp.get('next_earnings')
+                    if ticker and earnings:
+                        earnings_map[ticker] = earnings
+        except FileNotFoundError:
+            pass
+        except Exception as e:
+            print(f"Warning: Could not load {filename}: {e}")
+    
+    return earnings_map
 
 def scan_iv_rankings(universe='all', top_n=None):
     """Scan tickers and rank by near-term implied volatility.
@@ -68,9 +87,10 @@ def scan_iv_rankings(universe='all', top_n=None):
         print(f"Successfully ranked: {len(ranked)} tickers")
         print()
         
-        # Initialize earnings checker to get next earnings dates
-        print("Fetching earnings dates...")
-        earnings_checker = EarningsChecker()
+        # Load earnings dates from main scan results (no extra API calls)
+        print("Loading earnings dates from scan results...")
+        earnings_map = load_earnings_from_scans()
+        print(f"Found earnings for {len(earnings_map)} tickers")
         
         # Format results
         results = []
@@ -80,14 +100,8 @@ def scan_iv_rankings(universe='all', top_n=None):
                             'NASDAQ100' if item['ticker'] in get_nasdaq_100_list() else \
                             'MIDCAP400'
             
-            # Get next earnings date
-            next_earnings = None
-            try:
-                earnings_date = earnings_checker.get_earnings_date(item['ticker'])
-                if earnings_date:
-                    next_earnings = earnings_date.strftime('%Y-%m-%d')
-            except Exception as e:
-                pass  # Ignore earnings lookup errors
+            # Get next earnings date from pre-loaded scan results
+            next_earnings = earnings_map.get(item['ticker'])
             
             result = {
                 'ticker': item['ticker'],
