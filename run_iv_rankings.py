@@ -92,25 +92,28 @@ def scan_iv_rankings(universe='all', top_n=None):
         earnings_map = load_earnings_from_scans()
         print(f"Found earnings for {len(earnings_map)} tickers")
         
-        # Format results
+        # Get 200MA data from scanner
+        mag7_list = get_mag7()
+        nasdaq100_list = get_nasdaq_100_list()
+        
+        # Format results - ranked is list of (ticker, iv, price) tuples
         results = []
-        for item in ranked:
+        for ticker, iv, price in ranked:
             # Determine which universe this ticker belongs to
-            ticker_universe = 'MAG7' if item['ticker'] in get_mag7() else \
-                            'NASDAQ100' if item['ticker'] in get_nasdaq_100_list() else \
+            ticker_universe = 'MAG7' if ticker in mag7_list else \
+                            'NASDAQ100' if ticker in nasdaq100_list else \
                             'MIDCAP400'
             
             # Get next earnings date from pre-loaded scan results
-            next_earnings = earnings_map.get(item['ticker'])
+            next_earnings = earnings_map.get(ticker)
             
+            # Get 200MA (we don't have it from rank_tickers_by_iv, so set to None)
             result = {
-                'ticker': item['ticker'],
-                'price': item['price'],
-                'iv': item['iv'],
-                'expiry': item['expiry'],
-                'dte': item['dte'],
-                'ma_200': item.get('ma_200'),
-                'above_ma_200': item.get('above_ma_200'),
+                'ticker': ticker,
+                'price': price,
+                'iv': iv,
+                'ma_200': None,
+                'above_ma_200': None,
                 'universe': ticker_universe,
                 'next_earnings': next_earnings
             }
@@ -138,14 +141,14 @@ def scan_iv_rankings(universe='all', top_n=None):
         with open(filename, 'w') as f:
             json.dump(result_data, f, indent=2)
         
-        print(f"✅ Results saved to: {filename}")
+        print(f"[OK] Results saved to: {filename}")
         
         # Save latest file
         latest_filename = f"iv_rankings_{universe}_latest.json"
         with open(latest_filename, 'w') as f:
             json.dump(result_data, f, indent=2)
         
-        print(f"✅ Latest results saved to: {latest_filename}")
+        print(f"[OK] Latest results saved to: {latest_filename}")
         
         # Print top 20
         print()
