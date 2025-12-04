@@ -315,8 +315,32 @@ def upload_to_web_repos():
     if copied > 0:
         print_info(f"Copied {copied} result files to web repo")
         
-        # Git commit and push (optional - user can do manually)
-        print_info("Remember to commit and push changes in forward-volatility-web repo")
+        # Git commit and push automatically
+        try:
+            import subprocess
+            web_repo = os.path.join("..", "forward-volatility-web")
+            
+            # Stage all changes
+            subprocess.run(["git", "add", "-A"], cwd=web_repo, check=True, capture_output=True)
+            
+            # Check if there are changes to commit
+            result = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=web_repo, capture_output=True)
+            
+            if result.returncode != 0:  # There are staged changes
+                # Commit
+                commit_msg = f"Daily scan update - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+                subprocess.run(["git", "commit", "-m", commit_msg], cwd=web_repo, check=True, capture_output=True)
+                print_success(f"Committed: {commit_msg}")
+                
+                # Push
+                subprocess.run(["git", "push"], cwd=web_repo, check=True, capture_output=True)
+                print_success("Pushed to GitHub - Vercel will deploy")
+            else:
+                print_info("No changes to commit")
+        except Exception as e:
+            print_warning(f"Git commit/push failed: {e}")
+            print_info("Files were copied but not committed - commit manually if needed")
+        
         return True
     else:
         print_warning("No scan result files found to copy")
