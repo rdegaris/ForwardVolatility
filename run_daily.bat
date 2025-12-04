@@ -27,6 +27,7 @@ copy /Y nasdaq100_results_latest.json "..\forward-volatility-web\public\data\" 2
 copy /Y midcap400_results_latest.json "..\forward-volatility-web\public\data\" 2>nul && echo   Copied midcap400_results_latest.json
 copy /Y nasdaq100_iv_rankings_latest.json "..\forward-volatility-web\public\data\" 2>nul && echo   Copied nasdaq100_iv_rankings_latest.json
 copy /Y midcap400_iv_rankings_latest.json "..\forward-volatility-web\public\data\" 2>nul && echo   Copied midcap400_iv_rankings_latest.json
+copy /Y mag7_iv_rankings_latest.json "..\forward-volatility-web\public\data\" 2>nul && echo   Copied mag7_iv_rankings_latest.json
 copy /Y trades.json "..\forward-volatility-web\public\data\" 2>nul && echo   Copied trades.json
 
 REM Copy earnings crush from EarningsCrush folder (NOT from calculator folder)

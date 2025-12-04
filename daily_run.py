@@ -183,6 +183,26 @@ def run_midcap400_scan():
     )
 
 
+def run_iv_rankings_scan():
+    """Run IV Rankings scanner for all universes."""
+    print_section("Running IV Rankings Scanner")
+    
+    # Run for each universe - results go into separate files
+    success_count = 0
+    
+    for universe in ['nasdaq100', 'midcap400']:
+        print_info(f"Scanning {universe} for IV rankings...")
+        result = run_command(
+            [PYTHON_EXE, "-u", "run_iv_rankings.py", universe],
+            f"IV Rankings scan ({universe})"
+        )
+        if result:
+            success_count += 1
+    
+    # Return True if at least one succeeded
+    return success_count > 0
+
+
 def run_earnings_crush_scan():
     """Run Earnings Crush scanner using IB."""
     print_section("Running Earnings Crush Scanner")
@@ -341,6 +361,7 @@ def main():
         'mag7': None,
         'nasdaq100': None,
         'midcap400': None,
+        'iv_rankings': None,
         'earnings_crush': None,
         'ib_positions': None,
         'upload': None
@@ -361,6 +382,7 @@ def main():
     elif args.scans_only or run_all:
         results['nasdaq100'] = run_nasdaq100_scan()
         results['midcap400'] = run_midcap400_scan()
+        results['iv_rankings'] = run_iv_rankings_scan()
         results['earnings_crush'] = run_earnings_crush_scan()
     
     # Fetch IB positions
@@ -381,6 +403,8 @@ def main():
         summary_items.append(('NASDAQ 100 Scan', results['nasdaq100']))
     if results['midcap400'] is not None:
         summary_items.append(('MidCap 400 Scan', results['midcap400']))
+    if results['iv_rankings'] is not None:
+        summary_items.append(('IV Rankings Scan', results['iv_rankings']))
     if results['earnings_crush'] is not None:
         summary_items.append(('Earnings Crush Scan', results['earnings_crush']))
     if results['ib_positions'] is not None:
