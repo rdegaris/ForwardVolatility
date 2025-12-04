@@ -274,10 +274,13 @@ def upload_to_web_repos():
         print_info("Skipping upload - make sure forward-volatility-web is in parent directory")
         return False
     
-    # Copy latest scan results
+    # Copy latest scan results (copy whatever exists, even if some scans failed)
     files_to_copy = [
         ("nasdaq100_results_latest.json", "nasdaq100_results_latest.json"),
         ("midcap400_results_latest.json", "midcap400_results_latest.json"),
+        ("nasdaq100_iv_rankings_latest.json", "nasdaq100_iv_rankings_latest.json"),
+        ("midcap400_iv_rankings_latest.json", "midcap400_iv_rankings_latest.json"),
+        ("mag7_iv_rankings_latest.json", "mag7_iv_rankings_latest.json"),
         ("trades.json", "trades.json"),
     ]
     
@@ -370,9 +373,15 @@ def main():
     # Determine what to run
     run_all = not any([args.scans_only, args.ib_only, args.nasdaq100, args.midcap400, args.earnings_crush])
     
-    # Run scans
+    # Run scans in priority order:
+    # 1. Portfolio (IB positions) - most important, fast
+    # 2. Earnings Crush - time-sensitive
+    # 3. IV Rankings - useful for analysis
+    # 4. NASDAQ 100 - main scanner
+    # 5. MidCap 400 - largest, most likely to fail
+    
     if args.ib_only:
-        pass  # Skip scans
+        results['ib_positions'] = fetch_ib_positions()
     elif args.nasdaq100:
         results['nasdaq100'] = run_nasdaq100_scan()
     elif args.midcap400:
@@ -380,35 +389,31 @@ def main():
     elif args.earnings_crush:
         results['earnings_crush'] = run_earnings_crush_scan()
     elif args.scans_only or run_all:
+        # Run in priority order - portfolio first, midcap last
+        results['ib_positions'] = fetch_ib_positions()
+        results['earnings_crush'] = run_earnings_crush_scan()
+        results['iv_rankings'] = run_iv_rankings_scan()
         results['nasdaq100'] = run_nasdaq100_scan()
         results['midcap400'] = run_midcap400_scan()
-        results['iv_rankings'] = run_iv_rankings_scan()
-        results['earnings_crush'] = run_earnings_crush_scan()
     
-    # Fetch IB positions
-    if not args.scans_only:
-        if args.ib_only or run_all:
-            results['ib_positions'] = fetch_ib_positions()
-    
-    # Upload to web repos
+    # ALWAYS upload to web repos (even if some scans failed)
     if not args.no_upload and not args.ib_only:
-        if run_all or args.scans_only or any([args.nasdaq100, args.midcap400, args.earnings_crush]):
-            results['upload'] = upload_to_web_repos()
+        results['upload'] = upload_to_web_repos()
     
     # Print summary
     print_header("Execution Summary")
     
     summary_items = []
+    if results['ib_positions'] is not None:
+        summary_items.append(('IB Positions Fetch', results['ib_positions']))
+    if results['earnings_crush'] is not None:
+        summary_items.append(('Earnings Crush Scan', results['earnings_crush']))
+    if results['iv_rankings'] is not None:
+        summary_items.append(('IV Rankings Scan', results['iv_rankings']))
     if results['nasdaq100'] is not None:
         summary_items.append(('NASDAQ 100 Scan', results['nasdaq100']))
     if results['midcap400'] is not None:
         summary_items.append(('MidCap 400 Scan', results['midcap400']))
-    if results['iv_rankings'] is not None:
-        summary_items.append(('IV Rankings Scan', results['iv_rankings']))
-    if results['earnings_crush'] is not None:
-        summary_items.append(('Earnings Crush Scan', results['earnings_crush']))
-    if results['ib_positions'] is not None:
-        summary_items.append(('IB Positions Fetch', results['ib_positions']))
     if results['upload'] is not None:
         summary_items.append(('Web Upload', results['upload']))
     
