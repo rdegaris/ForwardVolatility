@@ -19,11 +19,15 @@ Usage:
 import subprocess
 import sys
 import os
+import time
 from datetime import datetime
 import argparse
 import json
 import logging
 from pathlib import Path
+
+# Delay between IB scans to let TWS recover from rate limits
+IB_SCAN_DELAY_SECONDS = 10
 
 
 def get_venv_python():
@@ -156,6 +160,13 @@ def run_command(command, description):
         return False
 
 
+def wait_for_ib_recovery(seconds=None):
+    """Wait between scans to let IB recover from rate limits."""
+    delay = seconds or IB_SCAN_DELAY_SECONDS
+    print_info(f"Waiting {delay}s for IB to recover...")
+    time.sleep(delay)
+
+
 def run_mag7_scan():
     """Run MAG7 scanner."""
     print_section("Running MAG7 Scanner")
@@ -190,7 +201,11 @@ def run_iv_rankings_scan():
     # Run for each universe - results go into separate files
     success_count = 0
     
-    for universe in ['nasdaq100', 'midcap400']:
+    for i, universe in enumerate(['nasdaq100', 'midcap400']):
+        if i > 0:
+            # Add delay between universes to let IB recover
+            wait_for_ib_recovery(5)
+        
         print_info(f"Scanning {universe} for IV rankings...")
         result = run_command(
             [PYTHON_EXE, "-u", "run_iv_rankings.py", universe],
@@ -414,11 +429,22 @@ def main():
         results['earnings_crush'] = run_earnings_crush_scan()
     elif args.scans_only or run_all:
         # Run in priority order - portfolio first, midcap last
+        # Add delays between IB scans to prevent rate limiting
+        
         results['ib_positions'] = fetch_ib_positions()
+        wait_for_ib_recovery(5)  # Short delay after positions
+        
         results['earnings_crush'] = run_earnings_crush_scan()
+        wait_for_ib_recovery()  # Full delay after earnings crush
+        
         results['iv_rankings'] = run_iv_rankings_scan()
+        wait_for_ib_recovery()  # Full delay after IV rankings
+        
         results['nasdaq100'] = run_nasdaq100_scan()
+        wait_for_ib_recovery()  # Full delay after NASDAQ100
+        
         results['midcap400'] = run_midcap400_scan()
+        # No delay needed after last scan
     
     # ALWAYS upload to web repos (even if some scans failed)
     if not args.no_upload and not args.ib_only:
