@@ -195,16 +195,23 @@ def get_option_price(ticker):
     # Debug: print what we're getting
     print(f"      Debug - last:{ticker.last}, bid:{ticker.bid}, ask:{ticker.ask}, close:{ticker.close}")
     
+    # Prefer last price if valid
     if ticker.last and not math.isnan(ticker.last) and ticker.last > 0:
+        print(f"      Using last: {ticker.last}")
         return ticker.last
+    # Fall back to mid price
     elif ticker.bid and ticker.ask and not math.isnan(ticker.bid) and not math.isnan(ticker.ask):
         mid = (ticker.bid + ticker.ask) / 2
         if mid > 0:
+            print(f"      Using mid: {mid}")
             return mid
+    # Fall back to close
     elif ticker.close and not math.isnan(ticker.close) and ticker.close > 0:
+        print(f"      Using close: {ticker.close}")
         return ticker.close
+    # Last resort: model price
     elif ticker.modelGreeks and ticker.modelGreeks.optPrice:
-        # Try model price as last resort
+        print(f"      Using model: {ticker.modelGreeks.optPrice}")
         return ticker.modelGreeks.optPrice
     return None
 
@@ -262,11 +269,22 @@ def export_to_json(calendar_spreads, filename='trades.json'):
         front_entry = abs(spread['front']['avgCost']) / 100
         back_entry = abs(spread['back']['avgCost']) / 100
         
-        # Calculate total unrealized P&L for the spread
-        # Calendar spread: long back - short front, so back PnL - front PnL
-        front_pnl = spread['front']['unrealizedPnL']
-        back_pnl = spread['back']['unrealizedPnL']
-        total_unrealized_pnl = back_pnl - front_pnl
+        front_current = spread['front']['currentPrice']
+        back_current = spread['back']['currentPrice']
+        
+        # Calendar spread P&L calculation:
+        # Entry net debit = Back Entry - Front Entry (you pay this to enter)
+        # Current spread value = Back Current - Front Current
+        # P&L = (Current spread - Entry debit) * quantity * 100
+        entry_debit = back_entry - front_entry
+        current_spread = back_current - front_current
+        total_unrealized_pnl = (current_spread - entry_debit) * spread['quantity'] * 100
+        
+        # Individual leg P&L (for display purposes)
+        # Short front: profit when it goes down
+        front_pnl = (front_entry - front_current) * spread['quantity'] * 100
+        # Long back: profit when it goes up
+        back_pnl = (back_current - back_entry) * spread['quantity'] * 100
         
         trade = {
             'id': f"ib_{int(datetime.now().timestamp())}_{i}",
@@ -276,11 +294,11 @@ def export_to_json(calendar_spreads, filename='trades.json'):
             'quantity': int(spread['quantity']),
             'frontExpiration': format_date(spread['front']['contract'].lastTradeDateOrContractMonth),
             'frontEntryPrice': round(front_entry, 2),
-            'frontCurrentPrice': round(spread['front']['currentPrice'], 2),
+            'frontCurrentPrice': round(front_current, 2),
             'frontUnrealizedPnL': round(front_pnl, 2),
             'backExpiration': format_date(spread['back']['contract'].lastTradeDateOrContractMonth),
             'backEntryPrice': round(back_entry, 2),
-            'backCurrentPrice': round(spread['back']['currentPrice'], 2),
+            'backCurrentPrice': round(back_current, 2),
             'backUnrealizedPnL': round(back_pnl, 2),
             'underlyingEntryPrice': round(spread['underlying']['currentPrice'], 2),  # Using current as we don't have historical
             'underlyingCurrentPrice': round(spread['underlying']['currentPrice'], 2),
@@ -291,14 +309,10 @@ def export_to_json(calendar_spreads, filename='trades.json'):
         
         trades.append(trade)
         
-        # Calculate P&L
-        pnl = ((trade['backCurrentPrice'] - trade['backEntryPrice']) - 
-               (trade['frontCurrentPrice'] - trade['frontEntryPrice'])) * trade['quantity'] * 100
-        
         print(f"  {trade['quantity']}x {trade['symbol']} ${trade['strike']} {trade['callOrPut']}")
-        print(f"    Front: {trade['frontExpiration']} | Entry: ${trade['frontEntryPrice']:.2f} | Current: ${trade['frontCurrentPrice']:.2f}")
-        print(f"    Back:  {trade['backExpiration']} | Entry: ${trade['backEntryPrice']:.2f} | Current: ${trade['backCurrentPrice']:.2f}")
-        print(f"    P&L: ${pnl:.2f}")
+        print(f"    Front: {trade['frontExpiration']} | Entry: ${front_entry:.2f} | Current: ${front_current:.2f} | P&L: ${front_pnl:.2f}")
+        print(f"    Back:  {trade['backExpiration']} | Entry: ${back_entry:.2f} | Current: ${back_current:.2f} | P&L: ${back_pnl:.2f}")
+        print(f"    Spread: Entry: ${entry_debit:.2f} | Current: ${current_spread:.2f} | Total P&L: ${total_unrealized_pnl:.2f}")
     
     # Write to JSON file
     with open(filename, 'w') as f:
