@@ -172,6 +172,8 @@ class IBScanner:
         if ticker in self.price_cache:
             return self.price_cache[ticker]
         
+        stock = None
+        ticker_data = None
         try:
             stock = Stock(ticker, 'SMART', 'USD')
             self.ib.qualifyContracts(stock)
@@ -182,23 +184,24 @@ class IBScanner:
             price = ticker_data.marketPrice()
             if price and price > 0:
                 self.price_cache[ticker] = price
-                # Cancel market data subscription to free up data lines
-                self.ib.cancelMktData(stock)
                 return price
             
             # Try last price if market price not available
             if ticker_data.last and ticker_data.last > 0:
                 self.price_cache[ticker] = ticker_data.last
-                # Cancel market data subscription to free up data lines
-                self.ib.cancelMktData(stock)
                 return ticker_data.last
             
-            # Cancel even if we didn't get a price
-            self.ib.cancelMktData(stock)
             return None
         except Exception as e:
             print(f"  Error getting price: {e}")
             return None
+        finally:
+            # ALWAYS cancel market data subscription to free up data lines
+            if stock:
+                try:
+                    self.ib.cancelMktData(stock)
+                except:
+                    pass
     
     def get_200day_ma(self, ticker: str) -> Optional[float]:
         """Get 200-day moving average for a stock.
@@ -328,6 +331,8 @@ class IBScanner:
         Returns:
             Dict with 'call_iv', 'put_iv', 'avg_iv' or None
         """
+        call = None
+        put = None
         try:
             stock = Stock(ticker, 'SMART', 'USD')
             self.ib.qualifyContracts(stock)
@@ -429,10 +434,6 @@ class IBScanner:
             put_last = put_ticker.last if put_ticker.last and put_ticker.last > 0 else None
             put_mid = (put_bid + put_ask) / 2 if put_bid and put_ask else put_last
             
-            # Cancel market data subscriptions
-            self.ib.cancelMktData(call)
-            self.ib.cancelMktData(put)
-            
             # Calculate average
             ivs = []
             if call_iv and call_iv > 0:
@@ -466,6 +467,18 @@ class IBScanner:
             if debug:
                 print(f"\n    [DEBUG] Exception: {e}")
             return None
+        finally:
+            # ALWAYS cancel market data subscriptions to free up data lines
+            if call:
+                try:
+                    self.ib.cancelMktData(call)
+                except:
+                    pass
+            if put:
+                try:
+                    self.ib.cancelMktData(put)
+                except:
+                    pass
     
     def get_atm_iv_batch(self, ticker: str, expiry1: str, expiry2: str, current_price: float, debug: bool = False) -> tuple:
         """Get ATM implied volatility for two expirations in a single batch request.
@@ -476,6 +489,10 @@ class IBScanner:
         Returns:
             Tuple of (iv_data1, iv_data2) or (None, None) on error
         """
+        call1 = None
+        put1 = None
+        call2 = None
+        put2 = None
         try:
             stock = Stock(ticker, 'SMART', 'USD')
             self.ib.qualifyContracts(stock)
@@ -534,12 +551,6 @@ class IBScanner:
             call2_iv, _ = extract_iv(call2_ticker, call2, f"{expiry2} Call")
             put2_iv, _ = extract_iv(put2_ticker, put2, f"{expiry2} Put")
             
-            # Cancel all subscriptions
-            self.ib.cancelMktData(call1)
-            self.ib.cancelMktData(put1)
-            self.ib.cancelMktData(call2)
-            self.ib.cancelMktData(put2)
-            
             # Build iv_data dicts
             def build_iv_data(call_iv, put_iv, call_ticker, put_ticker):
                 ivs = [iv for iv in [call_iv, put_iv] if iv and iv > 0]
@@ -577,6 +588,14 @@ class IBScanner:
             if debug:
                 print(f"\n    [DEBUG] Batch exception: {e}")
             return None, None
+        finally:
+            # ALWAYS cancel all subscriptions to free up data lines
+            for contract in [call1, put1, call2, put2]:
+                if contract:
+                    try:
+                        self.ib.cancelMktData(contract)
+                    except:
+                        pass
     
     def scan_ticker(self, ticker: str, threshold: float = 0.4) -> List[Dict]:
         """Scan a ticker for forward volatility opportunities."""
@@ -779,7 +798,12 @@ class IBScanner:
         return opportunities
 
 
-def rank_tickers_by_iv(scanner: IBScanner, tickers: List[str], top_n: Optional[int] = None) -> List[tuple]:
+# Reconnect to IB every N tickers to avoid memory buildup
+RECONNECT_INTERVAL = 100
+
+
+def rank_tickers_by_iv(scanner: IBScanner, tickers: List[str], top_n: Optional[int] = None, 
+                       reconnect_interval: int = RECONNECT_INTERVAL) -> List[tuple]:
     """
     Rank tickers by near-term IV to prioritize high IV stocks.
     
@@ -787,6 +811,7 @@ def rank_tickers_by_iv(scanner: IBScanner, tickers: List[str], top_n: Optional[i
         scanner: IBScanner instance
         tickers: List of ticker symbols
         top_n: Return only top N tickers (None = return all)
+        reconnect_interval: Reconnect to IB every N tickers to avoid memory buildup
     
     Returns:
         List of (ticker, iv, price) tuples sorted by IV descending
@@ -797,9 +822,27 @@ def rank_tickers_by_iv(scanner: IBScanner, tickers: List[str], top_n: Optional[i
     print("This helps prioritize high-volatility opportunities...\n")
     
     ticker_ivs = []
+    tickers_since_reconnect = 0
+    total = len(tickers)
     
     for i, ticker in enumerate(tickers, 1):
-        print(f"[{i}/{len(tickers)}] Checking {ticker}...", end=" ")
+        # Periodic reconnection to avoid memory buildup
+        tickers_since_reconnect += 1
+        if tickers_since_reconnect >= reconnect_interval:
+            print(f"\n[INFO] Reconnecting to IB to free memory ({i}/{total})...")
+            try:
+                scanner.disconnect()
+                time.sleep(2)  # Wait for clean disconnect
+                if not scanner.connect():
+                    print("[ERROR] Failed to reconnect to IB")
+                    break
+                tickers_since_reconnect = 0
+                print(f"[OK] Reconnected successfully\n")
+            except Exception as e:
+                print(f"[ERROR] Reconnection failed: {e}")
+                break
+        
+        print(f"[{i}/{total}] Checking {ticker}...", end=" ")
         
         try:
             price = scanner.get_stock_price(ticker)

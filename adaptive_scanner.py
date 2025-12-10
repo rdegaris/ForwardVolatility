@@ -17,13 +17,18 @@ from scanner_ib import IBScanner, calculate_dte
 import pandas as pd
 
 
+# Reconnect to IB every N tickers to avoid memory buildup
+RECONNECT_INTERVAL = 100  # Reconnect every 100 tickers
+
+
 class AdaptiveScanner:
     """Single-pass adaptive IV scanner."""
     
     def __init__(self, scanner: IBScanner, 
                  min_iv_threshold: float = 30.0,
                  adaptive_percentile: float = 0.20,
-                 ff_threshold: float = 0.2):
+                 ff_threshold: float = 0.2,
+                 reconnect_interval: int = RECONNECT_INTERVAL):
         """
         Initialize adaptive scanner.
         
@@ -32,11 +37,13 @@ class AdaptiveScanner:
             min_iv_threshold: Minimum IV to even consider (default 30%)
             adaptive_percentile: Scan stocks in top X percentile (default 0.20 = top 20%)
             ff_threshold: Forward Factor threshold for opportunities (default 0.2)
+            reconnect_interval: Reconnect to IB every N tickers to avoid memory buildup
         """
         self.scanner = scanner
         self.min_iv_threshold = min_iv_threshold
         self.adaptive_percentile = adaptive_percentile
         self.ff_threshold = ff_threshold
+        self.reconnect_interval = reconnect_interval
         
         # Track IVs for adaptive threshold
         self.iv_list = []  # Sorted list of IVs seen
@@ -46,6 +53,9 @@ class AdaptiveScanner:
         self.opportunities = []
         self.skipped_low_iv = []
         self.scanned_tickers = []
+        
+        # Counter for reconnection
+        self.tickers_since_reconnect = 0
     
     def get_adaptive_threshold(self) -> float:
         """
@@ -113,6 +123,22 @@ class AdaptiveScanner:
         
         for i, ticker in enumerate(tickers, 1):
             ticker_start = time.time()
+            
+            # Periodic reconnection to avoid memory buildup
+            self.tickers_since_reconnect += 1
+            if self.tickers_since_reconnect >= self.reconnect_interval:
+                print(f"\n[INFO] Reconnecting to IB to free memory ({i}/{total})...")
+                try:
+                    self.scanner.disconnect()
+                    time.sleep(2)  # Wait for clean disconnect
+                    if not self.scanner.connect():
+                        print("[ERROR] Failed to reconnect to IB")
+                        break
+                    self.tickers_since_reconnect = 0
+                    print(f"[OK] Reconnected successfully\n")
+                except Exception as e:
+                    print(f"[ERROR] Reconnection failed: {e}")
+                    break
             
             # Get price first
             print(f"[{i}/{total}] {ticker}...", end=" ", flush=True)
