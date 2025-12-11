@@ -319,11 +319,16 @@ def upload_to_web_repos():
         earnings_results = earnings_crush_path / 'earnings_crush_latest.json'
         if earnings_results.exists():
             try:
-                # Copy to root public folder for EarningsCrush page
+                # Copy to /data/ folder (where EarningsCrush page fetches from)
+                data_dst = os.path.join(web_path, "earnings_crush_latest.json")
+                shutil.copy2(str(earnings_results), data_dst)
+                print_success(f"Copied earnings_crush_latest.json -> data/ (page source)")
+                copied += 1
+                
+                # Also copy to root public folder for backwards compatibility
                 root_dst = os.path.join(web_path, "..", "earnings_crush_latest.json")
                 shutil.copy2(str(earnings_results), root_dst)
                 print_success(f"Copied earnings_crush_latest.json -> public/ (root)")
-                copied += 1
             except Exception as e:
                 print_error(f"Failed to copy earnings_crush_latest.json: {e}")
         else:

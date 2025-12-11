@@ -3,11 +3,17 @@ Scan all tickers across all lists and rank by near-term IV
 Uses the existing rank_tickers_by_iv functionality from scanner_ib
 """
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from scanner_ib import IBScanner, rank_tickers_by_iv
 from nasdaq100 import get_nasdaq_100_list
 from midcap400 import get_midcap400_list, get_mag7
+from earnings_checker import EarningsChecker
 import time
+
+# Days after earnings to exclude (IV already crushed)
+DAYS_AFTER_EARNINGS_EXCLUDE = 3
+# Days before earnings to exclude (IV elevated due to upcoming event)  
+DAYS_BEFORE_EARNINGS_EXCLUDE = 7
 
 def load_earnings_from_scans():
     """Load earnings dates from main scan result files."""
@@ -91,6 +97,27 @@ def scan_iv_rankings(universe='all', top_n=None):
         print("Loading earnings dates from scan results...")
         earnings_map = load_earnings_from_scans()
         print(f"Found earnings for {len(earnings_map)} tickers")
+        
+        # Filter out tickers with recent or upcoming earnings
+        print(f"Filtering out tickers with earnings within {DAYS_AFTER_EARNINGS_EXCLUDE} days ago or {DAYS_BEFORE_EARNINGS_EXCLUDE} days ahead...")
+        earnings_checker = EarningsChecker()
+        today = datetime.now().date()
+        filtered_ranked = []
+        removed_count = 0
+        
+        for ticker, iv, price in ranked:
+            # Check earnings date
+            earnings_date = earnings_checker.get_earnings_date(ticker)
+            if earnings_date:
+                days_diff = (earnings_date - today).days
+                if -DAYS_AFTER_EARNINGS_EXCLUDE <= days_diff <= DAYS_BEFORE_EARNINGS_EXCLUDE:
+                    print(f"    ⚠️ Removing {ticker}: Earnings on {earnings_date} ({days_diff} days)")
+                    removed_count += 1
+                    continue
+            filtered_ranked.append((ticker, iv, price))
+        
+        print(f"Removed {removed_count} tickers with earnings in window")
+        ranked = filtered_ranked
         
         # Get 200MA data from scanner
         mag7_list = get_mag7()
