@@ -1,6 +1,6 @@
 """
 Earnings Checker Module
-Fetches earnings dates using Finnhub API and filters out stocks with upcoming earnings.
+Fetches earnings dates using Finnhub API with Yahoo Finance fallback, and filters out stocks with upcoming earnings.
 """
 
 import requests
@@ -13,13 +13,15 @@ import time
 # Finnhub API key
 FINNHUB_API_KEY = os.environ.get('FINNHUB_API_KEY', 'd3rcvl1r01qopgh82hs0d3rcvl1r01qopgh82hsg')
 
+
 class EarningsChecker:
-    """Check for upcoming earnings dates using Finnhub API."""
+    """Check for upcoming earnings dates using Finnhub API with Yahoo Finance fallback."""
     
-    def __init__(self, cache_file: str = "earnings_cache.json"):
+    def __init__(self, cache_file: str = "earnings_cache.json", use_yahoo_fallback: bool = True):
         self.cache: Dict[str, datetime] = {}
         self.cache_file = cache_file
         self.api_key = FINNHUB_API_KEY
+        self.use_yahoo_fallback = use_yahoo_fallback
         self._load_cache()
     
     def _load_cache(self):
@@ -46,9 +48,47 @@ class EarningsChecker:
         except Exception as e:
             print(f"Warning: Could not save earnings cache: {e}")
     
+    def _get_earnings_from_yahoo(self, ticker: str) -> Optional[datetime]:
+        """
+        Get earnings date from Yahoo Finance using yfinance library.
+        
+        Args:
+            ticker: Stock symbol
+            
+        Returns:
+            datetime of next earnings or None
+        """
+        try:
+            import yfinance as yf
+            
+            stock = yf.Ticker(ticker)
+            calendar = stock.calendar
+            
+            if calendar and 'Earnings Date' in calendar:
+                earnings_dates = calendar['Earnings Date']
+                if earnings_dates and len(earnings_dates) > 0:
+                    # yfinance returns date objects
+                    earnings_date = earnings_dates[0]
+                    
+                    # Convert to datetime if needed
+                    if hasattr(earnings_date, 'year'):
+                        dt = datetime(earnings_date.year, earnings_date.month, earnings_date.day)
+                    else:
+                        dt = datetime.strptime(str(earnings_date), '%Y-%m-%d')
+                    
+                    # Only return if it's today or in the future
+                    if dt >= datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
+                        return dt
+            
+            return None
+            
+        except Exception as e:
+            print(f"    Warning: Could not fetch earnings from Yahoo for {ticker}: {e}")
+            return None
+    
     def get_earnings_date(self, ticker: str, days_ahead: int = 60) -> Optional[datetime]:
         """
-        Get the next earnings date for a ticker using Finnhub API.
+        Get the next earnings date for a ticker using Finnhub API with IB fallback.
         
         Args:
             ticker: Stock symbol
@@ -65,6 +105,32 @@ class EarningsChecker:
                 return cached_date
             # If cached date is in the past, need to refresh
         
+        # Try Finnhub first
+        earnings_date = self._get_earnings_from_finnhub(ticker, days_ahead)
+        
+        # If Finnhub returns None, try Yahoo Finance as fallback
+        if earnings_date is None and self.use_yahoo_fallback:
+            earnings_date = self._get_earnings_from_yahoo(ticker)
+            if earnings_date:
+                print(f"    [Yahoo] Found earnings for {ticker}: {earnings_date.strftime('%Y-%m-%d')}")
+        
+        # Cache the result
+        self.cache[ticker] = earnings_date
+        self._save_cache()
+        
+        return earnings_date
+    
+    def _get_earnings_from_finnhub(self, ticker: str, days_ahead: int = 60) -> Optional[datetime]:
+        """
+        Get earnings date from Finnhub API.
+        
+        Args:
+            ticker: Stock symbol
+            days_ahead: How many days ahead to look
+            
+        Returns:
+            datetime of next earnings or None
+        """
         try:
             today = datetime.now().date()
             from_date = today.strftime('%Y-%m-%d')
@@ -84,18 +150,12 @@ class EarningsChecker:
                     date_str = earnings_entry.get('date')
                     
                     if date_str:
-                        earnings_date = datetime.strptime(date_str, '%Y-%m-%d')
-                        self.cache[ticker] = earnings_date
-                        self._save_cache()
-                        return earnings_date
+                        return datetime.strptime(date_str, '%Y-%m-%d')
             
-            # No earnings found in window
-            self.cache[ticker] = None
-            self._save_cache()
             return None
             
         except Exception as e:
-            print(f"    Warning: Could not fetch earnings for {ticker}: {e}")
+            print(f"    Warning: Could not fetch earnings from Finnhub for {ticker}: {e}")
             return None
     
     def has_earnings_before(self, ticker: str, expiry_date: str) -> bool:
