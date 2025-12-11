@@ -299,33 +299,35 @@ def upload_to_web_repos():
         ("trades.json", "trades.json"),
     ]
     
-    # Also copy earnings crush results if they exist
-    earnings_crush_path = Path(__file__).parent.parent.parent / 'EarningsCrush' / 'earnings-crush-calculator'
-    if earnings_crush_path.exists():
-        earnings_results = earnings_crush_path / 'earnings_crush_latest.json'
-        if earnings_results.exists():
-            # Copy to both locations: /data/ for Home page and root for EarningsCrush page
-            files_to_copy.append((str(earnings_results), "earnings_crush_latest.json"))
-    
     copied = 0
+    import shutil
+    
     for src, dst in files_to_copy:
         if os.path.exists(src):
             try:
-                import shutil
                 # Copy to /data/ directory
                 dst_path = os.path.join(web_path, dst)
                 shutil.copy2(src, dst_path)
                 print_success(f"Copied {src} -> data/{dst}")
                 copied += 1
-                
-                # Also copy earnings_crush_latest.json to root public folder for EarningsCrush page
-                if dst == "earnings_crush_latest.json":
-                    root_dst = os.path.join(web_path, "..", dst)
-                    shutil.copy2(src, root_dst)
-                    print_success(f"Copied {src} -> {dst} (root)")
-                    
             except Exception as e:
                 print_error(f"Failed to copy {src}: {e}")
+    
+    # Copy earnings crush results from EarningsCrush folder (separate location)
+    earnings_crush_path = Path(__file__).parent.parent.parent / 'EarningsCrush' / 'earnings-crush-calculator'
+    if earnings_crush_path.exists():
+        earnings_results = earnings_crush_path / 'earnings_crush_latest.json'
+        if earnings_results.exists():
+            try:
+                # Copy to root public folder for EarningsCrush page
+                root_dst = os.path.join(web_path, "..", "earnings_crush_latest.json")
+                shutil.copy2(str(earnings_results), root_dst)
+                print_success(f"Copied earnings_crush_latest.json -> public/ (root)")
+                copied += 1
+            except Exception as e:
+                print_error(f"Failed to copy earnings_crush_latest.json: {e}")
+        else:
+            print_warning("earnings_crush_latest.json not found in EarningsCrush folder")
     
     if copied > 0:
         print_info(f"Copied {copied} result files to web repo")
