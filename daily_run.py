@@ -245,6 +245,30 @@ def run_earnings_crush_scan():
     return success
 
 
+def run_preearnings_straddle_scan():
+    """Run Pre-Earnings Long Straddle scanner using IB."""
+    print_section("Running Pre-Earnings Straddle Scanner")
+
+    earnings_crush_path = Path(__file__).parent.parent.parent / 'EarningsCrush' / 'earnings-crush-calculator'
+
+    if not earnings_crush_path.exists():
+        print_warning("Earnings crush calculator not found, skipping")
+        return False
+
+    scan_script = earnings_crush_path / 'run_preearnings_straddle_scan_ib.py'
+
+    if not scan_script.exists():
+        print_warning(f"run_preearnings_straddle_scan_ib.py not found in {earnings_crush_path}, skipping")
+        return False
+
+    success = run_command(
+        [PYTHON_EXE, "-u", str(scan_script)],
+        "Pre-Earnings Straddle scan (Finnhub + IB)"
+    )
+
+    return success
+
+
 def fetch_ib_positions():
     """Fetch IB positions and export to JSON."""
     print_section("Fetching IB Positions")
@@ -333,6 +357,18 @@ def upload_to_web_repos():
                 print_error(f"Failed to copy earnings_crush_latest.json: {e}")
         else:
             print_warning("earnings_crush_latest.json not found in EarningsCrush folder")
+
+        preearnings_results = earnings_crush_path / 'pre_earnings_straddle_latest.json'
+        if preearnings_results.exists():
+            try:
+                data_dst = os.path.join(web_path, "pre_earnings_straddle_latest.json")
+                shutil.copy2(str(preearnings_results), data_dst)
+                print_success("Copied pre_earnings_straddle_latest.json -> data/")
+                copied += 1
+            except Exception as e:
+                print_error(f"Failed to copy pre_earnings_straddle_latest.json: {e}")
+        else:
+            print_warning("pre_earnings_straddle_latest.json not found in EarningsCrush folder")
     
     if copied > 0:
         print_info(f"Copied {copied} result files to web repo")
@@ -379,6 +415,7 @@ def main():
     parser.add_argument('--nasdaq100', action='store_true', help='Run NASDAQ100 scanner only')
     parser.add_argument('--midcap400', action='store_true', help='Run MidCap400 scanner only')
     parser.add_argument('--earnings-crush', action='store_true', help='Run Earnings Crush scanner only')
+    parser.add_argument('--preearnings-straddles', action='store_true', help='Run Pre-Earnings Straddle scanner only')
     parser.add_argument('--no-upload', action='store_true', help='Skip uploading to web repos')
     
     args = parser.parse_args()
@@ -412,12 +449,13 @@ def main():
         'midcap400': None,
         'iv_rankings': None,
         'earnings_crush': None,
+        'preearnings_straddles': None,
         'ib_positions': None,
         'upload': None
     }
     
     # Determine what to run
-    run_all = not any([args.scans_only, args.ib_only, args.nasdaq100, args.midcap400, args.earnings_crush])
+    run_all = not any([args.scans_only, args.ib_only, args.nasdaq100, args.midcap400, args.earnings_crush, args.preearnings_straddles])
     
     # Run scans in priority order:
     # 1. Portfolio (IB positions) - most important, fast
@@ -434,6 +472,8 @@ def main():
         results['midcap400'] = run_midcap400_scan()
     elif args.earnings_crush:
         results['earnings_crush'] = run_earnings_crush_scan()
+    elif args.preearnings_straddles:
+        results['preearnings_straddles'] = run_preearnings_straddle_scan()
     elif args.scans_only or run_all:
         # Run in priority order - portfolio first, midcap last
         # Add delays between IB scans to prevent rate limiting
@@ -443,6 +483,9 @@ def main():
         
         results['earnings_crush'] = run_earnings_crush_scan()
         wait_for_ib_recovery()  # Full delay after earnings crush
+
+        results['preearnings_straddles'] = run_preearnings_straddle_scan()
+        wait_for_ib_recovery()  # Full delay after pre-earnings straddles
         
         results['iv_rankings'] = run_iv_rankings_scan()
         wait_for_ib_recovery()  # Full delay after IV rankings
@@ -465,6 +508,8 @@ def main():
         summary_items.append(('IB Positions Fetch', results['ib_positions']))
     if results['earnings_crush'] is not None:
         summary_items.append(('Earnings Crush Scan', results['earnings_crush']))
+    if results['preearnings_straddles'] is not None:
+        summary_items.append(('Pre-Earnings Straddles Scan', results['preearnings_straddles']))
     if results['iv_rankings'] is not None:
         summary_items.append(('IV Rankings Scan', results['iv_rankings']))
     if results['nasdaq100'] is not None:
