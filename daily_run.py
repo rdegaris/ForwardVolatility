@@ -99,7 +99,7 @@ def print_info(message):
     print(f"{Colors.CYAN}[INFO] {message}{Colors.END}")
 
 
-def run_command(command, description):
+def run_command(command, description, cwd=None):
     """
     Run a shell command and return success status.
     Streams output in real-time for visibility.
@@ -124,6 +124,7 @@ def run_command(command, description):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,  # Combine stderr into stdout
                 bufsize=1,  # Line buffered
+                cwd=cwd,
             )
         else:
             process = subprocess.Popen(
@@ -132,6 +133,7 @@ def run_command(command, description):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,  # Combine stderr into stdout
                 bufsize=1,  # Line buffered
+                cwd=cwd,
             )
         
         # Stream output line by line in real-time
@@ -239,7 +241,8 @@ def run_earnings_crush_scan():
     # Run the earnings crush scan
     success = run_command(
         [PYTHON_EXE, "-u", str(scan_script)],
-        "Earnings Crush scan (Finnhub + IB)"
+        "Earnings Crush scan (Finnhub + IB)",
+        cwd=str(earnings_crush_path)
     )
     
     return success
@@ -263,7 +266,8 @@ def run_preearnings_straddle_scan():
 
     success = run_command(
         [PYTHON_EXE, "-u", str(scan_script)],
-        "Pre-Earnings Straddle scan (Finnhub + IB)"
+        "Pre-Earnings Straddle scan (Finnhub + IB)",
+        cwd=str(earnings_crush_path)
     )
 
     return success
@@ -359,6 +363,12 @@ def upload_to_web_repos():
             print_warning("earnings_crush_latest.json not found in EarningsCrush folder")
 
         preearnings_results = earnings_crush_path / 'pre_earnings_straddle_latest.json'
+        if not preearnings_results.exists():
+            # Fallback: older runs may have written this file in the forward-volatility-calculator CWD
+            alt = Path('pre_earnings_straddle_latest.json')
+            if alt.exists():
+                preearnings_results = alt
+
         if preearnings_results.exists():
             try:
                 data_dst = os.path.join(web_path, "pre_earnings_straddle_latest.json")
@@ -368,7 +378,7 @@ def upload_to_web_repos():
             except Exception as e:
                 print_error(f"Failed to copy pre_earnings_straddle_latest.json: {e}")
         else:
-            print_warning("pre_earnings_straddle_latest.json not found in EarningsCrush folder")
+            print_warning("pre_earnings_straddle_latest.json not found in EarningsCrush folder or local folder")
     
     if copied > 0:
         print_info(f"Copied {copied} result files to web repo")
