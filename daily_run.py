@@ -99,7 +99,7 @@ def print_info(message):
     print(f"{Colors.CYAN}[INFO] {message}{Colors.END}")
 
 
-def run_command(command, description, cwd=None):
+def run_command(command, description, cwd=None, env=None):
     """
     Run a shell command and return success status.
     Streams output in real-time for visibility.
@@ -125,6 +125,7 @@ def run_command(command, description, cwd=None):
                 stderr=subprocess.STDOUT,  # Combine stderr into stdout
                 bufsize=1,  # Line buffered
                 cwd=cwd,
+                env=env,
             )
         else:
             process = subprocess.Popen(
@@ -134,6 +135,7 @@ def run_command(command, description, cwd=None):
                 stderr=subprocess.STDOUT,  # Combine stderr into stdout
                 bufsize=1,  # Line buffered
                 cwd=cwd,
+                env=env,
             )
         
         # Stream output line by line in real-time
@@ -190,9 +192,14 @@ def run_nasdaq100_scan():
 def run_midcap400_scan():
     """Run MidCap 400 scanner."""
     print_section("Running MidCap 400 Scanner")
+    env = os.environ.copy()
+    # MidCap 400 is the slowest scan; MA200 historical data requests add a lot of latency.
+    # Disable MA200 fetch for this subprocess only.
+    env['FETCH_MA_200'] = env.get('FETCH_MA_200_MIDCAP400', '0')
     return run_command(
         [PYTHON_EXE, "-u", "run_midcap400_scan.py"],
-        "MidCap 400 scan"
+        "MidCap 400 scan",
+        env=env,
     )
 
 
