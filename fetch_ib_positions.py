@@ -335,9 +335,9 @@ def main():
     print("=" * 60)
     
     # Configuration
-    HOST = '127.0.0.1'
-    PORT = 7498  # 7498 for TWS paper, 7496 for TWS live, 4002 for Gateway paper, 4001 for Gateway live
-    CLIENT_ID = 1
+    HOST = os.environ.get('IB_HOST', '127.0.0.1')
+    PORT = int(os.environ.get('IB_PORT', '7498'))
+    CLIENT_ID = int(os.environ.get('IB_CLIENT_ID', '1'))
     
     ib = None
     try:

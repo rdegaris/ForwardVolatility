@@ -308,6 +308,15 @@ def fetch_ib_positions():
 def upload_to_web_repos():
     """Upload scan results to web repositories."""
     print_section("Uploading Results to Web Repositories")
+
+    def _validate_json_file(path: str) -> bool:
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                json.load(f)
+            return True
+        except Exception as e:
+            print_error(f"Invalid JSON ({path}): {e}")
+            return False
     
     # Check if web repo exists
     web_path = os.path.join("..", "forward-volatility-web", "public", "data")
@@ -330,9 +339,14 @@ def upload_to_web_repos():
     copied = 0
     import shutil
     
+    block_publish = False
+
     for src, dst in files_to_copy:
         if os.path.exists(src):
             try:
+                if src.lower().endswith('.json') and not _validate_json_file(src):
+                    block_publish = True
+                    continue
                 # Copy to /data/ directory
                 dst_path = os.path.join(web_path, dst)
                 shutil.copy2(src, dst_path)
@@ -347,16 +361,19 @@ def upload_to_web_repos():
         earnings_results = earnings_crush_path / 'earnings_crush_latest.json'
         if earnings_results.exists():
             try:
+                if not _validate_json_file(str(earnings_results)):
+                    block_publish = True
+                else:
                 # Copy to /data/ folder (where EarningsCrush page fetches from)
-                data_dst = os.path.join(web_path, "earnings_crush_latest.json")
-                shutil.copy2(str(earnings_results), data_dst)
-                print_success(f"Copied earnings_crush_latest.json -> data/ (page source)")
-                copied += 1
-                
-                # Also copy to root public folder for backwards compatibility
-                root_dst = os.path.join(web_path, "..", "earnings_crush_latest.json")
-                shutil.copy2(str(earnings_results), root_dst)
-                print_success(f"Copied earnings_crush_latest.json -> public/ (root)")
+                    data_dst = os.path.join(web_path, "earnings_crush_latest.json")
+                    shutil.copy2(str(earnings_results), data_dst)
+                    print_success(f"Copied earnings_crush_latest.json -> data/ (page source)")
+                    copied += 1
+                    
+                    # Also copy to root public folder for backwards compatibility
+                    root_dst = os.path.join(web_path, "..", "earnings_crush_latest.json")
+                    shutil.copy2(str(earnings_results), root_dst)
+                    print_success(f"Copied earnings_crush_latest.json -> public/ (root)")
             except Exception as e:
                 print_error(f"Failed to copy earnings_crush_latest.json: {e}")
         else:
@@ -371,10 +388,13 @@ def upload_to_web_repos():
 
         if preearnings_results.exists():
             try:
-                data_dst = os.path.join(web_path, "pre_earnings_straddle_latest.json")
-                shutil.copy2(str(preearnings_results), data_dst)
-                print_success("Copied pre_earnings_straddle_latest.json -> data/")
-                copied += 1
+                if not _validate_json_file(str(preearnings_results)):
+                    block_publish = True
+                else:
+                    data_dst = os.path.join(web_path, "pre_earnings_straddle_latest.json")
+                    shutil.copy2(str(preearnings_results), data_dst)
+                    print_success("Copied pre_earnings_straddle_latest.json -> data/")
+                    copied += 1
             except Exception as e:
                 print_error(f"Failed to copy pre_earnings_straddle_latest.json: {e}")
         else:
@@ -382,6 +402,11 @@ def upload_to_web_repos():
     
     if copied > 0:
         print_info(f"Copied {copied} result files to web repo")
+
+        if block_publish:
+            print_warning("One or more JSON files were invalid; blocking git commit/push")
+            print_info("Fix the upstream generator, then re-run to publish")
+            return False
         
         # Git commit and push automatically
         try:

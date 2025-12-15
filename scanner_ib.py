@@ -8,6 +8,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
 import time
+import os
 
 try:
     from ib_insync import IB, Stock, Option
@@ -113,7 +114,7 @@ def print_bordered_table(df):
 class IBScanner:
     """Interactive Brokers Forward Volatility Scanner."""
     
-    def __init__(self, host='127.0.0.1', port=7498, client_id=1, check_earnings=True):
+    def __init__(self, host=None, port=None, client_id=None, check_earnings=True):
         """
         Initialize IB connection.
         
@@ -123,6 +124,12 @@ class IBScanner:
             client_id: Unique client ID
             check_earnings: Filter out tickers with earnings in trading window (default: True)
         """
+        if host is None:
+            host = os.environ.get('IB_HOST', '127.0.0.1')
+        if port is None:
+            port = int(os.environ.get('IB_PORT', '7498'))
+        if client_id is None:
+            client_id = int(os.environ.get('IB_CLIENT_ID', '1'))
         self.ib = IB()
         self.host = host
         self.port = port
@@ -612,6 +619,21 @@ class IBScanner:
         current_price = stock_info['price']
         ma_200 = stock_info.get('ma_200')
         above_ma_200 = stock_info.get('above_ma_200')
+
+        # Optional: skip tickers with earnings in the next N days.
+        # This prevents calendar-event names from polluting the scan and reduces API calls.
+        if self.check_earnings and self.earnings_checker:
+            try:
+                ignore_days = int(os.environ.get('EARNINGS_IGNORE_WITHIN_DAYS', '90'))
+            except Exception:
+                ignore_days = 90
+            if ignore_days > 0 and self.earnings_checker.has_earnings_within_days(ticker, ignore_days):
+                ed = self.earnings_checker.get_earnings_date(ticker, days_ahead=max(ignore_days, 60))
+                if ed:
+                    print(f"  Skipping: earnings within {ignore_days} days ({ed.strftime('%Y-%m-%d')})")
+                else:
+                    print(f"  Skipping: earnings within {ignore_days} days")
+                return opportunities
         
         # Display price and MA info
         print(f"  Price: ${current_price:.2f}")
@@ -725,7 +747,7 @@ class IBScanner:
                 if self.check_earnings and self.earnings_checker:
                     earnings_date = self.earnings_checker.cache.get(ticker)
                     if not earnings_date:
-                        # Try to fetch it from IB
+                        # Fetch it from cached earnings sources (Finnhub primary; Yahoo fallback/confirm)
                         earnings_date = self.earnings_checker.get_earnings_date(ticker)
                     if earnings_date:
                         next_earnings = earnings_date.strftime('%Y-%m-%d')

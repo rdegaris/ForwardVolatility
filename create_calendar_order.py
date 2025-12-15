@@ -16,7 +16,13 @@ The order is placed in TWS but NOT transmitted - review and transmit manually.
 """
 
 import sys
+import os
 from ib_insync import IB, Option, ComboLeg, Contract, LimitOrder
+
+
+IB_HOST = os.environ.get("IB_HOST", "127.0.0.1")
+IB_PORT = int(os.environ.get("IB_PORT", "7498"))
+IB_CLIENT_ID = int(os.environ.get("IB_CLIENT_ID", "100"))
 
 
 def create_calendar_order(ticker: str, strike: float, front_expiry: str, back_expiry: str, quantity: int = 10, transmit: bool = False):
@@ -45,7 +51,7 @@ def create_calendar_order(ticker: str, strike: float, front_expiry: str, back_ex
     # Connect to IB
     ib = IB()
     try:
-        ib.connect('127.0.0.1', 7498, clientId=100)
+        ib.connect(IB_HOST, IB_PORT, clientId=IB_CLIENT_ID)
         print('[OK] Connected to IB')
     except Exception as e:
         print(f'[ERROR] Could not connect to IB: {e}')

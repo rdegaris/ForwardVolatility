@@ -15,6 +15,7 @@ import bisect
 from typing import List, Dict, Optional, Tuple
 from scanner_ib import IBScanner, calculate_dte
 import pandas as pd
+import os
 
 
 # Reconnect to IB every N tickers to avoid memory buildup
@@ -247,7 +248,7 @@ def adaptive_batch_scan(tickers: List[str],
                         min_iv_threshold: float = 30.0,
                         adaptive_percentile: float = 0.20,
                         ff_threshold: float = 0.2,
-                        port: int = 7498) -> Tuple[pd.DataFrame, List[Dict]]:
+                        port: Optional[int] = None) -> Tuple[pd.DataFrame, List[Dict]]:
     """
     Run adaptive single-pass scan on a list of tickers.
     
@@ -256,11 +257,13 @@ def adaptive_batch_scan(tickers: List[str],
         min_iv_threshold: Minimum IV to consider (default 30%)
         adaptive_percentile: Scan stocks in top X percentile (default 0.20)
         ff_threshold: FF threshold for opportunities (default 0.2)
-        port: IB port (default 7498)
+        port: IB port (defaults to IB_PORT env var or 7498)
     
     Returns:
         Tuple of (opportunities DataFrame, IV rankings list)
     """
+    if port is None:
+        port = int(os.environ.get('IB_PORT', '7498'))
     scanner = IBScanner(port=port, check_earnings=True)
     
     if not scanner.connect():

@@ -9,6 +9,7 @@ Orders will appear in TWS ready for review before execution.
 import json
 import sys
 import argparse
+import os
 from datetime import datetime, timedelta
 import time
 
@@ -25,7 +26,7 @@ except ImportError:
 class CalendarOrderPlacer:
     """Places calendar spread orders in TWS without transmitting."""
     
-    def __init__(self, host='127.0.0.1', port=7498, client_id=10):
+    def __init__(self, host=None, port=None, client_id=None):
         """
         Initialize IB connection.
         
@@ -34,6 +35,12 @@ class CalendarOrderPlacer:
             port: 7498 for TWS (matching scanner default)
             client_id: Unique client ID (use different from scanner)
         """
+        if host is None:
+            host = os.environ.get('IB_HOST', '127.0.0.1')
+        if port is None:
+            port = int(os.environ.get('IB_PORT', '7498'))
+        if client_id is None:
+            client_id = int(os.environ.get('IB_CLIENT_ID', '10'))
         self.ib = IB()
         self.host = host
         self.port = port

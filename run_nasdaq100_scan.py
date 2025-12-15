@@ -48,8 +48,7 @@ def run_nasdaq100_scan(ff_threshold=0.2, min_iv_threshold=30.0, adaptive_percent
         tickers,
         min_iv_threshold=min_iv_threshold,
         adaptive_percentile=adaptive_percentile,
-        ff_threshold=ff_threshold,
-        port=7498
+        ff_threshold=ff_threshold
     )
     
     if df is None or df.empty:

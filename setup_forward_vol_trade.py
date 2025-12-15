@@ -18,7 +18,13 @@ The script reads from nasdaq100_results_latest.json and midcap400_results_latest
 
 import sys
 import json
+import os
 from ib_insync import IB, Option, ComboLeg, Contract, LimitOrder
+
+
+IB_HOST = os.environ.get("IB_HOST", "127.0.0.1")
+IB_PORT = int(os.environ.get("IB_PORT", "7498"))
+IB_CLIENT_ID = int(os.environ.get("IB_CLIENT_ID", "101"))
 
 
 def load_opportunity(ticker: str) -> dict:
@@ -98,7 +104,7 @@ def setup_trade(ticker: str, quantity: int = 10, transmit: bool = False):
     # Connect to IB
     ib = IB()
     try:
-        ib.connect('127.0.0.1', 7498, clientId=101)
+        ib.connect(IB_HOST, IB_PORT, clientId=IB_CLIENT_ID)
         print('[OK] Connected to IB')
     except Exception as e:
         print(f'[ERROR] Could not connect to IB: {e}')

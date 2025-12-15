@@ -9,17 +9,33 @@ from typing import Optional, Dict, List
 import json
 import os
 import time
+from pathlib import Path
 
-# Finnhub API key
-FINNHUB_API_KEY = os.environ.get('FINNHUB_API_KEY', 'd3rcvl1r01qopgh82hs0d3rcvl1r01qopgh82hsg')
+# Finnhub API key (required for Finnhub; optional if using Yahoo fallback)
+FINNHUB_API_KEY = (os.environ.get('FINNHUB_API_KEY') or '').strip() or None
+
+# Cache controls
+EARNINGS_CACHE_TTL_SECONDS = int(os.environ.get('EARNINGS_CACHE_TTL_SECONDS', '86400'))  # 1 day
+CONFIRM_WITH_YFINANCE = (os.environ.get('EARNINGS_CONFIRM_YFINANCE', '1').strip() != '0')
+
+
+def _default_cache_path() -> str:
+    # Shared across scripts/repos; safe for Task Scheduler.
+    base = Path(os.environ.get('FORWARD_VOL_CACHE_DIR') or (Path.home() / '.forward-volatility'))
+    try:
+        base.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        pass
+    return str(base / 'earnings_cache.json')
 
 
 class EarningsChecker:
     """Check for upcoming earnings dates using Finnhub API with Yahoo Finance fallback."""
     
-    def __init__(self, cache_file: str = "earnings_cache.json", use_yahoo_fallback: bool = True):
-        self.cache: Dict[str, datetime] = {}
-        self.cache_file = cache_file
+    def __init__(self, cache_file: Optional[str] = None, use_yahoo_fallback: bool = True):
+        self.cache: Dict[str, Optional[datetime]] = {}
+        self._checked_at: Dict[str, float] = {}
+        self.cache_file = (cache_file or os.environ.get('EARNINGS_CACHE_FILE') or _default_cache_path())
         self.api_key = FINNHUB_API_KEY
         self.use_yahoo_fallback = use_yahoo_fallback
         self._load_cache()
@@ -28,25 +44,70 @@ class EarningsChecker:
         """Load cached earnings dates from file."""
         if os.path.exists(self.cache_file):
             try:
-                with open(self.cache_file, 'r') as f:
+                with open(self.cache_file, 'r', encoding='utf-8') as f:
                     data = json.load(f)
-                    # Convert string dates back to datetime
+
+                # Back-compat: {"AAPL": "2025-01-01"}
+                if isinstance(data, dict) and all(isinstance(v, (str, type(None))) for v in data.values()):
                     for ticker, date_str in data.items():
                         if date_str:
                             self.cache[ticker] = datetime.strptime(date_str, '%Y-%m-%d')
+                            self._checked_at[ticker] = 0.0
+                        else:
+                            self.cache[ticker] = None
+                            self._checked_at[ticker] = 0.0
+                    return
+
+                # Current format: {"tickers": {"AAPL": {"date": "YYYY-MM-DD"|null, "checked_at": <epoch>}}, "meta": {...}}
+                tickers_obj = data.get('tickers') if isinstance(data, dict) else None
+                if isinstance(tickers_obj, dict):
+                    for ticker, entry in tickers_obj.items():
+                        if not isinstance(entry, dict):
+                            continue
+                        date_str = entry.get('date')
+                        checked_at = entry.get('checked_at')
+                        if isinstance(checked_at, (int, float)):
+                            self._checked_at[ticker] = float(checked_at)
+                        else:
+                            self._checked_at[ticker] = 0.0
+                        if date_str:
+                            try:
+                                self.cache[ticker] = datetime.strptime(date_str, '%Y-%m-%d')
+                            except Exception:
+                                self.cache[ticker] = None
+                        else:
+                            self.cache[ticker] = None
             except Exception as e:
                 print(f"Warning: Could not load earnings cache: {e}")
     
     def _save_cache(self):
         """Save cached earnings dates to file."""
         try:
-            data = {}
+            tickers_obj: Dict[str, Dict[str, object]] = {}
             for ticker, dt in self.cache.items():
-                data[ticker] = dt.strftime('%Y-%m-%d') if dt else None
-            with open(self.cache_file, 'w') as f:
-                json.dump(data, f, indent=2)
+                tickers_obj[ticker] = {
+                    'date': dt.strftime('%Y-%m-%d') if dt else None,
+                    'checked_at': float(self._checked_at.get(ticker, 0.0)),
+                }
+            payload = {
+                'meta': {'version': 2},
+                'tickers': tickers_obj,
+            }
+            # Ensure parent exists
+            try:
+                Path(self.cache_file).parent.mkdir(parents=True, exist_ok=True)
+            except Exception:
+                pass
+            with open(self.cache_file, 'w', encoding='utf-8') as f:
+                json.dump(payload, f, indent=2)
         except Exception as e:
             print(f"Warning: Could not save earnings cache: {e}")
+
+    def _cache_fresh(self, ticker: str) -> bool:
+        checked_at = float(self._checked_at.get(ticker, 0.0) or 0.0)
+        if checked_at <= 0:
+            return False
+        return (time.time() - checked_at) <= EARNINGS_CACHE_TTL_SECONDS
     
     def _get_earnings_from_yahoo(self, ticker: str) -> Optional[datetime]:
         """
@@ -98,15 +159,30 @@ class EarningsChecker:
             datetime of next earnings or None if not found
         """
         # Check cache first
-        if ticker in self.cache:
-            cached_date = self.cache[ticker]
+        if ticker in self.cache and self._cache_fresh(ticker):
+            cached_date = self.cache.get(ticker)
+            if cached_date is None:
+                return None
             # If cached date is in the future or today, use it
-            if cached_date and cached_date >= datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
+            if cached_date >= datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
                 return cached_date
-            # If cached date is in the past, need to refresh
         
         # Try Finnhub first
         earnings_date = self._get_earnings_from_finnhub(ticker, days_ahead)
+
+        # Confirm with Yahoo Finance if available (sanity check)
+        if earnings_date is not None and self.use_yahoo_fallback and CONFIRM_WITH_YFINANCE:
+            yahoo_date = self._get_earnings_from_yahoo(ticker)
+            if yahoo_date is not None:
+                try:
+                    diff_days = abs((earnings_date - yahoo_date).days)
+                    if diff_days >= 4:
+                        print(
+                            f"    Warning: Finnhub vs Yahoo mismatch for {ticker}: "
+                            f"Finnhub={earnings_date.strftime('%Y-%m-%d')} Yahoo={yahoo_date.strftime('%Y-%m-%d')}"
+                        )
+                except Exception:
+                    pass
         
         # If Finnhub returns None, try Yahoo Finance as fallback
         if earnings_date is None and self.use_yahoo_fallback:
@@ -116,6 +192,7 @@ class EarningsChecker:
         
         # Cache the result
         self.cache[ticker] = earnings_date
+        self._checked_at[ticker] = time.time()
         self._save_cache()
         
         return earnings_date
@@ -131,6 +208,8 @@ class EarningsChecker:
         Returns:
             datetime of next earnings or None
         """
+        if not self.api_key:
+            return None
         try:
             today = datetime.now().date()
             from_date = today.strftime('%Y-%m-%d')
@@ -153,10 +232,20 @@ class EarningsChecker:
                         return datetime.strptime(date_str, '%Y-%m-%d')
             
             return None
-            
+
         except Exception as e:
             print(f"    Warning: Could not fetch earnings from Finnhub for {ticker}: {e}")
             return None
+
+    def has_earnings_within_days(self, ticker: str, days: int) -> bool:
+        """True if earnings are within the next N calendar days (including today)."""
+        if days <= 0:
+            return False
+        earnings_date = self.get_earnings_date(ticker, days_ahead=max(days, 60))
+        if not earnings_date:
+            return False
+        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        return today <= earnings_date <= (today + timedelta(days=days))
     
     def has_earnings_before(self, ticker: str, expiry_date: str) -> bool:
         """

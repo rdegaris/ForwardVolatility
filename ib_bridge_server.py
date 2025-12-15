@@ -23,7 +23,7 @@ Endpoints
 
 Notes
 - Requires ib_insync installed in the same venv.
-- Requires FINNHUB_API_KEY (has a fallback value but you should set your own).
+- Requires FINNHUB_API_KEY for earnings-date lookups.
 """
 
 from __future__ import annotations
@@ -39,6 +39,13 @@ from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
 import requests
+
+try:
+    from earnings_checker import EarningsChecker
+
+    EARNINGS_CHECKER_AVAILABLE = True
+except Exception:
+    EARNINGS_CHECKER_AVAILABLE = False
 
 try:
     import asyncio
@@ -79,7 +86,10 @@ def _ensure_event_loop_in_this_thread() -> None:
 
 
 def _finnhub_key() -> str:
-    return os.environ.get("FINNHUB_API_KEY", "d3rcvl1r01qopgh82hs0d3rcvl1r01qopgh82hsg")
+    return (os.environ.get("FINNHUB_API_KEY") or "").strip()
+
+
+_earnings_checker = EarningsChecker(use_yahoo_fallback=True) if EARNINGS_CHECKER_AVAILABLE else None
 
 
 def _json_response(handler: BaseHTTPRequestHandler, status: int, payload: Any) -> None:
@@ -96,25 +106,13 @@ def _json_response(handler: BaseHTTPRequestHandler, status: int, payload: Any) -
 
 
 def fetch_next_earnings_date(symbol: str, days_ahead: int = 60) -> Optional[str]:
-    today = date.today()
-    from_d = today.strftime("%Y-%m-%d")
-    to_d = (today + timedelta(days=days_ahead)).strftime("%Y-%m-%d")
-    url = (
-        "https://finnhub.io/api/v1/calendar/earnings"
-        f"?from={from_d}&to={to_d}&symbol={symbol}&token={_finnhub_key()}"
-    )
-    try:
-        resp = requests.get(url, timeout=10)
-        if resp.status_code != 200:
-            return None
-        data = resp.json() or {}
-        cal = data.get("earningsCalendar") or []
-        if not cal:
-            return None
-        d = cal[0].get("date")
-        return d
-    except Exception:
+    if not _earnings_checker:
         return None
+    # EarningsChecker caches (including negative results) in a shared file cache.
+    dt = _earnings_checker.get_earnings_date(symbol, days_ahead=days_ahead)
+    if not dt:
+        return None
+    return dt.strftime("%Y-%m-%d")
 
 
 def days_to(date_str: Optional[str]) -> Optional[int]:

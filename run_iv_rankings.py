@@ -9,11 +9,13 @@ from nasdaq100 import get_nasdaq_100_list
 from midcap400 import get_midcap400_list, get_mag7
 from earnings_checker import EarningsChecker
 import time
+import os
 
 # Days after earnings to exclude (IV already crushed)
-DAYS_AFTER_EARNINGS_EXCLUDE = 3
-# Days before earnings to exclude (IV elevated due to upcoming event)  
-DAYS_BEFORE_EARNINGS_EXCLUDE = 7
+DAYS_AFTER_EARNINGS_EXCLUDE = int(os.environ.get('EARNINGS_IGNORE_PAST_DAYS', '3'))
+# Days before earnings to exclude (IV elevated due to upcoming event)
+# Default: 90 days to avoid earnings names dominating IV rankings.
+DAYS_BEFORE_EARNINGS_EXCLUDE = int(os.environ.get('EARNINGS_IGNORE_WITHIN_DAYS', '90'))
 
 def load_earnings_from_scans():
     """Load earnings dates from main scan result files."""
@@ -71,11 +73,11 @@ def scan_iv_rankings(universe='all', top_n=None):
         print(f"Returning top: {top_n}")
     print()
     
-    scanner = IBScanner(port=7498, check_earnings=False)
+    scanner = IBScanner(check_earnings=False)
     
     if not scanner.connect():
         print("❌ Could not connect to Interactive Brokers")
-        print("Make sure TWS or IB Gateway is running on port 7498")
+        print("Make sure TWS or IB Gateway is running (see IB_PORT)")
         return None
     
     try:
