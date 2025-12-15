@@ -4,7 +4,7 @@ Uses the existing rank_tickers_by_iv functionality from scanner_ib
 """
 import json
 from datetime import datetime, timedelta
-from scanner_ib import IBScanner, rank_tickers_by_iv
+from scanner_ib import IBScanner, rank_tickers_by_iv, rank_tickers_by_underlying_iv
 from nasdaq100 import get_nasdaq_100_list
 from midcap400 import get_midcap400_list, get_mag7
 from earnings_checker import EarningsChecker
@@ -16,6 +16,22 @@ DAYS_AFTER_EARNINGS_EXCLUDE = int(os.environ.get('EARNINGS_IGNORE_PAST_DAYS', '3
 # Days before earnings to exclude (IV elevated due to upcoming event)
 # Default: 90 days to avoid earnings names dominating IV rankings.
 DAYS_BEFORE_EARNINGS_EXCLUDE = int(os.environ.get('EARNINGS_IGNORE_WITHIN_DAYS', '90'))
+
+# IV rankings method:
+# - 'underlying' is much faster (uses stock snapshot IV fields)
+# - 'options' uses option-chain near-term IV (slower, more accurate)
+IV_RANKINGS_METHOD = os.environ.get('IV_RANKINGS_METHOD', 'underlying').strip().lower()
+
+# Whether to call EarningsChecker for tickers not present in scan JSON.
+# Default off to keep rankings fast and avoid external calls.
+IV_RANKINGS_FETCH_MISSING_EARNINGS = os.environ.get('IV_RANKINGS_FETCH_MISSING_EARNINGS', '0').strip() in ('1', 'true', 'yes', 'y')
+
+
+def _parse_yyyy_mm_dd(date_str: str):
+    try:
+        return datetime.strptime(date_str, '%Y-%m-%d').date()
+    except Exception:
+        return None
 
 def load_earnings_from_scans():
     """Load earnings dates from main scan result files."""
@@ -81,8 +97,14 @@ def scan_iv_rankings(universe='all', top_n=None):
         return None
     
     try:
-        # Use the existing rank_tickers_by_iv function
-        ranked = rank_tickers_by_iv(scanner, tickers, top_n=top_n)
+        if IV_RANKINGS_METHOD == 'options':
+            ranked = rank_tickers_by_iv(scanner, tickers, top_n=top_n)
+        else:
+            ranked = rank_tickers_by_underlying_iv(scanner, tickers, top_n=top_n)
+            # Safety: if implied/hist vol fields aren't available, fall back.
+            if not ranked or len(ranked) < max(10, int(0.05 * len(tickers))):
+                print("[WARNING] Underlying IV snapshot returned too few results; falling back to option-based near-term IV ranking.")
+                ranked = rank_tickers_by_iv(scanner, tickers, top_n=top_n)
         
         if not ranked:
             print("❌ No tickers could be ranked")
@@ -108,8 +130,17 @@ def scan_iv_rankings(universe='all', top_n=None):
         removed_count = 0
         
         for ticker, iv, price in ranked:
-            # Check earnings date
-            earnings_date = earnings_checker.get_earnings_date(ticker)
+            # Prefer earnings dates already embedded in scan JSON (fast, no API calls)
+            earnings_date = None
+
+            mapped = earnings_map.get(ticker)
+            if mapped:
+                earnings_date = _parse_yyyy_mm_dd(mapped)
+
+            # Optional fallback: fetch missing earnings via cached earnings checker.
+            if earnings_date is None and IV_RANKINGS_FETCH_MISSING_EARNINGS:
+                earnings_date = earnings_checker.get_earnings_date(ticker)
+
             if earnings_date:
                 days_diff = (earnings_date - today).days
                 if -DAYS_AFTER_EARNINGS_EXCLUDE <= days_diff <= DAYS_BEFORE_EARNINGS_EXCLUDE:

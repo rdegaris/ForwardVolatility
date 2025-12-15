@@ -12,6 +12,9 @@ from datetime import datetime
 from midcap400 import get_midcap400_list
 from adaptive_scanner import adaptive_batch_scan
 import pandas as pd
+import os
+
+from scanner_ib import IBScanner, rank_tickers_by_underlying_iv
 
 
 def run_midcap400_scan(ff_threshold=0.2, min_iv_threshold=35.0, adaptive_percentile=0.20):
@@ -41,11 +44,42 @@ def run_midcap400_scan(ff_threshold=0.2, min_iv_threshold=35.0, adaptive_percent
     log(f"Strategy: Adaptive - scan top {adaptive_percentile * 100:.0f}% by IV as we go")
     log("")
     
+    # Fast prefilter: use underlying snapshot IV to pick the likely high-vol names,
+    # then run the slower option-chain scan on just that subset.
+    prefilter_enabled = os.environ.get('MIDCAP_PREFILTER_ENABLED', '1').strip().lower() not in ('0', 'false', 'no', 'n')
+    prefilter_percentile = float(os.environ.get('MIDCAP_PREFILTER_PERCENTILE', str(adaptive_percentile)))
+    prefilter_percentile = max(0.01, min(prefilter_percentile, 1.0))
+
+    if prefilter_enabled:
+        log("Prefiltering tickers by underlying IV snapshot (fast)...")
+        pre_scanner = IBScanner(check_earnings=False)
+        filtered = tickers
+        if pre_scanner.connect():
+            try:
+                ranked = rank_tickers_by_underlying_iv(pre_scanner, tickers, top_n=None)
+                if ranked:
+                    # Keep top X percentile by underlying IV (and apply min_iv_threshold to that metric).
+                    ranked = [r for r in ranked if r[1] >= min_iv_threshold]
+                    keep_n = max(25, int(len(ranked) * prefilter_percentile))
+                    filtered = [t for (t, iv, price) in ranked[:keep_n]]
+                    log(f"Prefilter kept {len(filtered)}/{len(tickers)} tickers (top {prefilter_percentile * 100:.0f}% by underlying IV, min {min_iv_threshold}%)")
+                else:
+                    log("[WARNING] Prefilter produced no results; scanning full universe")
+            finally:
+                pre_scanner.disconnect()
+
+        # After prefiltering, scan ALL remaining names (avoid double-filtering by percentile).
+        scan_percentile = 1.0
+        tickers_to_scan = filtered
+    else:
+        scan_percentile = adaptive_percentile
+        tickers_to_scan = tickers
+
     # Run adaptive single-pass scan
     df, iv_rankings = adaptive_batch_scan(
-        tickers,
+        tickers_to_scan,
         min_iv_threshold=min_iv_threshold,
-        adaptive_percentile=adaptive_percentile,
+        adaptive_percentile=scan_percentile,
         ff_threshold=ff_threshold
     )
     

@@ -139,6 +139,10 @@ class IBScanner:
         self.earnings_checker = EarningsChecker() if self.check_earnings else None
         self.price_cache = {}  # Cache for stock prices
         self.ma_200_cache = {}  # Cache for 200-day MA
+        self._opt_params_cache = {}  # Cache for reqSecDefOptParams results per ticker
+
+        # Performance toggles
+        self.fetch_ma_200 = os.environ.get('FETCH_MA_200', '1').strip().lower() not in ('0', 'false', 'no', 'n')
     
     def connect(self, max_retries=3):
         """Connect to IB Gateway or TWS with retry logic."""
@@ -184,9 +188,30 @@ class IBScanner:
         try:
             stock = Stock(ticker, 'SMART', 'USD')
             self.ib.qualifyContracts(stock)
+
+            # Fast path: snapshot tick (avoids a fixed multi-second sleep)
+            try:
+                snap = self.ib.reqTickers(stock)
+                if snap and len(snap) > 0:
+                    t = snap[0]
+                    price = t.marketPrice()
+                    if price and price > 0:
+                        self.price_cache[ticker] = price
+                        return price
+                    if getattr(t, 'last', None) and t.last > 0:
+                        self.price_cache[ticker] = t.last
+                        return t.last
+            except Exception:
+                pass
             
             ticker_data = self.ib.reqMktData(stock, '', False, False)
-            self.ib.sleep(2)  # Wait for data
+
+            # Fallback: short wait for streaming data
+            try:
+                wait_s = float(os.environ.get('IB_STOCK_PRICE_SLEEP_SECONDS', '0.6'))
+            except Exception:
+                wait_s = 0.6
+            self.ib.sleep(wait_s)
             
             price = ticker_data.marketPrice()
             if price and price > 0:
@@ -260,9 +285,11 @@ class IBScanner:
                 print(f"    No price available for {ticker}", flush=True)
                 return None
             print(f"    Price: ${price:.2f}", flush=True)
-            
-            print(f"    Getting 200-day MA...", flush=True)
-            ma_200 = self.get_200day_ma(ticker)
+
+            ma_200 = None
+            if self.fetch_ma_200:
+                print(f"    Getting 200-day MA...", flush=True)
+                ma_200 = self.get_200day_ma(ticker)
             
             above_ma_200 = None
             if ma_200:
@@ -281,10 +308,7 @@ class IBScanner:
         """Get available option expiration dates."""
         try:
             print(f"    Getting option chains for {ticker}...", flush=True)
-            stock = Stock(ticker, 'SMART', 'USD')
-            self.ib.qualifyContracts(stock)
-            
-            chains = self.ib.reqSecDefOptParams(stock.symbol, '', stock.secType, stock.conId)
+            chains = self.get_secdef_opt_params(ticker)
             
             if not chains:
                 return []
@@ -294,6 +318,22 @@ class IBScanner:
             return expirations
         except Exception as e:
             print(f"  Error getting option chains: {e}")
+            return []
+
+    def get_secdef_opt_params(self, ticker: str):
+        """Get (and cache) option security definition params for a ticker."""
+        cached = self._opt_params_cache.get(ticker)
+        if cached is not None:
+            return cached
+
+        try:
+            stock = Stock(ticker, 'SMART', 'USD')
+            self.ib.qualifyContracts(stock)
+            chains = self.ib.reqSecDefOptParams(stock.symbol, '', stock.secType, stock.conId)
+            self._opt_params_cache[ticker] = chains
+            return chains
+        except Exception:
+            self._opt_params_cache[ticker] = []
             return []
     
     def get_near_term_iv(self, ticker: str, current_price: float) -> Optional[float]:
@@ -344,7 +384,7 @@ class IBScanner:
             stock = Stock(ticker, 'SMART', 'USD')
             self.ib.qualifyContracts(stock)
             
-            chains = self.ib.reqSecDefOptParams(stock.symbol, '', stock.secType, stock.conId)
+            chains = self.get_secdef_opt_params(ticker)
             if not chains:
                 if debug:
                     print(f"\n    [DEBUG] No chains found")
@@ -378,7 +418,11 @@ class IBScanner:
             if debug:
                 print(f"    [DEBUG] Waiting for IV data (2 sec)...")
             print(f"    Waiting for IV data...", flush=True)
-            self.ib.sleep(2)  # 2 seconds for better IV data quality, especially for less liquid stocks
+            try:
+                iv_wait_s = float(os.environ.get('IB_OPTION_IV_SLEEP_SECONDS', '2'))
+            except Exception:
+                iv_wait_s = 2.0
+            self.ib.sleep(iv_wait_s)
             if debug:
                 print(f"    [DEBUG] Data received")
             print(f"    IV data received", flush=True)
@@ -504,7 +548,7 @@ class IBScanner:
             stock = Stock(ticker, 'SMART', 'USD')
             self.ib.qualifyContracts(stock)
             
-            chains = self.ib.reqSecDefOptParams(stock.symbol, '', stock.secType, stock.conId)
+            chains = self.get_secdef_opt_params(ticker)
             if not chains:
                 return None, None
             
@@ -531,7 +575,11 @@ class IBScanner:
             
             # Wait once for all data
             print(f"    Waiting for batch IV data...", flush=True)
-            self.ib.sleep(2)
+            try:
+                iv_wait_s = float(os.environ.get('IB_OPTION_IV_SLEEP_SECONDS', '2'))
+            except Exception:
+                iv_wait_s = 2.0
+            self.ib.sleep(iv_wait_s)
             print(f"    Batch IV data received", flush=True)
             
             # Extract IV from all tickers
@@ -544,7 +592,11 @@ class IBScanner:
                 elif ticker_data.last and ticker_data.last > 0:
                     try:
                         calc_iv = self.ib.calculateImpliedVolatility(contract, ticker_data.last, current_price)
-                        self.ib.sleep(0.5)
+                        try:
+                            calc_wait_s = float(os.environ.get('IB_CALC_IV_SLEEP_SECONDS', '0.5'))
+                        except Exception:
+                            calc_wait_s = 0.5
+                        self.ib.sleep(calc_wait_s)
                         if calc_iv and hasattr(calc_iv, 'impliedVolatility') and calc_iv.impliedVolatility:
                             iv = calc_iv.impliedVolatility * 100
                             if debug:
@@ -703,7 +755,8 @@ class IBScanner:
             print(f"  Checking {expiry1} (DTE={dte1}) vs {expiry2} (DTE={dte2}) [Target: {target_dte1}/{target_dte2}]...", flush=True)
             
             # Use batch method to fetch both expirations at once (saves ~2s per pair)
-            iv_data1, iv_data2 = self.get_atm_iv_batch(ticker, expiry1, expiry2, current_price, debug=True)
+            scan_iv_debug = os.environ.get('SCAN_IV_DEBUG', '0').strip().lower() in ('1', 'true', 'yes', 'y')
+            iv_data1, iv_data2 = self.get_atm_iv_batch(ticker, expiry1, expiry2, current_price, debug=scan_iv_debug)
             
             if iv_data1 is None or iv_data2 is None:
                 print("  -> No IV data\n")
@@ -898,6 +951,79 @@ def rank_tickers_by_iv(scanner: IBScanner, tickers: List[str], top_n: Optional[i
         print(f"\n(Showing top {top_n} of {len(ticker_ivs)} tickers)")
     
     return ticker_ivs[:top_n] if top_n else ticker_ivs
+
+
+def rank_tickers_by_underlying_iv(
+    scanner: IBScanner,
+    tickers: List[str],
+    top_n: Optional[int] = None,
+    batch_size: int = 75,
+) -> List[tuple]:
+    """Rank tickers by underlying implied volatility (snapshot).
+
+    This is much faster than option-chain based IV because it avoids:
+    - reqSecDefOptParams per ticker
+    - reqMktData on option contracts
+    - fixed sleeps per ticker
+
+    Notes:
+    - Requires the IB account to have market data permissions for the IV fields.
+    - Falls back to historical volatility if implied vol is unavailable.
+    """
+
+    print("\n" + "=" * 80)
+    print("RANKING TICKERS BY UNDERLYING IV (SNAPSHOT)")
+    print("=" * 80)
+    print("Fast path: uses stock snapshot fields (impliedVolatility / histVolatility).\n")
+
+    results: List[tuple] = []
+    total = len(tickers)
+
+    # Build + qualify stock contracts in batches, then snapshot them.
+    for start in range(0, total, batch_size):
+        batch = tickers[start:start + batch_size]
+        contracts = [Stock(t, 'SMART', 'USD') for t in batch]
+
+        try:
+            scanner.ib.qualifyContracts(*contracts)
+            tickers_data = scanner.ib.reqTickers(*contracts)
+
+            for tkr_data in tickers_data:
+                symbol = getattr(tkr_data.contract, 'symbol', None)
+                if not symbol:
+                    continue
+
+                price = tkr_data.marketPrice()
+                if not price or price <= 0:
+                    if getattr(tkr_data, 'last', None) and tkr_data.last > 0:
+                        price = tkr_data.last
+
+                if not price or price <= 0:
+                    continue
+
+                # Prefer implied vol; fallback to historical vol.
+                iv = getattr(tkr_data, 'impliedVolatility', None)
+                if iv and iv > 0:
+                    iv_pct = iv * 100
+                else:
+                    hv = getattr(tkr_data, 'histVolatility', None)
+                    if hv and hv > 0:
+                        iv_pct = hv * 100
+                    else:
+                        continue
+
+                scanner.price_cache[symbol] = price
+                results.append((symbol, float(iv_pct), float(price)))
+
+        except Exception as e:
+            print(f"[WARNING] Batch {start + 1}-{min(start + batch_size, total)} failed: {e}")
+            continue
+
+    results.sort(key=lambda x: x[1], reverse=True)
+
+    if top_n:
+        return results[:top_n]
+    return results
 
 
 def scan_batch(scanner: IBScanner, tickers: List[str], threshold: float = 0.2, 

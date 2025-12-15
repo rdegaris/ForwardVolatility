@@ -121,6 +121,11 @@ class AdaptiveScanner:
         print("=" * 80 + "\n")
         
         start_time = time.time()
+
+        try:
+            ticker_pause_s = float(os.environ.get('SCAN_TICKER_PAUSE_SECONDS', '0.02'))
+        except Exception:
+            ticker_pause_s = 0.02
         
         for i, ticker in enumerate(tickers, 1):
             ticker_start = time.time()
@@ -184,7 +189,8 @@ class AdaptiveScanner:
                     skipped_count += 1
                 
                 # Brief pause to avoid rate limiting
-                time.sleep(0.1)
+                if ticker_pause_s > 0:
+                    time.sleep(ticker_pause_s)
                 
             except Exception as e:
                 print(f"[ERROR] {e}")
