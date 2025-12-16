@@ -26,6 +26,71 @@ import json
 import logging
 from pathlib import Path
 
+
+def _load_env_file(path: Path) -> bool:
+    """Load KEY=VALUE lines into os.environ (no overrides).
+
+    Intentionally lightweight (no dependency on python-dotenv).
+    Supports comments (#), blank lines, and optional leading "export ".
+    """
+    try:
+        if not path.exists() or not path.is_file():
+            return False
+        loaded_any = False
+        for raw in path.read_text(encoding='utf-8').splitlines():
+            line = raw.strip()
+            if not line or line.startswith('#'):
+                continue
+            if line.lower().startswith('export '):
+                line = line[7:].strip()
+            if '=' not in line:
+                continue
+            key, value = line.split('=', 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            if not key:
+                continue
+            if key in os.environ and (os.environ.get(key) or '').strip():
+                continue
+            os.environ[key] = value
+            loaded_any = True
+        return loaded_any
+    except Exception:
+        return False
+
+
+def load_local_secrets():
+    """Load secrets from local env files in common locations.
+
+    This enables running from cmd/bat/Task Scheduler without relying on
+    interactive shell profiles.
+    """
+    script_dir = Path(__file__).parent.resolve()
+
+    candidates = [
+        script_dir / '.env',
+        script_dir / '.secrets.env',
+    ]
+
+    # Also allow a shared env file at the workspace root (Forward Volatility/)
+    # without hard-coding absolute paths.
+    for parent in [script_dir.parent, script_dir.parent.parent]:
+        candidates.extend([
+            parent / '.env',
+            parent / '.secrets.env',
+        ])
+
+    # EarningsCrush calculator can be invoked with cwd=earnings_crush_path,
+    # so also load from that folder if present.
+    earnings_crush_path = script_dir.parent.parent.parent / 'EarningsCrush' / 'earnings-crush-calculator'
+    candidates.extend([
+        earnings_crush_path / '.env',
+        earnings_crush_path / '.secrets.env',
+    ])
+
+    for path in candidates:
+        _load_env_file(path)
+
 # Delay between IB scans to let TWS recover from rate limits
 IB_SCAN_DELAY_SECONDS = 10
 
@@ -230,6 +295,14 @@ def run_iv_rankings_scan():
 def run_earnings_crush_scan():
     """Run Earnings Crush scanner using IB."""
     print_section("Running Earnings Crush Scanner")
+
+    if not (os.environ.get('FINNHUB_API_KEY') or '').strip():
+        secrets_hint = Path(__file__).parent.resolve() / '.secrets.env'
+        print_warning(
+            "FINNHUB_API_KEY not set; skipping Earnings Crush scan "
+            f"(set it in {secrets_hint} for Task Scheduler/batch runs)"
+        )
+        return None
     
     # Path to earnings crush calculator
     earnings_crush_path = Path(__file__).parent.parent.parent / 'EarningsCrush' / 'earnings-crush-calculator'
@@ -258,6 +331,14 @@ def run_earnings_crush_scan():
 def run_preearnings_straddle_scan():
     """Run Pre-Earnings Long Straddle scanner using IB."""
     print_section("Running Pre-Earnings Straddle Scanner")
+
+    if not (os.environ.get('FINNHUB_API_KEY') or '').strip():
+        secrets_hint = Path(__file__).parent.resolve() / '.secrets.env'
+        print_warning(
+            "FINNHUB_API_KEY not set; skipping Pre-Earnings Straddle scan "
+            f"(set it in {secrets_hint} for Task Scheduler/batch runs)"
+        )
+        return None
 
     earnings_crush_path = Path(__file__).parent.parent.parent / 'EarningsCrush' / 'earnings-crush-calculator'
 
@@ -449,6 +530,8 @@ def upload_to_web_repos():
 
 def main():
     """Main execution function."""
+    load_local_secrets()
+
     parser = argparse.ArgumentParser(
         description="Daily Forward Volatility Scanner - Run all scans and IB sync"
     )
@@ -524,10 +607,12 @@ def main():
         wait_for_ib_recovery(5)  # Short delay after positions
         
         results['earnings_crush'] = run_earnings_crush_scan()
-        wait_for_ib_recovery()  # Full delay after earnings crush
+        if results['earnings_crush'] is not None:
+            wait_for_ib_recovery()  # Full delay after earnings crush
 
         results['preearnings_straddles'] = run_preearnings_straddle_scan()
-        wait_for_ib_recovery()  # Full delay after pre-earnings straddles
+        if results['preearnings_straddles'] is not None:
+            wait_for_ib_recovery()  # Full delay after pre-earnings straddles
         
         results['iv_rankings'] = run_iv_rankings_scan()
         wait_for_ib_recovery()  # Full delay after IV rankings

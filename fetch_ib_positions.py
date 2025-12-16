@@ -21,7 +21,7 @@ from collections import defaultdict
 import os
 
 
-def connect_to_ib(host='127.0.0.1', port=7497, client_id=1):
+def connect_to_ib(host='127.0.0.1', port=7497, client_id=110):
     """
     Connect to Interactive Brokers TWS or Gateway.
     
@@ -337,7 +337,7 @@ def main():
     # Configuration
     HOST = os.environ.get('IB_HOST', '127.0.0.1')
     PORT = int(os.environ.get('IB_PORT', '7498'))
-    CLIENT_ID = int(os.environ.get('IB_CLIENT_ID', '1'))
+    CLIENT_ID = int(os.environ.get('IB_CLIENT_ID', '110'))
     
     ib = None
     try:

@@ -24,4 +24,5 @@ echo  Execution Complete
 echo  Website will update in ~2 minutes
 echo ========================================
 echo.
+if "%NO_PAUSE%"=="1" goto :eof
 pause

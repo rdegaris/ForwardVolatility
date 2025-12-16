@@ -129,7 +129,8 @@ class IBScanner:
         if port is None:
             port = int(os.environ.get('IB_PORT', '7498'))
         if client_id is None:
-            client_id = int(os.environ.get('IB_CLIENT_ID', '1'))
+            # Default to a higher clientId to reduce collisions with manual TWS/Gateway sessions.
+            client_id = int(os.environ.get('IB_CLIENT_ID', '110'))
         self.ib = IB()
         self.host = host
         self.port = port

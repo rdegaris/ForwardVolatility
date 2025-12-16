@@ -92,7 +92,7 @@ def scan_iv_rankings(universe='all', top_n=None):
     scanner = IBScanner(check_earnings=False)
     
     if not scanner.connect():
-        print("❌ Could not connect to Interactive Brokers")
+        print("[ERROR] Could not connect to Interactive Brokers")
         print("Make sure TWS or IB Gateway is running (see IB_PORT)")
         return None
     
@@ -107,7 +107,7 @@ def scan_iv_rankings(universe='all', top_n=None):
                 ranked = rank_tickers_by_iv(scanner, tickers, top_n=top_n)
         
         if not ranked:
-            print("❌ No tickers could be ranked")
+            print("[ERROR] No tickers could be ranked")
             return None
         
         print()
