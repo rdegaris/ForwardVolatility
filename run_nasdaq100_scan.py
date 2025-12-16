@@ -14,9 +14,10 @@ from nasdaq100 import get_nasdaq_100_list
 from adaptive_scanner import adaptive_batch_scan
 import pandas as pd
 import sys
+import os
 
 
-def run_nasdaq100_scan(ff_threshold=0.2, min_iv_threshold=30.0, adaptive_percentile=0.25):
+def run_nasdaq100_scan(ff_threshold=0.1, min_iv_threshold=30.0, adaptive_percentile=0.25):
     """Run adaptive scan on NASDAQ 100 stocks and save formatted results.
     
     Args:
@@ -36,6 +37,16 @@ def run_nasdaq100_scan(ff_threshold=0.2, min_iv_threshold=30.0, adaptive_percent
     log("=" * 80)
     log("")
     
+    # Allow env overrides (useful for Task Scheduler / batch runs)
+    try:
+        ff_threshold = float(os.environ.get('FF_THRESHOLD', str(ff_threshold)))
+    except Exception:
+        pass
+    try:
+        min_iv_threshold = float(os.environ.get('MIN_IV_THRESHOLD', str(min_iv_threshold)))
+    except Exception:
+        pass
+
     tickers = get_nasdaq_100_list()
     log(f"Scanning: {len(tickers)} NASDAQ 100 stocks")
     log(f"FF Threshold: {ff_threshold}")
@@ -232,7 +243,7 @@ def run_nasdaq100_scan(ff_threshold=0.2, min_iv_threshold=30.0, adaptive_percent
 
 if __name__ == "__main__":
     import sys
-    threshold = float(sys.argv[1]) if len(sys.argv) > 1 else 0.2
+    threshold = float(sys.argv[1]) if len(sys.argv) > 1 else 0.1
     try:
         run_nasdaq100_scan(ff_threshold=threshold)
         sys.exit(0)

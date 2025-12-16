@@ -141,6 +141,7 @@ class IBScanner:
         self.price_cache = {}  # Cache for stock prices
         self.ma_200_cache = {}  # Cache for 200-day MA
         self._opt_params_cache = {}  # Cache for reqSecDefOptParams results per ticker
+        self._opt_chain_choice_cache = {}  # Cache chosen option chain per ticker
 
         # Performance toggles
         self.fetch_ma_200 = os.environ.get('FETCH_MA_200', '1').strip().lower() not in ('0', 'false', 'no', 'n')
@@ -309,13 +310,12 @@ class IBScanner:
         """Get available option expiration dates."""
         try:
             print(f"    Getting option chains for {ticker}...", flush=True)
-            chains = self.get_secdef_opt_params(ticker)
+            chain = self._select_option_chain(ticker)
             
-            if not chains:
+            if not chain:
                 return []
             
-            # Get expirations from first chain
-            expirations = sorted(chains[0].expirations)
+            expirations = sorted(chain.expirations)
             return expirations
         except Exception as e:
             print(f"  Error getting option chains: {e}")
@@ -336,6 +336,70 @@ class IBScanner:
         except Exception:
             self._opt_params_cache[ticker] = []
             return []
+
+    def _select_option_chain(self, ticker: str):
+        """Choose the best SecDefOptParam chain for a ticker.
+
+        Some symbols have multiple chains (e.g., a "2{SYMBOL}" tradingClass). Picking the
+        wrong chain can lead to ambiguous contracts or missing security definitions.
+        """
+        cached = self._opt_chain_choice_cache.get(ticker)
+        if cached is not None:
+            return cached
+
+        chains = self.get_secdef_opt_params(ticker)
+        if not chains:
+            self._opt_chain_choice_cache[ticker] = None
+            return None
+
+        def score(chain) -> tuple:
+            exch = (getattr(chain, 'exchange', '') or '').upper()
+            trading_class = (getattr(chain, 'tradingClass', '') or '').upper()
+            return (
+                1 if exch == 'SMART' else 0,
+                1 if trading_class == ticker.upper() else 0,
+                0 if trading_class.startswith('2') else 1,
+            )
+
+        chosen = max(chains, key=score)
+        self._opt_chain_choice_cache[ticker] = chosen
+        return chosen
+
+    def _make_option(self, ticker: str, expiry: str, strike: float, right: str, chain) -> 'Option':
+        """Construct an Option contract with enough fields to avoid ambiguity in IB."""
+        trading_class = getattr(chain, 'tradingClass', '') if chain is not None else ''
+        multiplier = getattr(chain, 'multiplier', '100') if chain is not None else '100'
+
+        return Option(
+            ticker,
+            expiry,
+            float(strike),
+            right,
+            'SMART',
+            multiplier=str(multiplier) if multiplier else '100',
+            currency='USD',
+            tradingClass=str(trading_class) if trading_class else '',
+        )
+
+    @staticmethod
+    def _candidate_strikes(strikes, current_price: float, max_candidates: int = 12) -> List[float]:
+        """Return a small list of strikes closest to price (for qualify fallbacks)."""
+        if not strikes:
+            return []
+        uniq = []
+        seen = set()
+        for s in strikes:
+            if s is None:
+                continue
+            try:
+                fs = float(s)
+            except Exception:
+                continue
+            if fs not in seen:
+                seen.add(fs)
+                uniq.append(fs)
+        uniq.sort(key=lambda x: abs(x - current_price))
+        return uniq[:max_candidates]
     
     def get_near_term_iv(self, ticker: str, current_price: float) -> Optional[float]:
         """Get near-term IV for quick ranking. Accepts 7-90 day expirations.
@@ -385,25 +449,42 @@ class IBScanner:
             stock = Stock(ticker, 'SMART', 'USD')
             self.ib.qualifyContracts(stock)
             
-            chains = self.get_secdef_opt_params(ticker)
-            if not chains:
+            chain = self._select_option_chain(ticker)
+            if not chain:
                 if debug:
                     print(f"\n    [DEBUG] No chains found")
                 return None
-            
-            strikes = chains[0].strikes
-            
-            # Find ATM strike
-            atm_strike = min(strikes, key=lambda x: abs(x - current_price))
+
+            candidates = self._candidate_strikes(getattr(chain, 'strikes', []), current_price)
+            if not candidates:
+                return None
+
+            atm_strike = None
+            for candidate_strike in candidates:
+                try:
+                    call = self._make_option(ticker, expiry, candidate_strike, 'C', chain)
+                    put = self._make_option(ticker, expiry, candidate_strike, 'P', chain)
+                    self.ib.qualifyContracts(call, put)
+
+                    # qualifyContracts may not raise even when IB returns error 200.
+                    # Treat it as a failure unless conId is populated.
+                    if not getattr(call, 'conId', 0) or not getattr(put, 'conId', 0):
+                        call = None
+                        put = None
+                        continue
+
+                    atm_strike = float(candidate_strike)
+                    break
+                except Exception:
+                    call = None
+                    put = None
+                    continue
+
+            if atm_strike is None:
+                return None
             
             if debug:
                 print(f"\n    [DEBUG] ATM Strike: {atm_strike} (Price: {current_price})")
-            
-            # Get call and put
-            call = Option(ticker, expiry, atm_strike, 'C', 'SMART')
-            put = Option(ticker, expiry, atm_strike, 'P', 'SMART')
-            
-            self.ib.qualifyContracts(call, put)
             
             if debug:
                 print(f"    [DEBUG] Call: {call.localSymbol if hasattr(call, 'localSymbol') else 'qualified'}")
@@ -549,23 +630,49 @@ class IBScanner:
             stock = Stock(ticker, 'SMART', 'USD')
             self.ib.qualifyContracts(stock)
             
-            chains = self.get_secdef_opt_params(ticker)
-            if not chains:
+            chain = self._select_option_chain(ticker)
+            if not chain:
                 return None, None
-            
-            strikes = chains[0].strikes
-            atm_strike = min(strikes, key=lambda x: abs(x - current_price))
+
+            candidates = self._candidate_strikes(getattr(chain, 'strikes', []), current_price)
+            if not candidates:
+                return None, None
+
+            atm_strike = None
+            call1 = None
+            put1 = None
+            call2 = None
+            put2 = None
+            for candidate_strike in candidates:
+                try:
+                    call1 = self._make_option(ticker, expiry1, candidate_strike, 'C', chain)
+                    put1 = self._make_option(ticker, expiry1, candidate_strike, 'P', chain)
+                    call2 = self._make_option(ticker, expiry2, candidate_strike, 'C', chain)
+                    put2 = self._make_option(ticker, expiry2, candidate_strike, 'P', chain)
+                    self.ib.qualifyContracts(call1, put1, call2, put2)
+
+                    # qualifyContracts may not raise even when IB returns error 200.
+                    if not all(getattr(c, 'conId', 0) for c in (call1, put1, call2, put2)):
+                        call1 = None
+                        put1 = None
+                        call2 = None
+                        put2 = None
+                        continue
+
+                    atm_strike = float(candidate_strike)
+                    break
+                except Exception:
+                    call1 = None
+                    put1 = None
+                    call2 = None
+                    put2 = None
+                    continue
+
+            if atm_strike is None:
+                return None, None
             
             if debug:
                 print(f"\n    [DEBUG] Batch request: ATM Strike {atm_strike} for {expiry1} and {expiry2}")
-            
-            # Create all 4 option contracts
-            call1 = Option(ticker, expiry1, atm_strike, 'C', 'SMART')
-            put1 = Option(ticker, expiry1, atm_strike, 'P', 'SMART')
-            call2 = Option(ticker, expiry2, atm_strike, 'C', 'SMART')
-            put2 = Option(ticker, expiry2, atm_strike, 'P', 'SMART')
-            
-            self.ib.qualifyContracts(call1, put1, call2, put2)
             
             # Request all market data at once
             print(f"    Requesting batch IV data for {expiry1} and {expiry2}...", flush=True)
@@ -674,12 +781,13 @@ class IBScanner:
         above_ma_200 = stock_info.get('above_ma_200')
 
         # Optional: skip tickers with earnings in the next N days.
-        # This prevents calendar-event names from polluting the scan and reduces API calls.
+        # NOTE: Default is OFF (0). Most stocks have earnings within 90 days,
+        # so a default like 90 can unintentionally zero out the entire scan.
         if self.check_earnings and self.earnings_checker:
             try:
-                ignore_days = int(os.environ.get('EARNINGS_IGNORE_WITHIN_DAYS', '90'))
+                ignore_days = int(os.environ.get('EARNINGS_IGNORE_WITHIN_DAYS', '0'))
             except Exception:
-                ignore_days = 90
+                ignore_days = 0
             if ignore_days > 0 and self.earnings_checker.has_earnings_within_days(ticker, ignore_days):
                 ed = self.earnings_checker.get_earnings_date(ticker, days_ahead=max(ignore_days, 60))
                 if ed:

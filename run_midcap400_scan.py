@@ -17,7 +17,7 @@ import os
 from scanner_ib import IBScanner, rank_tickers_by_underlying_iv
 
 
-def run_midcap400_scan(ff_threshold=0.2, min_iv_threshold=35.0, adaptive_percentile=0.20):
+def run_midcap400_scan(ff_threshold=0.1, min_iv_threshold=35.0, adaptive_percentile=0.20):
     """Run adaptive scan on S&P MidCap 400 stocks.
     
     Args:
@@ -37,6 +37,16 @@ def run_midcap400_scan(ff_threshold=0.2, min_iv_threshold=35.0, adaptive_percent
     log("=" * 80)
     log("")
     
+    # Allow env overrides (useful for Task Scheduler / batch runs)
+    try:
+        ff_threshold = float(os.environ.get('FF_THRESHOLD', str(ff_threshold)))
+    except Exception:
+        pass
+    try:
+        min_iv_threshold = float(os.environ.get('MIN_IV_THRESHOLD', str(min_iv_threshold)))
+    except Exception:
+        pass
+
     tickers = get_midcap400_list()
     log(f"Scanning: {len(tickers)} S&P MidCap 400 stocks")
     log(f"FF Threshold: {ff_threshold}")
