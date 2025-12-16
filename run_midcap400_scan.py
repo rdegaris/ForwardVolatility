@@ -13,6 +13,9 @@ from midcap400 import get_midcap400_list
 from adaptive_scanner import adaptive_batch_scan
 import pandas as pd
 import os
+from env_loader import load_env
+
+load_env(__file__)
 
 from scanner_ib import IBScanner, rank_tickers_by_underlying_iv
 

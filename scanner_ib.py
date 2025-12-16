@@ -910,7 +910,9 @@ class IBScanner:
                     earnings_date = self.earnings_checker.cache.get(ticker)
                     if not earnings_date:
                         # Fetch it from cached earnings sources (Finnhub primary; Yahoo fallback/confirm)
-                        earnings_date = self.earnings_checker.get_earnings_date(ticker)
+                        # Use a long enough window to cover the back expiry (e.g. 30/90 pairs).
+                        days_ahead = max(120, int(dte2) + 7)
+                        earnings_date = self.earnings_checker.get_earnings_date(ticker, days_ahead=days_ahead)
                     if earnings_date:
                         next_earnings = earnings_date.strftime('%Y-%m-%d')
                 

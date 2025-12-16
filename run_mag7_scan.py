@@ -8,6 +8,9 @@ from scanner_ib import IBScanner, rank_tickers_by_iv
 from nasdaq100 import get_mag7
 import pandas as pd
 import time
+from env_loader import load_env
+
+load_env(__file__)
 
 def calculate_trade_details(row):
     """Calculate trade recommendations and P&L estimates"""

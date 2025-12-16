@@ -10,9 +10,16 @@ import json
 import os
 import time
 from pathlib import Path
+from typing import Any
 
-# Finnhub API key (required for Finnhub; optional if using Yahoo fallback)
-FINNHUB_API_KEY = (os.environ.get('FINNHUB_API_KEY') or '').strip() or None
+# NOTE: We intentionally DO NOT freeze FINNHUB_API_KEY at import time.
+# Some entrypoints load env vars (e.g. from .env/.secrets.env) after imports.
+# Always read from os.environ when needed.
+
+
+def _finnhub_key() -> Optional[str]:
+    key = (os.environ.get('FINNHUB_API_KEY') or '').strip()
+    return key or None
 
 # Cache controls
 EARNINGS_CACHE_TTL_SECONDS = int(os.environ.get('EARNINGS_CACHE_TTL_SECONDS', '86400'))  # 1 day
@@ -35,8 +42,10 @@ class EarningsChecker:
     def __init__(self, cache_file: Optional[str] = None, use_yahoo_fallback: bool = True):
         self.cache: Dict[str, Optional[datetime]] = {}
         self._checked_at: Dict[str, float] = {}
+        self._api_key_present: Dict[str, bool] = {}
+        self._source: Dict[str, str] = {}
         self.cache_file = (cache_file or os.environ.get('EARNINGS_CACHE_FILE') or _default_cache_path())
-        self.api_key = FINNHUB_API_KEY
+        self.api_key = _finnhub_key()
         self.use_yahoo_fallback = use_yahoo_fallback
         self._load_cache()
     
@@ -66,10 +75,16 @@ class EarningsChecker:
                             continue
                         date_str = entry.get('date')
                         checked_at = entry.get('checked_at')
+                        api_key_present = entry.get('api_key_present')
+                        source = entry.get('source')
                         if isinstance(checked_at, (int, float)):
                             self._checked_at[ticker] = float(checked_at)
                         else:
                             self._checked_at[ticker] = 0.0
+                        if isinstance(api_key_present, bool):
+                            self._api_key_present[ticker] = api_key_present
+                        if isinstance(source, str):
+                            self._source[ticker] = source
                         if date_str:
                             try:
                                 self.cache[ticker] = datetime.strptime(date_str, '%Y-%m-%d')
@@ -88,6 +103,8 @@ class EarningsChecker:
                 tickers_obj[ticker] = {
                     'date': dt.strftime('%Y-%m-%d') if dt else None,
                     'checked_at': float(self._checked_at.get(ticker, 0.0)),
+                    'api_key_present': bool(self._api_key_present.get(ticker, False)),
+                    'source': self._source.get(ticker, 'unknown'),
                 }
             payload = {
                 'meta': {'version': 2},
@@ -158,17 +175,31 @@ class EarningsChecker:
         Returns:
             datetime of next earnings or None if not found
         """
-        # Check cache first
+        # Refresh API key each call (env may be loaded after import).
+        self.api_key = _finnhub_key()
+        api_key_present_now = bool(self.api_key)
+
+        # Check cache first.
+        # Important nuance: if we previously cached None *without* a Finnhub key,
+        # and a key is available now, we should re-check Finnhub.
         if ticker in self.cache and self._cache_fresh(ticker):
             cached_date = self.cache.get(ticker)
             if cached_date is None:
-                return None
-            # If cached date is in the future or today, use it
-            if cached_date >= datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
-                return cached_date
+                cached_had_key = bool(self._api_key_present.get(ticker, False))
+                if api_key_present_now and not cached_had_key:
+                    pass  # ignore stale negative cache from a no-key run
+                else:
+                    return None
+            else:
+                # If cached date is in the future or today, use it
+                if cached_date >= datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
+                    return cached_date
         
         # Try Finnhub first
+        source = 'none'
         earnings_date = self._get_earnings_from_finnhub(ticker, days_ahead)
+        if earnings_date is not None:
+            source = 'finnhub'
 
         # Confirm with Yahoo Finance if available (sanity check)
         if earnings_date is not None and self.use_yahoo_fallback and CONFIRM_WITH_YFINANCE:
@@ -188,11 +219,14 @@ class EarningsChecker:
         if earnings_date is None and self.use_yahoo_fallback:
             earnings_date = self._get_earnings_from_yahoo(ticker)
             if earnings_date:
+                source = 'yahoo'
                 print(f"    [Yahoo] Found earnings for {ticker}: {earnings_date.strftime('%Y-%m-%d')}")
         
         # Cache the result
         self.cache[ticker] = earnings_date
         self._checked_at[ticker] = time.time()
+        self._api_key_present[ticker] = api_key_present_now
+        self._source[ticker] = source
         self._save_cache()
         
         return earnings_date
@@ -224,12 +258,24 @@ class EarningsChecker:
                 
                 # Check if we have earnings data
                 if data and 'earningsCalendar' in data and len(data['earningsCalendar']) > 0:
-                    # Get the first (nearest) earnings date
-                    earnings_entry = data['earningsCalendar'][0]
-                    date_str = earnings_entry.get('date')
-                    
-                    if date_str:
-                        return datetime.strptime(date_str, '%Y-%m-%d')
+                    # Finnhub does not guarantee ordering; pick the nearest future date.
+                    today_dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                    dates: List[datetime] = []
+                    for entry in data.get('earningsCalendar', []):
+                        if not isinstance(entry, dict):
+                            continue
+                        date_str = entry.get('date')
+                        if not date_str:
+                            continue
+                        try:
+                            dt = datetime.strptime(date_str, '%Y-%m-%d')
+                        except Exception:
+                            continue
+                        if dt >= today_dt:
+                            dates.append(dt)
+
+                    if dates:
+                        return min(dates)
             
             return None
 
@@ -258,12 +304,13 @@ class EarningsChecker:
         Returns:
             True if earnings are before expiry, False otherwise
         """
-        earnings_date = self.get_earnings_date(ticker)
+        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        expiry = datetime.strptime(expiry_date, '%Y%m%d')
+        days_ahead = max(60, int((expiry - today).days) + 7)
+
+        earnings_date = self.get_earnings_date(ticker, days_ahead=days_ahead)
         if not earnings_date:
             return False
-        
-        # Parse expiry date
-        expiry = datetime.strptime(expiry_date, '%Y%m%d')
         
         # Check if earnings are before or on expiry
         return earnings_date.date() <= expiry.date()
@@ -281,13 +328,15 @@ class EarningsChecker:
         Returns:
             True if earnings fall in the danger zone, False otherwise
         """
-        earnings_date = self.get_earnings_date(ticker)
+        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        back = datetime.strptime(back_expiry, '%Y%m%d')
+        days_ahead = max(60, int((back - today).days) + 7)
+
+        earnings_date = self.get_earnings_date(ticker, days_ahead=days_ahead)
         if not earnings_date:
             return False
-        
-        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+
         front = datetime.strptime(front_expiry, '%Y%m%d')
-        back = datetime.strptime(back_expiry, '%Y%m%d')
         
         # Danger zone: earnings between today and back expiry
         # This catches:
@@ -298,7 +347,7 @@ class EarningsChecker:
     
     def get_days_to_earnings(self, ticker: str) -> Optional[int]:
         """Get number of days until earnings."""
-        earnings_date = self.get_earnings_date(ticker)
+        earnings_date = self.get_earnings_date(ticker, days_ahead=180)
         if not earnings_date:
             return None
         

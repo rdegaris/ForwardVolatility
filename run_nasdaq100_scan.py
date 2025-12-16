@@ -20,6 +20,9 @@ import os
 def run_nasdaq100_scan(ff_threshold=0.1, min_iv_threshold=30.0, adaptive_percentile=0.25):
     """Run adaptive scan on NASDAQ 100 stocks and save formatted results.
     
+from env_loader import load_env
+
+load_env(__file__)
     Args:
         ff_threshold: FF threshold for opportunities (default 0.2)
         min_iv_threshold: Minimum IV to consider scanning (default 30%)
