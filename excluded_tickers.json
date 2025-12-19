@@ -1,0 +1,566 @@
+{
+  "tickers": {
+    "AEO": {
+      "count": 4,
+      "first_seen": "2025-12-19T19:14:43+00:00",
+      "last_seen": "2025-12-19T19:14:43+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "AFG": {
+      "count": 2,
+      "first_seen": "2025-12-19T18:28:00+00:00",
+      "last_seen": "2025-12-19T18:28:01+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "AMAT": {
+      "count": 28,
+      "first_seen": "2025-12-19T19:03:56+00:00",
+      "last_seen": "2025-12-19T19:04:10+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "AMD": {
+      "count": 36,
+      "first_seen": "2025-12-19T19:02:50+00:00",
+      "last_seen": "2025-12-19T19:03:02+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "AMED": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:26:53+00:00",
+      "last_seen": "2025-12-19T18:26:55+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "ANET": {
+      "count": 25,
+      "first_seen": "2025-12-19T19:15:45+00:00",
+      "last_seen": "2025-12-19T19:15:54+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "ANSS": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:20:12+00:00",
+      "last_seen": "2025-12-19T18:20:15+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "ARM": {
+      "count": 12,
+      "first_seen": "2025-12-19T19:06:52+00:00",
+      "last_seen": "2025-12-19T19:06:59+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "AVGO": {
+      "count": 28,
+      "first_seen": "2025-12-19T19:02:16+00:00",
+      "last_seen": "2025-12-19T19:02:31+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "BERY": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:26:54+00:00",
+      "last_seen": "2025-12-19T18:26:55+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "BHLB": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:26:54+00:00",
+      "last_seen": "2025-12-19T18:26:55+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "CDAY": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:26:57+00:00",
+      "last_seen": "2025-12-19T18:27:00+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "CEG": {
+      "count": 28,
+      "first_seen": "2025-12-19T19:11:32+00:00",
+      "last_seen": "2025-12-19T19:11:48+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "CERE": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:26:57+00:00",
+      "last_seen": "2025-12-19T18:27:00+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "CHS": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:26:57+00:00",
+      "last_seen": "2025-12-19T18:27:00+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "CHTR": {
+      "count": 16,
+      "first_seen": "2025-12-19T19:07:15+00:00",
+      "last_seen": "2025-12-19T19:07:28+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "CREE": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:26:58+00:00",
+      "last_seen": "2025-12-19T18:27:00+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "CRWD": {
+      "count": 2,
+      "first_seen": "2025-12-19T19:05:33+00:00",
+      "last_seen": "2025-12-19T19:05:33+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "CRY": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:26:58+00:00",
+      "last_seen": "2025-12-19T18:27:00+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "CSWI": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:26:58+00:00",
+      "last_seen": "2025-12-19T18:27:01+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "DF": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:26:59+00:00",
+      "last_seen": "2025-12-19T18:27:02+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "ENV": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:00+00:00",
+      "last_seen": "2025-12-19T18:27:02+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "FL": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:03+00:00",
+      "last_seen": "2025-12-19T18:27:05+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "GMS": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:03+00:00",
+      "last_seen": "2025-12-19T18:27:05+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "HBI": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:04+00:00",
+      "last_seen": "2025-12-19T18:27:06+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "IACC": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:08+00:00",
+      "last_seen": "2025-12-19T18:27:10+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "IGT": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:08+00:00",
+      "last_seen": "2025-12-19T18:27:10+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "INT": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:08+00:00",
+      "last_seen": "2025-12-19T18:27:10+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "INTC": {
+      "count": 16,
+      "first_seen": "2025-12-19T19:03:23+00:00",
+      "last_seen": "2025-12-19T19:03:36+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "IPG": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:08+00:00",
+      "last_seen": "2025-12-19T18:27:10+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "ISRG": {
+      "count": 1,
+      "first_seen": "2025-12-19T18:24:45+00:00",
+      "last_seen": "2025-12-19T18:24:45+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "JBT": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:08+00:00",
+      "last_seen": "2025-12-19T18:27:11+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "KLAC": {
+      "count": 4,
+      "first_seen": "2025-12-19T19:04:52+00:00",
+      "last_seen": "2025-12-19T19:04:56+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "LANC": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:09+00:00",
+      "last_seen": "2025-12-19T18:27:12+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "LAWS": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:09+00:00",
+      "last_seen": "2025-12-19T18:27:12+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "LBT": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:09+00:00",
+      "last_seen": "2025-12-19T18:27:12+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "LDL": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:09+00:00",
+      "last_seen": "2025-12-19T18:27:12+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "LRCX": {
+      "count": 12,
+      "first_seen": "2025-12-19T19:04:36+00:00",
+      "last_seen": "2025-12-19T19:04:43+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "MDC": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:13+00:00",
+      "last_seen": "2025-12-19T18:27:15+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "META": {
+      "count": 2,
+      "first_seen": "2025-12-19T18:20:43+00:00",
+      "last_seen": "2025-12-19T18:20:43+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "MRC": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:14+00:00",
+      "last_seen": "2025-12-19T18:27:16+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "MRNA": {
+      "count": 2,
+      "first_seen": "2025-12-19T19:09:11+00:00",
+      "last_seen": "2025-12-19T19:09:11+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "NTR": {
+      "count": 1,
+      "first_seen": "2025-12-19T19:43:33+00:00",
+      "last_seen": "2025-12-19T19:43:33+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "OLO": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:15+00:00",
+      "last_seen": "2025-12-19T18:27:17+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "OMI": {
+      "count": 2,
+      "first_seen": "2025-12-19T18:48:13+00:00",
+      "last_seen": "2025-12-19T18:48:13+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "ORLY": {
+      "count": 6,
+      "first_seen": "2025-12-19T18:23:33+00:00",
+      "last_seen": "2025-12-19T18:23:34+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "PACW": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:15+00:00",
+      "last_seen": "2025-12-19T18:27:17+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "PBCT": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:18+00:00",
+      "last_seen": "2025-12-19T18:27:21+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "PES": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:18+00:00",
+      "last_seen": "2025-12-19T18:27:21+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "PPBI": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:18+00:00",
+      "last_seen": "2025-12-19T18:27:22+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "PPC": {
+      "count": 6,
+      "first_seen": "2025-12-19T18:50:14+00:00",
+      "last_seen": "2025-12-19T18:50:15+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "PRO": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:18+00:00",
+      "last_seen": "2025-12-19T18:27:22+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "RIVN": {
+      "count": 23,
+      "first_seen": "2025-12-19T19:12:10+00:00",
+      "last_seen": "2025-12-19T19:12:26+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "RKT": {
+      "count": 2,
+      "first_seen": "2025-12-19T18:51:41+00:00",
+      "last_seen": "2025-12-19T18:51:41+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "ROIC": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:20+00:00",
+      "last_seen": "2025-12-19T18:27:23+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "SGH": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:24+00:00",
+      "last_seen": "2025-12-19T18:27:26+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "SIX": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:24+00:00",
+      "last_seen": "2025-12-19T18:27:26+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "SKX": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:24+00:00",
+      "last_seen": "2025-12-19T18:27:26+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "SNV": {
+      "count": 2,
+      "first_seen": "2025-12-19T18:54:20+00:00",
+      "last_seen": "2025-12-19T18:54:20+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "SPR": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:24+00:00",
+      "last_seen": "2025-12-19T18:27:26+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "SRC": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:24+00:00",
+      "last_seen": "2025-12-19T18:27:26+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "STR": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:24+00:00",
+      "last_seen": "2025-12-19T18:27:27+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "SUM": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:24+00:00",
+      "last_seen": "2025-12-19T18:27:27+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "SWM": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:25+00:00",
+      "last_seen": "2025-12-19T18:27:27+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "SWN": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:25+00:00",
+      "last_seen": "2025-12-19T18:27:27+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "TCF": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:25+00:00",
+      "last_seen": "2025-12-19T18:27:27+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "TEAM": {
+      "count": 16,
+      "first_seen": "2025-12-19T19:05:54+00:00",
+      "last_seen": "2025-12-19T19:06:06+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "TGI": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:25+00:00",
+      "last_seen": "2025-12-19T18:27:27+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "TRTN": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:29+00:00",
+      "last_seen": "2025-12-19T18:27:31+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "TSLA": {
+      "count": 16,
+      "first_seen": "2025-12-19T19:01:53+00:00",
+      "last_seen": "2025-12-19T19:02:07+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "TWNK": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:29+00:00",
+      "last_seen": "2025-12-19T18:27:31+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "UBA": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:29+00:00",
+      "last_seen": "2025-12-19T18:27:31+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "UCBI": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:29+00:00",
+      "last_seen": "2025-12-19T18:27:31+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "UFS": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:29+00:00",
+      "last_seen": "2025-12-19T18:27:31+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "UMPQ": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:29+00:00",
+      "last_seen": "2025-12-19T18:27:31+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "USM": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:29+00:00",
+      "last_seen": "2025-12-19T18:27:31+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "WBA": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:20:13+00:00",
+      "last_seen": "2025-12-19T18:20:16+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "WRB": {
+      "count": 1,
+      "first_seen": "2025-12-19T18:59:58+00:00",
+      "last_seen": "2025-12-19T18:59:58+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "WRI": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:31+00:00",
+      "last_seen": "2025-12-19T18:27:32+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    },
+    "WWE": {
+      "count": 3,
+      "first_seen": "2025-12-19T18:27:31+00:00",
+      "last_seen": "2025-12-19T18:27:32+00:00",
+      "reason": "No security definition has been found for the request",
+      "source": "ib_errorEvent:200"
+    }
+  },
+  "updated_at": "2025-12-19T19:43:33+00:00",
+  "version": 1
+}

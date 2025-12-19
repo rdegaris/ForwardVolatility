@@ -1,0 +1,5 @@
+symbol,entry_dt,entry_price,exit_dt,exit_price,side,qty,pnl,pnl_after_costs,reason
+SYNTH,2015-01-29,84.875,2015-02-19,84.0,short,20,875.0,775.0,channel_exit
+SYNTH,2015-03-02,86.625,2015-03-13,84.25,long,14,-1662.5,-1732.5,stop
+SYNTH,2015-04-06,87.25,2015-04-09,84.5,long,7,-962.5,-997.5,stop
+SYNTH,2015-07-13,76.75,2015-07-31,77.0,long,32,400.0,240.0,channel_exit

@@ -144,7 +144,7 @@ def scan_iv_rankings(universe='all', top_n=None):
             if earnings_date:
                 days_diff = (earnings_date - today).days
                 if -DAYS_AFTER_EARNINGS_EXCLUDE <= days_diff <= DAYS_BEFORE_EARNINGS_EXCLUDE:
-                    print(f"    ⚠️ Removing {ticker}: Earnings on {earnings_date} ({days_diff} days)")
+                    print(f"    [EARNINGS] Removing {ticker}: Earnings on {earnings_date} ({days_diff} days)")
                     removed_count += 1
                     continue
             filtered_ranked.append((ticker, iv, price))
@@ -219,7 +219,7 @@ def scan_iv_rankings(universe='all', top_n=None):
         print("-" * 80)
         
         for i, r in enumerate(results[:20], 1):
-            trend = "↑ ABOVE" if r.get('above_ma_200') else "↓ BELOW" if r.get('above_ma_200') is not None else "-"
+            trend = "ABOVE" if r.get('above_ma_200') else "BELOW" if r.get('above_ma_200') is not None else "-"
             earnings = r.get('next_earnings', '-') or '-'
             print(f"{i:<6} {r['ticker']:<8} ${r['price']:<9.2f} {r['iv']:<9.1f}% {earnings:<12} {trend:<8}")
         

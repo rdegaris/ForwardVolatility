@@ -86,7 +86,7 @@ def setup_trade(ticker: str, quantity: int = 10, transmit: bool = False):
     print(f"Ticker: {ticker}")
     print(f"Price: ${price:.2f}")
     if ma_200:
-        trend = "ABOVE ↑" if above_ma else "BELOW ↓"
+        trend = "ABOVE" if above_ma else "BELOW"
         print(f"200-day MA: ${ma_200:.2f} ({trend})")
     print()
     print(f"Forward Factor: {ff:.3f}")

@@ -261,6 +261,15 @@ def run_midcap400_scan():
     # MidCap 400 is the slowest scan; MA200 historical data requests add a lot of latency.
     # Disable MA200 fetch for this subprocess only.
     env['FETCH_MA_200'] = env.get('FETCH_MA_200_MIDCAP400', '0')
+
+    # Speed-focused MidCap knobs (subprocess-only):
+    # - Prefilter by underlying snapshot IV (fast) and keep only top slice.
+    # - Raise min IV cutoff to avoid spending time on low-quality names.
+    # Override these via env vars if you want to loosen/tighten.
+    env['MIDCAP_PREFILTER_ENABLED'] = env.get('MIDCAP_PREFILTER_ENABLED', '1')
+    env['MIDCAP_PREFILTER_PERCENTILE'] = env.get('MIDCAP_PREFILTER_PERCENTILE_MIDCAP400', env.get('MIDCAP_PREFILTER_PERCENTILE', '0.10'))
+    env['MIN_IV_THRESHOLD'] = env.get('MIN_IV_THRESHOLD_MIDCAP400', env.get('MIN_IV_THRESHOLD', '40'))
+
     return run_command(
         [PYTHON_EXE, "-u", "run_midcap400_scan.py"],
         "MidCap 400 scan",
@@ -361,6 +370,43 @@ def run_preearnings_straddle_scan():
     return success
 
 
+def run_turtle_export():
+    """Export Turtle (System 2) JSON payloads for the web app."""
+    print_section("Exporting Turtle Strategy JSON")
+
+    turtle_root = Path(__file__).parent / 'turtle_trader'
+    if not turtle_root.exists():
+        print_warning(f"turtle_trader folder not found: {turtle_root}")
+        return False
+
+    # Run as a module from within the turtle_trader folder so imports resolve.
+    # Write output JSON into the calculator repo root so upload_to_web_repos can copy it.
+    return run_command(
+        [
+            PYTHON_EXE,
+            "-u",
+            "-m",
+            "turtle_trader.scripts.export_web_json",
+            "--configs-dir",
+            "configs",
+            "--state",
+            "out_live/state.json",
+                "--port",
+                "7498",
+            "--duration",
+            "3 Y",
+            "--out-suggested",
+            "../turtle_suggested_latest.json",
+            "--out-open",
+            "../turtle_open_trades_latest.json",
+            "--out-triggers",
+            "../turtle_triggers_latest.json",
+        ],
+        "Turtle JSON export (IB continuous signals -> front-month execution)",
+        cwd=str(turtle_root),
+    )
+
+
 def fetch_ib_positions():
     """Fetch IB positions and export to JSON."""
     print_section("Fetching IB Positions")
@@ -422,6 +468,11 @@ def upload_to_web_repos():
         ("midcap400_iv_rankings_latest.json", "midcap400_iv_rankings_latest.json"),
         ("mag7_iv_rankings_latest.json", "mag7_iv_rankings_latest.json"),
         ("trades.json", "trades.json"),
+
+        # Turtle strategy web payloads
+        ("turtle_suggested_latest.json", "turtle_suggested_latest.json"),
+        ("turtle_open_trades_latest.json", "turtle_open_trades_latest.json"),
+        ("turtle_triggers_latest.json", "turtle_triggers_latest.json"),
     ]
     
     copied = 0
@@ -575,6 +626,7 @@ def main():
         'iv_rankings': None,
         'earnings_crush': None,
         'preearnings_straddles': None,
+        'turtle_export': None,
         'ib_positions': None,
         'upload': None
     }
@@ -616,6 +668,9 @@ def main():
         
         results['iv_rankings'] = run_iv_rankings_scan()
         wait_for_ib_recovery()  # Full delay after IV rankings
+
+        results['turtle_export'] = run_turtle_export()
+        wait_for_ib_recovery(5)
         
         results['nasdaq100'] = run_nasdaq100_scan()
         wait_for_ib_recovery()  # Full delay after NASDAQ100
@@ -639,6 +694,8 @@ def main():
         summary_items.append(('Pre-Earnings Straddles Scan', results['preearnings_straddles']))
     if results['iv_rankings'] is not None:
         summary_items.append(('IV Rankings Scan', results['iv_rankings']))
+    if results['turtle_export'] is not None:
+        summary_items.append(('Turtle JSON Export', results['turtle_export']))
     if results['nasdaq100'] is not None:
         summary_items.append(('NASDAQ 100 Scan', results['nasdaq100']))
     if results['midcap400'] is not None:

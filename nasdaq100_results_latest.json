@@ -1,6 +1,6 @@
 {
-  "timestamp": "2025-12-16T10:36:19.263699",
-  "date": "2025-12-16",
+  "timestamp": "2025-12-19T11:12:50.047331",
+  "date": "2025-12-19",
   "scan_type": "adaptive",
   "scan_log": [
     "================================================================================",
@@ -13,60 +13,12 @@
     "Strategy: Adaptive - scan top 25% by IV as we go",
     ""
   ],
-  "opportunities": [
-    {
-      "ticker": "DXCM",
-      "price": 65.48,
-      "ma_200": null,
-      "above_ma_200": null,
-      "expiry1": "20251226",
-      "expiry2": "20260102",
-      "dte1": 9,
-      "dte2": 16,
-      "ff_call": 0.124,
-      "ff_put": 0.124,
-      "ff_avg": 0.124,
-      "best_ff": 0.124,
-      "next_earnings": "2026-02-11",
-      "call_iv1": 34.69,
-      "call_iv2": 33.07,
-      "put_iv1": 34.69,
-      "put_iv2": 33.07,
-      "avg_iv1": 34.69,
-      "avg_iv2": 33.07,
-      "fwd_var_call": 0.09523,
-      "fwd_var_put": 0.09523,
-      "fwd_var_avg": 0.09523,
-      "fwd_vol_call": 30.86,
-      "fwd_vol_put": 30.86,
-      "fwd_vol_avg": 30.86,
-      "trade_details": {
-        "spread_type": "PUT",
-        "strike": 65.0,
-        "front_iv": 34.69,
-        "back_iv": 33.07,
-        "ff_display": 0.124,
-        "front_price": 1.426749681926853,
-        "back_price": 1.8134952236502753,
-        "net_debit": 0.38674554172342224,
-        "net_debit_total": 38.674554172342226,
-        "price_source": "estimated",
-        "best_case": 15.46982166893689,
-        "typical_case": 7.734910834468445,
-        "adverse_case": -11.602366251702668,
-        "max_loss": -38.674554172342226,
-        "best_case_pct": 40.0,
-        "typical_case_pct": 20.0,
-        "adverse_case_pct": -30.0,
-        "max_loss_pct": -100.0
-      }
-    }
-  ],
+  "opportunities": [],
   "summary": {
-    "total_opportunities": 1,
+    "total_opportunities": 0,
     "tickers_scanned": 104,
-    "tickers_with_iv": 78,
-    "best_ff": 0.124,
-    "avg_ff": 0.124
+    "tickers_with_iv": 98,
+    "best_ff": 0,
+    "avg_ff": 0
   }
 }

@@ -129,6 +129,10 @@ class AdaptiveScanner:
         
         for i, ticker in enumerate(tickers, 1):
             ticker_start = time.time()
+
+            if getattr(self.scanner, 'excluded_tickers', None) and self.scanner.excluded_tickers.is_excluded(ticker):
+                print(f"[{i}/{total}] {ticker}... [SKIP] Excluded (previously unqualified)")
+                continue
             
             # Periodic reconnection to avoid memory buildup
             self.tickers_since_reconnect += 1

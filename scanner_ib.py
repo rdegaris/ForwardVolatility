@@ -10,6 +10,8 @@ from typing import List, Dict, Optional
 import time
 import os
 
+from excluded_tickers import ExcludedTickers
+
 try:
     from ib_insync import IB, Stock, Option
     IB_AVAILABLE = True
@@ -143,6 +145,16 @@ class IBScanner:
         self._opt_params_cache = {}  # Cache for reqSecDefOptParams results per ticker
         self._opt_chain_choice_cache = {}  # Cache chosen option chain per ticker
 
+        # Persistent exclude list for tickers IB can't qualify (e.g., delisted / no security definition).
+        exclude_enabled = os.environ.get('EXCLUDE_TICKERS_ENABLED', '1').strip().lower() not in ('0', 'false', 'no', 'n')
+        exclude_path = os.environ.get(
+            'EXCLUDE_TICKERS_FILE',
+            os.path.join(os.path.dirname(__file__), 'excluded_tickers.json')
+        )
+        self.excluded_tickers = ExcludedTickers(exclude_path, enabled=exclude_enabled)
+        self._last_ib_error_by_symbol = {}
+        self._error_handler_registered = False
+
         # Performance toggles
         self.fetch_ma_200 = os.environ.get('FETCH_MA_200', '1').strip().lower() not in ('0', 'false', 'no', 'n')
     
@@ -157,6 +169,15 @@ class IBScanner:
                 
                 print(f"Connecting to Interactive Brokers at {self.host}:{self.port}...")
                 self.ib.connect(self.host, self.port, clientId=self.client_id, timeout=10)
+
+                # Register error handler once so we can persistently exclude unqualifiable tickers.
+                if not self._error_handler_registered:
+                    try:
+                        self.ib.errorEvent += self._on_ib_error
+                        self._error_handler_registered = True
+                    except Exception:
+                        pass
+
                 self.connected = True
                 print("  Connected successfully!")
                 return True
@@ -172,6 +193,64 @@ class IBScanner:
             print("     - Gateway Paper: 4002")
             print("     - Gateway Live: 4001")
             return False
+
+    @staticmethod
+    def _looks_like_not_found_error(message: str) -> bool:
+        if not message:
+            return False
+        msg = message.lower()
+        needles = (
+            'no security definition has been found',
+            'unknown contract',
+            'unknown security',
+            'no such contract',
+            'no contract found',
+            'security definition',
+        )
+        return any(n in msg for n in needles)
+
+    def _on_ib_error(self, *args):
+        """IB error event handler.
+
+        Signature (ib_insync): (reqId, errorCode, errorString, contract)
+        but we accept *args to be resilient across versions.
+        """
+        try:
+            req_id = args[0] if len(args) > 0 else None
+            error_code = args[1] if len(args) > 1 else None
+            error_string = args[2] if len(args) > 2 else ''
+            contract = args[3] if len(args) > 3 else None
+        except Exception:
+            return
+
+        symbol = None
+        try:
+            symbol = getattr(contract, 'symbol', None) if contract is not None else None
+        except Exception:
+            symbol = None
+
+        if symbol:
+            self._last_ib_error_by_symbol[symbol.upper()] = {
+                'ts': time.time(),
+                'code': error_code,
+                'msg': str(error_string),
+                'req_id': req_id,
+            }
+
+        # Error 200 is the canonical "no security definition" / unknown contract.
+        if symbol and int(error_code or 0) == 200:
+            self.excluded_tickers.add(symbol, reason=str(error_string), source='ib_errorEvent:200')
+
+    def _should_exclude_on_exception(self, ticker: str, exc: Exception) -> bool:
+        msg = str(exc)
+        if self._looks_like_not_found_error(msg):
+            return True
+
+        # Sometimes the error comes through errorEvent and qualifyContracts doesn't raise.
+        last = self._last_ib_error_by_symbol.get(ticker.upper())
+        if last and int(last.get('code') or 0) == 200 and (time.time() - float(last.get('ts') or 0)) < 30:
+            return True
+        return False
     
     def disconnect(self):
         """Disconnect from IB."""
@@ -181,6 +260,9 @@ class IBScanner:
     
     def get_stock_price(self, ticker: str) -> Optional[float]:
         """Get current stock price."""
+        if self.excluded_tickers.is_excluded(ticker):
+            return None
+
         # Check cache first
         if ticker in self.price_cache:
             return self.price_cache[ticker]
@@ -189,7 +271,19 @@ class IBScanner:
         ticker_data = None
         try:
             stock = Stock(ticker, 'SMART', 'USD')
-            self.ib.qualifyContracts(stock)
+            try:
+                self.ib.qualifyContracts(stock)
+            except Exception as e:
+                if self._should_exclude_on_exception(ticker, e):
+                    self.excluded_tickers.add(ticker, reason=str(e), source='qualifyContracts:stock')
+                raise
+
+            # qualifyContracts may not raise even when IB returns error 200.
+            if not getattr(stock, 'conId', 0):
+                last = self._last_ib_error_by_symbol.get(ticker.upper())
+                if last and int(last.get('code') or 0) == 200:
+                    self.excluded_tickers.add(ticker, reason=str(last.get('msg') or 'Error 200'), source='qualifyContracts:stock')
+                return None
 
             # Fast path: snapshot tick (avoids a fixed multi-second sleep)
             try:
@@ -248,8 +342,21 @@ class IBScanner:
             return self.ma_200_cache[ticker]
         
         try:
+            if self.excluded_tickers.is_excluded(ticker):
+                return None
             stock = Stock(ticker, 'SMART', 'USD')
-            self.ib.qualifyContracts(stock)
+            try:
+                self.ib.qualifyContracts(stock)
+            except Exception as e:
+                if self._should_exclude_on_exception(ticker, e):
+                    self.excluded_tickers.add(ticker, reason=str(e), source='qualifyContracts:ma200')
+                raise
+
+            if not getattr(stock, 'conId', 0):
+                last = self._last_ib_error_by_symbol.get(ticker.upper())
+                if last and int(last.get('code') or 0) == 200:
+                    self.excluded_tickers.add(ticker, reason=str(last.get('msg') or 'Error 200'), source='qualifyContracts:ma200')
+                return None
             
             # Request 200 days of daily bars
             bars = self.ib.reqHistoricalData(
@@ -328,8 +435,25 @@ class IBScanner:
             return cached
 
         try:
+            if self.excluded_tickers.is_excluded(ticker):
+                self._opt_params_cache[ticker] = []
+                return []
+
             stock = Stock(ticker, 'SMART', 'USD')
-            self.ib.qualifyContracts(stock)
+            try:
+                self.ib.qualifyContracts(stock)
+            except Exception as e:
+                if self._should_exclude_on_exception(ticker, e):
+                    self.excluded_tickers.add(ticker, reason=str(e), source='qualifyContracts:optParams')
+                raise
+
+            if not getattr(stock, 'conId', 0):
+                last = self._last_ib_error_by_symbol.get(ticker.upper())
+                if last and int(last.get('code') or 0) == 200:
+                    self.excluded_tickers.add(ticker, reason=str(last.get('msg') or 'Error 200'), source='qualifyContracts:optParams')
+                self._opt_params_cache[ticker] = []
+                return []
+
             chains = self.ib.reqSecDefOptParams(stock.symbol, '', stock.secType, stock.conId)
             self._opt_params_cache[ticker] = chains
             return chains
@@ -1012,6 +1136,9 @@ def rank_tickers_by_iv(scanner: IBScanner, tickers: List[str], top_n: Optional[i
     total = len(tickers)
     
     for i, ticker in enumerate(tickers, 1):
+        if scanner.excluded_tickers.is_excluded(ticker):
+            print(f"[{i}/{total}] Checking {ticker}... [SKIP] Excluded")
+            continue
         # Periodic reconnection to avoid memory buildup
         tickers_since_reconnect += 1
         if tickers_since_reconnect >= reconnect_interval:
@@ -1088,7 +1215,57 @@ def rank_tickers_by_underlying_iv(
     print("Fast path: uses stock snapshot fields (impliedVolatility / histVolatility).\n")
 
     results: List[tuple] = []
+    tickers = [t for t in tickers if not scanner.excluded_tickers.is_excluded(t)]
     total = len(tickers)
+
+    def _process_single(symbol: str) -> None:
+        if scanner.excluded_tickers.is_excluded(symbol):
+            return
+
+        contract = Stock(symbol, 'SMART', 'USD')
+        try:
+            try:
+                scanner.ib.qualifyContracts(contract)
+            except Exception as e:
+                if scanner._should_exclude_on_exception(symbol, e):
+                    scanner.excluded_tickers.add(symbol, reason=str(e), source='qualifyContracts:underlyingIV')
+                return
+
+            if not getattr(contract, 'conId', 0):
+                last = scanner._last_ib_error_by_symbol.get(symbol.upper())
+                if last and int(last.get('code') or 0) == 200:
+                    scanner.excluded_tickers.add(symbol, reason=str(last.get('msg') or 'Error 200'), source='qualifyContracts:underlyingIV')
+                return
+
+            tickers_data = scanner.ib.reqTickers(contract)
+            if not tickers_data:
+                return
+            tkr_data = tickers_data[0]
+
+            price = tkr_data.marketPrice()
+            if not price or price <= 0:
+                if getattr(tkr_data, 'last', None) and tkr_data.last > 0:
+                    price = tkr_data.last
+            if not price or price <= 0:
+                return
+
+            iv = getattr(tkr_data, 'impliedVolatility', None)
+            if iv and iv > 0:
+                iv_pct = iv * 100
+            else:
+                hv = getattr(tkr_data, 'histVolatility', None)
+                if hv and hv > 0:
+                    iv_pct = hv * 100
+                else:
+                    return
+
+            scanner.price_cache[symbol] = float(price)
+            results.append((symbol, float(iv_pct), float(price)))
+
+        except Exception as e:
+            if scanner._should_exclude_on_exception(symbol, e):
+                scanner.excluded_tickers.add(symbol, reason=str(e), source='reqTickers:underlyingIV')
+            return
 
     # Build + qualify stock contracts in batches, then snapshot them.
     for start in range(0, total, batch_size):
@@ -1096,12 +1273,35 @@ def rank_tickers_by_underlying_iv(
         contracts = [Stock(t, 'SMART', 'USD') for t in batch]
 
         try:
-            scanner.ib.qualifyContracts(*contracts)
-            tickers_data = scanner.ib.reqTickers(*contracts)
+            try:
+                scanner.ib.qualifyContracts(*contracts)
+            except Exception as e:
+                print(f"[WARNING] Qualify batch {start + 1}-{min(start + batch_size, total)} failed; falling back to per-ticker. Error: {e}")
+                for sym in batch:
+                    _process_single(sym)
+                continue
+
+            # qualifyContracts may not raise even when IB returns error 200; drop + persist excludes.
+            for c in contracts:
+                sym = getattr(c, 'symbol', None)
+                if not sym:
+                    continue
+                if not getattr(c, 'conId', 0):
+                    last = scanner._last_ib_error_by_symbol.get(str(sym).upper())
+                    if last and int(last.get('code') or 0) == 200:
+                        scanner.excluded_tickers.add(sym, reason=str(last.get('msg') or 'Error 200'), source='qualifyContracts:underlyingIV')
+
+            try:
+                tickers_data = scanner.ib.reqTickers(*contracts)
+            except Exception as e:
+                print(f"[WARNING] Snapshot batch {start + 1}-{min(start + batch_size, total)} failed; falling back to per-ticker. Error: {e}")
+                for sym in batch:
+                    _process_single(sym)
+                continue
 
             for tkr_data in tickers_data:
                 symbol = getattr(tkr_data.contract, 'symbol', None)
-                if not symbol:
+                if not symbol or scanner.excluded_tickers.is_excluded(symbol):
                     continue
 
                 price = tkr_data.marketPrice()
@@ -1123,11 +1323,13 @@ def rank_tickers_by_underlying_iv(
                     else:
                         continue
 
-                scanner.price_cache[symbol] = price
-                results.append((symbol, float(iv_pct), float(price)))
+                scanner.price_cache[str(symbol)] = float(price)
+                results.append((str(symbol), float(iv_pct), float(price)))
 
         except Exception as e:
-            print(f"[WARNING] Batch {start + 1}-{min(start + batch_size, total)} failed: {e}")
+            print(f"[WARNING] Batch {start + 1}-{min(start + batch_size, total)} failed unexpectedly: {e}")
+            for sym in batch:
+                _process_single(sym)
             continue
 
     results.sort(key=lambda x: x[1], reverse=True)
@@ -1165,6 +1367,9 @@ def scan_batch(scanner: IBScanner, tickers: List[str], threshold: float = 0.2,
     all_opportunities = []
     
     for i, ticker in enumerate(scan_list, 1):
+        if scanner.excluded_tickers.is_excluded(ticker):
+            print(f"\n[{i}/{len(scan_list)}] {ticker}... [SKIP] Excluded")
+            continue
         print(f"\n[{i}/{len(scan_list)}] {ticker}...")
         opportunities = scanner.scan_ticker(ticker, threshold)
         all_opportunities.extend(opportunities)

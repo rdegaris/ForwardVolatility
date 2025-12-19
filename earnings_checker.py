@@ -383,7 +383,7 @@ class EarningsChecker:
                 earnings_date = self.get_earnings_date(ticker)
                 days = self.get_days_to_earnings(ticker)
                 if verbose:
-                    print(f"    ⚠️  REMOVED {ticker}: Earnings on {earnings_date.strftime('%Y-%m-%d')} ({days} days) - in trading window!")
+                    print(f"    [EARNINGS] REMOVED {ticker}: Earnings on {earnings_date.strftime('%Y-%m-%d')} ({days} days) - in trading window")
             else:
                 filtered.append(opp)
         
@@ -426,4 +426,4 @@ if __name__ == "__main__":
         else:
             print(f"{ticker}: No earnings date found")
     
-    print("\n✅ Earnings checker is working!")
+    print("\n[OK] Earnings checker is working!")

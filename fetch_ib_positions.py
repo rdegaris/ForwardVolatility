@@ -27,7 +27,7 @@ def connect_to_ib(host='127.0.0.1', port=7497, client_id=110):
     
     Args:
         host: IB host (default: localhost)
-        port: 7497 for TWS paper, 7496 for TWS live, 4002 for Gateway paper, 4001 for Gateway live
+        port: 7498 for TWS paper, 7496 for TWS live, 4002 for Gateway paper, 4001 for Gateway live
         client_id: Unique client ID
     
     Returns:
@@ -263,7 +263,7 @@ def export_to_json(calendar_spreads, filename='trades.json'):
     
     trades = []
     
-    for i, spread in enumerate(calendar_spreads):
+    for _, spread in enumerate(calendar_spreads):
         # Calculate entry prices per share
         # IB avgCost is in cents PER CONTRACT, so just divide by 100 to get dollars
         front_entry = abs(spread['front']['avgCost']) / 100
@@ -286,8 +286,13 @@ def export_to_json(calendar_spreads, filename='trades.json'):
         # Long back: profit when it goes up
         back_pnl = (back_current - back_entry) * spread['quantity'] * 100
         
+        # Stable ID so the web UI can update/replace the same position across runs.
+        # (If you change strikes/expiries/rights, this naturally becomes a new trade.)
+        stable_id = f"ibcal_{spread['symbol']}_{spread['right']}_{float(spread['strike'])}_{spread['front']['contract'].lastTradeDateOrContractMonth}_{spread['back']['contract'].lastTradeDateOrContractMonth}"
+
         trade = {
-            'id': f"ib_{int(datetime.now().timestamp())}_{i}",
+            'id': stable_id,
+            'source': 'ib',
             'symbol': spread['symbol'],
             'strike': float(spread['strike']),
             'callOrPut': 'CALL' if spread['right'] == 'C' else 'PUT',
@@ -305,6 +310,7 @@ def export_to_json(calendar_spreads, filename='trades.json'):
             'entryDate': date.today().strftime('%Y-%m-%d'),
             'unrealizedPnL': round(total_unrealized_pnl, 2),
             'status': 'open',
+            'asOf': datetime.now().isoformat(),
         }
         
         trades.append(trade)
