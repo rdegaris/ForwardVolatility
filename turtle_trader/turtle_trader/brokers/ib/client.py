@@ -58,7 +58,9 @@ class IBClient:
 
     def cont_future(self, symbol: str, exchange: str = "CME", currency: str = "USD") -> Any:
         """Continuous futures contract for history (IB rolls internally)."""
-        return ContFuture(symbol, exchange, currency)  # type: ignore
+        # Use keyword args: ib_insync ContFuture positional args are (symbol, exchange, localSymbol, ...)
+        # Passing currency positionally breaks for e.g. 6E and other currency futures.
+        return ContFuture(symbol=symbol, exchange=exchange, currency=currency)  # type: ignore
 
     def future(self, symbol: str, last_trade_month: str, exchange: str = "CME", currency: str = "USD") -> Any:
         """Specific futures contract (e.g. ES 202503)."""

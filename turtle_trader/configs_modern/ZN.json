@@ -1,0 +1,32 @@
+{
+  "account": {
+    "starting_equity": 100000.0,
+    "risk_per_unit_pct": 0.01,
+    "max_units": 4,
+    "pyramid_add_every_N": 0.5,
+    "stop_loss_N": 2.0,
+    "commission_per_contract": 2.5,
+    "slippage_ticks": 1
+  },
+  "instrument": {
+    "symbol": "ZN",
+    "point_value": 1000.0,
+    "tick_size": 0.015625,
+    "exchange": "CBOT",
+    "currency": "USD",
+    "signal_contract": "continuous",
+    "execution_contract": "front_month",
+    "roll_days_before_expiry": 7,
+    "min_days_to_expiry": 10
+  },
+  "strategy": {
+    "atr_period": 20,
+    "system": "S2",
+    "skip_winner_s1": false,
+    "s1_entry_breakout": 20,
+    "s1_exit_breakout": 10,
+    "s2_entry_breakout": 55,
+    "s2_exit_breakout": 20,
+    "direction": "both"
+  }
+}

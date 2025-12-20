@@ -381,7 +381,7 @@ def run_turtle_export():
 
     # Run as a module from within the turtle_trader folder so imports resolve.
     # Write output JSON into the calculator repo root so upload_to_web_repos can copy it.
-    return run_command(
+    ok_export = run_command(
         [
             PYTHON_EXE,
             "-u",
@@ -405,6 +405,27 @@ def run_turtle_export():
         "Turtle JSON export (IB continuous signals -> front-month execution)",
         cwd=str(turtle_root),
     )
+
+    ok_signals = run_command(
+        [
+            PYTHON_EXE,
+            "-u",
+            "-m",
+            "turtle_trader.scripts.ib_signal_scan",
+            "--configs-dir",
+            "configs_modern",
+            "--port",
+            "7498",
+            "--duration",
+            "3 Y",
+            "--out",
+            "../turtle_signals_latest.json",
+        ],
+        "Turtle signals scan (System 2 triggers; modern basket)",
+        cwd=str(turtle_root),
+    )
+
+    return bool(ok_export and ok_signals)
 
 
 def fetch_ib_positions():
@@ -473,6 +494,7 @@ def upload_to_web_repos():
         ("turtle_suggested_latest.json", "turtle_suggested_latest.json"),
         ("turtle_open_trades_latest.json", "turtle_open_trades_latest.json"),
         ("turtle_triggers_latest.json", "turtle_triggers_latest.json"),
+        ("turtle_signals_latest.json", "turtle_signals_latest.json"),
     ]
     
     copied = 0
