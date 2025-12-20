@@ -8,7 +8,8 @@ from typing import Any
 
 from turtle_trader.brokers.ib.client import IBClient, IBConfig
 from turtle_trader.config import load_config
-from turtle_trader.live import compute_levels
+from turtle_trader.live import compute_levels, compute_unit_qty
+from turtle_trader.risk import round_to_tick
 from turtle_trader.types import Bar
 
 
@@ -94,6 +95,16 @@ def main() -> int:
             long_triggered = levels.long_entry is not None and last.high >= float(levels.long_entry)
             short_triggered = levels.short_entry is not None and last.low <= float(levels.short_entry)
 
+            # Unit sizing uses account starting equity (net liq not fetched in this scan).
+            unit_qty = int(compute_unit_qty(cfg, equity=float(cfg.account.starting_equity), N=float(levels.N)))
+
+            long_stop_loss = None
+            short_stop_loss = None
+            if levels.long_entry is not None:
+                long_stop_loss = float(round_to_tick(float(levels.long_entry) - (cfg.account.stop_loss_N * float(levels.N)), cfg.instrument.tick_size))
+            if levels.short_entry is not None:
+                short_stop_loss = float(round_to_tick(float(levels.short_entry) + (cfg.account.stop_loss_N * float(levels.N)), cfg.instrument.tick_size))
+
             row = {
                 "symbol": inst.symbol,
                 "exchange": inst.exchange,
@@ -106,34 +117,58 @@ def main() -> int:
                 "last_close": float(last.close),
                 "long_entry": float(levels.long_entry) if levels.long_entry is not None else None,
                 "short_entry": float(levels.short_entry) if levels.short_entry is not None else None,
+                "long_stop_loss": float(long_stop_loss) if long_stop_loss is not None else None,
+                "short_stop_loss": float(short_stop_loss) if short_stop_loss is not None else None,
+                "unit_qty": int(unit_qty),
                 "long_triggered": bool(long_triggered),
                 "short_triggered": bool(short_triggered),
             }
             rows.append(row)
-            if long_triggered or short_triggered:
-                triggered.append(row)
 
-        triggered = sorted(
-            triggered,
-            key=lambda r: (
-                r["symbol"],
-                (0 if r.get("long_triggered") else 1),
-                (0 if r.get("short_triggered") else 1),
-            ),
-        )
+            # Triggered list is actionable and side-specific.
+            if long_triggered and levels.long_entry is not None and long_stop_loss is not None:
+                triggered.append(
+                    {
+                        "symbol": inst.symbol,
+                        "exchange": inst.exchange,
+                        "currency": inst.currency,
+                        "side": "long",
+                        "asof": str(levels.asof),
+                        "last_close": float(last.close),
+                        "entry_stop": float(levels.long_entry),
+                        "stop_loss": float(long_stop_loss),
+                        "unit_qty": int(unit_qty),
+                        "N": float(levels.N),
+                        "notes": "Breakout hit on latest bar; only an entry if flat + allowed by your rules",
+                    }
+                )
+            if short_triggered and levels.short_entry is not None and short_stop_loss is not None:
+                triggered.append(
+                    {
+                        "symbol": inst.symbol,
+                        "exchange": inst.exchange,
+                        "currency": inst.currency,
+                        "side": "short",
+                        "asof": str(levels.asof),
+                        "last_close": float(last.close),
+                        "entry_stop": float(levels.short_entry),
+                        "stop_loss": float(short_stop_loss),
+                        "unit_qty": int(unit_qty),
+                        "N": float(levels.N),
+                        "notes": "Breakout hit on latest bar; only an entry if flat + allowed by your rules",
+                    }
+                )
+
+        triggered = sorted(triggered, key=lambda r: (r.get("symbol", ""), r.get("side", "")))
 
         print("\n=== Turtle S2: triggered today (based on last bar high/low vs prior Donchian) ===")
         if not triggered:
             print("(none)")
         else:
             for r in triggered:
-                sides = "/".join(
-                    [s for s, ok in (("LONG", r["long_triggered"]), ("SHORT", r["short_triggered"])) if ok]
-                )
                 print(
-                    f"{r['symbol']:>4} {sides:<10} asof={r['asof']} close={r['last_close']:.6g} "
-                    f"LE={r['long_entry'] if r['long_entry'] is not None else 'NA'} "
-                    f"SE={r['short_entry'] if r['short_entry'] is not None else 'NA'}"
+                    f"{r['symbol']:>6} {str(r.get('side','')).upper():<6} asof={r['asof']} close={r['last_close']:.6g} "
+                    f"ENTRY={r['entry_stop']:.6g} STOP={r['stop_loss']:.6g} QTY={r['unit_qty']}"
                 )
 
         if args.out:
