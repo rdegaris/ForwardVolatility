@@ -10,7 +10,7 @@
 2. **Create a New Task**
    - Click "Create Task" (not "Create Basic Task")
    - Name: `Forward Volatility Daily Scan`
-   - Description: `Run daily options scanner and upload results`
+   - Description: `Run The OzCTA System daily scan and upload results`
    - Check "Run whether user is logged on or not"
    - Check "Run with highest privileges"
 

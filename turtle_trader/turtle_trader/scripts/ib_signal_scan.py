@@ -66,7 +66,7 @@ def _load_configs(configs_dir: Path) -> list[Path]:
 def main() -> int:
     ap = argparse.ArgumentParser(
         description=(
-            "Scan Turtle System 2 (55/20) entry signals from IB continuous futures. "
+            "Scan Trendorama System 2 (55/20) entry signals from IB continuous futures. "
             "Skips any instruments where IB history is unavailable."
         )
     )
@@ -115,7 +115,7 @@ def main() -> int:
                     c = _cluster_for_symbol(sym)
                     cluster_open_counts[c] = cluster_open_counts.get(c, 0) + 1
             except Exception as e:
-                print(f"[turtle_scan] positions: unavailable ({type(e).__name__}: {e}); eligibility will ignore open positions")
+                print(f"[trendorama_scan] positions: unavailable ({type(e).__name__}: {e}); eligibility will ignore open positions")
 
         rows: list[dict[str, Any]] = []
         triggered: list[dict[str, Any]] = []
@@ -124,18 +124,18 @@ def main() -> int:
             cfg = load_config(p)
             inst = cfg.instrument
 
-            print(f"[turtle_scan] {inst.symbol}: fetching continuous daily bars ({args.duration})")
+            print(f"[trendorama_scan] {inst.symbol}: fetching continuous daily bars ({args.duration})")
             try:
                 cont = client.cont_future(inst.symbol, exchange=inst.exchange, currency=inst.currency)
                 cont = client.qualify(cont)
                 df = client.fetch_daily_bars(cont, duration=args.duration, use_rth=args.use_rth)
             except Exception as e:
-                print(f"[turtle_scan] {inst.symbol}: skip (history unavailable: {type(e).__name__}: {e})")
+                print(f"[trendorama_scan] {inst.symbol}: skip (history unavailable: {type(e).__name__}: {e})")
                 continue
 
             bars = _bars_from_ib_df(df)
             if len(bars) < max(cfg.strategy.s2_entry_breakout, cfg.strategy.atr_period) + 5:
-                print(f"[turtle_scan] {inst.symbol}: skip (not enough bars: {len(bars)})")
+                print(f"[trendorama_scan] {inst.symbol}: skip (not enough bars: {len(bars)})")
                 continue
 
             levels = compute_levels(cfg, bars)
@@ -250,7 +250,7 @@ def main() -> int:
 
         triggered = sorted(triggered, key=lambda r: (r.get("symbol", ""), r.get("side", "")))
 
-        print("\n=== Turtle S2: triggered today (based on last bar high/low vs prior Donchian) ===")
+        print("\n=== Trendorama S2: triggered today (based on last bar high/low vs prior Donchian) ===")
         if not triggered:
             print("(none)")
         else:

@@ -1,6 +1,6 @@
-# Turtle Trader (Futures) — Baseline
+# Trendorama (Futures) — Baseline
 
-Educational baseline implementation of the classic Turtle Trading trend-following system, oriented around futures.
+Educational baseline implementation of a classic trend-following breakout system ("Trendorama"), oriented around futures.
 
 This project provides:
 - Donchian-channel breakout entries/exits (System 1 + System 2)
