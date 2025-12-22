@@ -235,15 +235,24 @@ def scan_iv_rankings(universe='all', top_n=None):
 
 if __name__ == "__main__":
     import sys
-    
+
     # Allow command line arguments for universe and top_n
     universe = sys.argv[1] if len(sys.argv) > 1 else 'all'
     top_n = int(sys.argv[2]) if len(sys.argv) > 2 else None
-    
+
     if universe not in ['mag7', 'nasdaq100', 'midcap400', 'all']:
         print(f"Invalid universe: {universe}")
         print("Valid options: mag7, nasdaq100, midcap400, all")
         print("Usage: python run_iv_rankings.py [universe] [top_n]")
         sys.exit(1)
-    
-    scan_iv_rankings(universe=universe, top_n=top_n)
+
+    result = scan_iv_rankings(universe=universe, top_n=top_n)
+    if result is None:
+        sys.exit(2)
+
+    # Workaround: some IB API/ib_insync teardown paths can segfault after a
+    # successful run (after files are already written). Force a clean process
+    # exit code after flushing output.
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(0)
