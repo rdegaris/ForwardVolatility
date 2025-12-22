@@ -487,7 +487,6 @@ def upload_to_web_repos():
         ("midcap400_results_latest.json", "midcap400_results_latest.json"),
         ("nasdaq100_iv_rankings_latest.json", "nasdaq100_iv_rankings_latest.json"),
         ("midcap400_iv_rankings_latest.json", "midcap400_iv_rankings_latest.json"),
-        ("mag7_iv_rankings_latest.json", "mag7_iv_rankings_latest.json"),
         ("trades.json", "trades.json"),
 
         # Turtle strategy web payloads
@@ -501,6 +500,20 @@ def upload_to_web_repos():
     import shutil
     
     block_publish = False
+
+    # MAG7 is no longer part of the scanning universe; remove stale artifacts from the web repo.
+    deprecated_web_files = [
+        "mag7_iv_rankings_latest.json",
+        "mag7_results_latest.json",
+    ]
+    for fname in deprecated_web_files:
+        try:
+            stale_path = os.path.join(web_path, fname)
+            if os.path.exists(stale_path):
+                os.remove(stale_path)
+                print_info(f"Removed stale web artifact: data/{fname}")
+        except Exception as e:
+            print_warning(f"Failed removing stale web artifact {fname}: {e}")
 
     for src, dst in files_to_copy:
         if os.path.exists(src):
