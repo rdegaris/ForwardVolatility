@@ -13,6 +13,26 @@ from turtle_trader.risk import round_to_tick
 from turtle_trader.types import Bar
 
 
+CLUSTERS: dict[str, set[str]] = {
+    "equities": {"ES", "NQ", "RTY"},
+    "energies": {"CL", "NG", "HO", "RB"},
+    "rates": {"ZB", "ZN", "ZF", "ZT"},
+    "metals": {"GC", "SI", "HG"},
+    "grains": {"ZC", "ZW", "ZS", "ZL"},
+    "softs": {"KC", "SB", "CT"},
+    "livestock": {"HE", "LE"},
+    "fx": {"EUR", "JPY", "GBP", "CAD", "AUD"},
+}
+
+
+def _cluster_for_symbol(symbol: str) -> str:
+    s = (symbol or "").upper()
+    for name, symbols in CLUSTERS.items():
+        if s in symbols:
+            return name
+    return "other"
+
+
 def _bars_from_ib_df(df) -> list[Bar]:
     bars: list[Bar] = []
     if df is None or len(df) == 0:
@@ -57,6 +77,17 @@ def main() -> int:
     ap.add_argument("--port", type=int, default=7498)
     ap.add_argument("--client-id", type=int, default=62)
     ap.add_argument("--out", default="", help="Optional JSON output path")
+    ap.add_argument(
+        "--cluster-cap",
+        type=int,
+        default=3,
+        help="Max number of open positions allowed within a correlation cluster",
+    )
+    ap.add_argument(
+        "--skip-positions",
+        action="store_true",
+        help="Do not query IB open positions (eligibility will be based on unit_qty only)",
+    )
 
     args = ap.parse_args()
 
@@ -68,6 +99,24 @@ def main() -> int:
     client = IBClient(IBConfig(host=args.host, port=args.port, client_id=args.client_id))
     client.connect()
     try:
+        open_symbols: set[str] = set()
+        cluster_open_counts: dict[str, int] = {}
+        if not args.skip_positions:
+            try:
+                for pos in client.ib.positions():  # type: ignore[attr-defined]
+                    qty = float(getattr(pos, "position", 0) or 0)
+                    if qty == 0:
+                        continue
+                    contract = getattr(pos, "contract", None)
+                    sym = (getattr(contract, "symbol", None) or "").upper()
+                    if sym:
+                        open_symbols.add(sym)
+                for sym in open_symbols:
+                    c = _cluster_for_symbol(sym)
+                    cluster_open_counts[c] = cluster_open_counts.get(c, 0) + 1
+            except Exception as e:
+                print(f"[turtle_scan] positions: unavailable ({type(e).__name__}: {e}); eligibility will ignore open positions")
+
         rows: list[dict[str, Any]] = []
         triggered: list[dict[str, Any]] = []
 
@@ -127,6 +176,21 @@ def main() -> int:
 
             # Triggered list is actionable and side-specific.
             if long_triggered and levels.long_entry is not None and long_stop_loss is not None:
+                cluster = _cluster_for_symbol(inst.symbol)
+                cluster_open = int(cluster_open_counts.get(cluster, 0))
+                cap = int(args.cluster_cap)
+                eligible = True
+                blocked_reason = None
+                if int(unit_qty) <= 0:
+                    eligible = False
+                    blocked_reason = "unit_qty=0 (risk sizing)"
+                elif inst.symbol.upper() in open_symbols:
+                    eligible = False
+                    blocked_reason = "already open position"
+                elif cluster_open >= cap:
+                    eligible = False
+                    blocked_reason = f"cluster cap reached ({cluster_open}/{cap})"
+
                 triggered.append(
                     {
                         "symbol": inst.symbol,
@@ -139,10 +203,30 @@ def main() -> int:
                         "stop_loss": float(long_stop_loss),
                         "unit_qty": int(unit_qty),
                         "N": float(levels.N),
+                        "cluster": cluster,
+                        "cluster_open_count": cluster_open,
+                        "cluster_cap": cap,
+                        "eligible": bool(eligible),
+                        "blocked_reason": blocked_reason,
                         "notes": "Breakout hit on latest bar; only an entry if flat + allowed by your rules",
                     }
                 )
             if short_triggered and levels.short_entry is not None and short_stop_loss is not None:
+                cluster = _cluster_for_symbol(inst.symbol)
+                cluster_open = int(cluster_open_counts.get(cluster, 0))
+                cap = int(args.cluster_cap)
+                eligible = True
+                blocked_reason = None
+                if int(unit_qty) <= 0:
+                    eligible = False
+                    blocked_reason = "unit_qty=0 (risk sizing)"
+                elif inst.symbol.upper() in open_symbols:
+                    eligible = False
+                    blocked_reason = "already open position"
+                elif cluster_open >= cap:
+                    eligible = False
+                    blocked_reason = f"cluster cap reached ({cluster_open}/{cap})"
+
                 triggered.append(
                     {
                         "symbol": inst.symbol,
@@ -155,6 +239,11 @@ def main() -> int:
                         "stop_loss": float(short_stop_loss),
                         "unit_qty": int(unit_qty),
                         "N": float(levels.N),
+                        "cluster": cluster,
+                        "cluster_open_count": cluster_open,
+                        "cluster_cap": cap,
+                        "eligible": bool(eligible),
+                        "blocked_reason": blocked_reason,
                         "notes": "Breakout hit on latest bar; only an entry if flat + allowed by your rules",
                     }
                 )
