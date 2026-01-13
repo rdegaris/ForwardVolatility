@@ -110,6 +110,32 @@ def create_calendar_order(ticker: str, strike: float, front_expiry: str, back_ex
         print(f"Total Cost: ${net_debit * quantity * 100:.0f} for {quantity} spreads")
         print()
         
+        print("-" * 60)
+        print("INDIVIDUAL LEG DETAILS")
+        print("-" * 60)
+        print(f"LEG 1 - SELL FRONT (Credit):")
+        print(f"    Contract:   {front_call.localSymbol}")
+        print(f"    ConId:      {front_call.conId}")
+        print(f"    Expiry:     {front_expiry}")
+        print(f"    Strike:     ${strike}")
+        print(f"    Right:      CALL")
+        print(f"    Action:     SELL {quantity}")
+        print(f"    Bid/Ask:    ${front_bid:.2f} / ${front_ask:.2f}")
+        print(f"    Mid:        ${front_mid:.2f}")
+        print(f"    Credit:     ${front_mid * quantity * 100:.0f} (at mid)")
+        print()
+        print(f"LEG 2 - BUY BACK (Debit):")
+        print(f"    Contract:   {back_call.localSymbol}")
+        print(f"    ConId:      {back_call.conId}")
+        print(f"    Expiry:     {back_expiry}")
+        print(f"    Strike:     ${strike}")
+        print(f"    Right:      CALL")
+        print(f"    Action:     BUY {quantity}")
+        print(f"    Bid/Ask:    ${back_bid:.2f} / ${back_ask:.2f}")
+        print(f"    Mid:        ${back_mid:.2f}")
+        print(f"    Debit:      ${back_mid * quantity * 100:.0f} (at mid)")
+        print()
+        
         # Create calendar spread combo
         calendar = Contract()
         calendar.symbol = ticker
@@ -133,17 +159,17 @@ def create_calendar_order(ticker: str, strike: float, front_expiry: str, back_ex
         
         calendar.comboLegs = [leg1, leg2]
         
-        # Create limit order
+        # Create limit order for combo
         order = LimitOrder('BUY', quantity, round(net_debit, 2))
         order.transmit = transmit
         order.tif = 'DAY'
         
-        # Place order
+        # Place combo order
         trade = ib.placeOrder(calendar, order)
         ib.sleep(1)
         
         print("=" * 60)
-        print("ORDER PLACED" + (" AND TRANSMITTED" if transmit else " (NOT TRANSMITTED)"))
+        print("COMBO ORDER PLACED" + (" AND TRANSMITTED" if transmit else " (NOT TRANSMITTED)"))
         print("=" * 60)
         print()
         print(f"{ticker} {front_expiry[:6]}/{back_expiry[:6]} {int(strike)} Calendar Call    {quantity}")
@@ -157,8 +183,46 @@ def create_calendar_order(ticker: str, strike: float, front_expiry: str, back_ex
         print(f"Status: {trade.orderStatus.status}")
         print()
         
+        # Place individual leg orders for manual execution
+        print("=" * 60)
+        print("INDIVIDUAL LEG ORDERS (for manual execution)")
+        print("=" * 60)
+        print()
+        
+        # Leg 1: SELL front call
+        front_order = LimitOrder('SELL', quantity, round(front_mid, 2))
+        front_order.transmit = transmit
+        front_order.tif = 'DAY'
+        front_trade = ib.placeOrder(front_call, front_order)
+        ib.sleep(0.5)
+        
+        print(f"LEG 1 - SELL FRONT:")
+        print(f"    {front_call.localSymbol}")
+        print(f"    Action: SELL {quantity}")
+        print(f"    Limit: ${front_mid:.2f}")
+        print(f"    Total Credit: ${front_mid * quantity * 100:.0f}")
+        print(f"    Order ID: {front_trade.order.orderId}")
+        print(f"    Status: {front_trade.orderStatus.status}")
+        print()
+        
+        # Leg 2: BUY back call
+        back_order = LimitOrder('BUY', quantity, round(back_mid, 2))
+        back_order.transmit = transmit
+        back_order.tif = 'DAY'
+        back_trade = ib.placeOrder(back_call, back_order)
+        ib.sleep(0.5)
+        
+        print(f"LEG 2 - BUY BACK:")
+        print(f"    {back_call.localSymbol}")
+        print(f"    Action: BUY {quantity}")
+        print(f"    Limit: ${back_mid:.2f}")
+        print(f"    Total Debit: ${back_mid * quantity * 100:.0f}")
+        print(f"    Order ID: {back_trade.order.orderId}")
+        print(f"    Status: {back_trade.orderStatus.status}")
+        print()
+        
         if not transmit:
-            print("[!] Review in TWS and transmit when ready!")
+            print("[!] Review all orders in TWS - transmit combo OR individual legs, not both!")
         
         # Cleanup
         ib.cancelMktData(front_call)

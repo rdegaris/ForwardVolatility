@@ -19,32 +19,58 @@ import json
 from datetime import datetime, date
 from collections import defaultdict
 import os
+import random
 
 
-def connect_to_ib(host='127.0.0.1', port=7497, client_id=110):
+def connect_to_ib(host='127.0.0.1', port=7497, client_id=None):
     """
     Connect to Interactive Brokers TWS or Gateway.
     
     Args:
         host: IB host (default: localhost)
         port: 7498 for TWS paper, 7496 for TWS live, 4002 for Gateway paper, 4001 for Gateway live
-        client_id: Unique client ID
+        client_id: Unique client ID (defaults to env IB_CLIENT_ID_POSITIONS/IB_CLIENT_ID, else 110)
     
     Returns:
         Connected IB instance
     """
-    ib = IB()
-    try:
-        ib.connect(host, port, clientId=client_id)
-        print(f"[OK] Connected to IB on {host}:{port}")
-        return ib
-    except Exception as e:
-        print(f"[ERROR] Failed to connect to IB: {e}")
-        print("\nMake sure:")
-        print("1. TWS or IB Gateway is running")
-        print("2. API connections are enabled (File > Global Configuration > API > Settings)")
-        print("3. Port number is correct (7497 for TWS paper, 4002 for Gateway paper)")
-        raise
+    if client_id is None:
+        env_client = (os.environ.get('IB_CLIENT_ID_POSITIONS') or os.environ.get('IB_CLIENT_ID') or '').strip()
+        if env_client.isdigit():
+            client_id = int(env_client)
+        else:
+            client_id = 110
+
+    # If the requested clientId is already in use, retry with a different one.
+    # This makes the daily runner resilient to orphaned sessions or concurrent tools.
+    for attempt in range(6):
+        ib = IB()
+        try_id = client_id if attempt == 0 else (client_id + attempt)
+        # Add a little randomness after a couple attempts to reduce collisions.
+        if attempt >= 3:
+            try_id = random.randint(200, 999)
+        try:
+            ib.connect(host, port, clientId=try_id)
+            print(f"[OK] Connected to IB on {host}:{port} (clientId={try_id})")
+            return ib
+        except Exception as e:
+            msg = str(e)
+            if 'client id is already in use' in msg.lower() or 'clientid' in msg.lower():
+                print(f"[WARN] IB clientId {try_id} already in use; retrying...")
+                try:
+                    ib.disconnect()
+                except Exception:
+                    pass
+                continue
+
+            print(f"[ERROR] Failed to connect to IB: {e}")
+            print("\nMake sure:")
+            print("1. TWS or IB Gateway is running")
+            print("2. API connections are enabled (File > Global Configuration > API > Settings)")
+            print("3. Port number is correct (7497 for TWS paper, 4002 for Gateway paper)")
+            raise
+
+    raise RuntimeError("Unable to connect to IB: all clientId retries failed")
 
 
 def get_option_positions(ib):
@@ -199,20 +225,25 @@ def get_option_price(ticker):
     if ticker.last and not math.isnan(ticker.last) and ticker.last > 0:
         print(f"      Using last: {ticker.last}")
         return ticker.last
-    # Fall back to mid price
-    elif ticker.bid and ticker.ask and not math.isnan(ticker.bid) and not math.isnan(ticker.ask):
+    
+    # Fall back to mid price (both bid and ask must be valid and positive)
+    if (ticker.bid is not None and ticker.ask is not None and 
+        not math.isnan(ticker.bid) and not math.isnan(ticker.ask) and
+        ticker.bid > 0 and ticker.ask > 0):
         mid = (ticker.bid + ticker.ask) / 2
-        if mid > 0:
-            print(f"      Using mid: {mid}")
-            return mid
+        print(f"      Using mid: {mid}")
+        return mid
+    
     # Fall back to close
-    elif ticker.close and not math.isnan(ticker.close) and ticker.close > 0:
+    if ticker.close and not math.isnan(ticker.close) and ticker.close > 0:
         print(f"      Using close: {ticker.close}")
         return ticker.close
+    
     # Last resort: model price
-    elif ticker.modelGreeks and ticker.modelGreeks.optPrice:
+    if ticker.modelGreeks and ticker.modelGreeks.optPrice:
         print(f"      Using model: {ticker.modelGreeks.optPrice}")
         return ticker.modelGreeks.optPrice
+    
     return None
 
 
@@ -354,14 +385,16 @@ def main():
         option_positions = get_option_positions(ib)
         
         if not option_positions:
-            print("\n[WARNING] No option positions found")
+            print("\n[INFO] No option positions found. Writing empty trades.json so the web app clears old positions.")
+            export_to_json([], filename='trades.json')
             return
         
         # Identify calendar spreads
         calendar_spreads = identify_calendar_spreads(option_positions, ib)
         
         if not calendar_spreads:
-            print("\n[WARNING] No calendar spreads found in positions")
+            print("\n[INFO] No calendar spreads found in positions. Writing empty trades.json so the web app clears old positions.")
+            export_to_json([], filename='trades.json')
             return
         
         # Export to JSON

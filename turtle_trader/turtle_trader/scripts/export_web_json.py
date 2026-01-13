@@ -98,6 +98,30 @@ def _get_position_for_symbol(ib, symbol: str, preferred_conid: Optional[int]) ->
     return best_qty, best_avg, best_contract
 
 
+def _get_open_fut_position_index(ib) -> dict[str, tuple[int, Optional[float], Any]]:
+    """Return symbol -> (qty, avg_cost, contract) for nonzero FUT positions."""
+    try:
+        positions = ib.positions()
+    except Exception:
+        return {}
+
+    out: dict[str, tuple[int, Optional[float], Any]] = {}
+    for p in positions:
+        con = getattr(p, "contract", None)
+        if con is None:
+            continue
+        if getattr(con, "secType", None) != "FUT":
+            continue
+        qty = int(getattr(p, "position", 0) or 0)
+        if qty == 0:
+            continue
+        sym = getattr(con, "symbol", None)
+        if not sym:
+            continue
+        out[str(sym)] = (qty, float(getattr(p, "avgCost", 0.0) or 0.0), con)
+    return out
+
+
 def _load_configs(configs_dir: Path) -> list[Path]:
     if not configs_dir.exists():
         return []
@@ -157,6 +181,16 @@ def _make_suggested_rows(cfg: TurtleConfig, levels, last_close: float, equity: f
 def main() -> int:
     ap = argparse.ArgumentParser(description="Export Turtle (S2) JSON payloads for the web app")
     ap.add_argument("--configs-dir", default="configs", help="Directory containing per-instrument config JSONs")
+    ap.add_argument(
+        "--open-configs-dir",
+        default=None,
+        help="Directory containing per-instrument config JSONs to consider for OPEN trades (defaults to --configs-dir)",
+    )
+    ap.add_argument(
+        "--open-only",
+        action="store_true",
+        help="Only export open trades (skip suggested + triggers computations)",
+    )
     ap.add_argument("--state", default="out_live/state.json", help="State file (units/last_add_price per symbol)")
 
     ap.add_argument("--out-suggested", default="turtle_suggested_latest.json")
@@ -176,74 +210,127 @@ def main() -> int:
 
     configs_dir = Path(args.configs_dir)
     cfg_paths = _load_configs(configs_dir)
-    if not cfg_paths:
+    if not cfg_paths and not args.open_only:
         print(f"No configs found in: {configs_dir}")
         print("Create config files like turtle_trader/configs/ES.json")
         return 2
+
+    open_configs_dir = Path(args.open_configs_dir) if args.open_configs_dir else configs_dir
+    open_cfg_paths = _load_configs(open_configs_dir)
+    if not open_cfg_paths:
+        open_cfg_paths = cfg_paths
 
     client = IBClient(IBConfig(host=args.host, port=args.port, client_id=args.client_id))
     client.connect()
     try:
         equity = _net_liq(client.ib) or None
 
+        open_pos_index = _get_open_fut_position_index(client.ib)
+        open_symbols = set(open_pos_index.keys())
+
         suggested_rows: list[dict[str, Any]] = []
         trigger_rows: list[dict[str, Any]] = []
         open_rows: list[dict[str, Any]] = []
 
+        computed: dict[str, dict[str, Any]] = {}
+
         now = datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
         today = datetime.utcnow().date().isoformat()
 
-        for p in cfg_paths:
+        if not args.open_only:
+            for p in cfg_paths:
+                cfg = load_config(p)
+                inst = cfg.instrument
+
+                print(f"[turtle_export] {inst.symbol}: fetching continuous daily bars ({args.duration})")
+
+                cont = client.cont_future(inst.symbol, exchange=inst.exchange, currency=inst.currency)
+                cont = client.qualify(cont)
+
+                try:
+                    df = client.fetch_daily_bars(cont, duration=args.duration, use_rth=args.use_rth)
+                except Exception as e:
+                    print(f"[turtle_export] {inst.symbol}: failed to fetch history ({type(e).__name__}): {e}")
+                    continue
+
+                bars = _bars_from_ib_df(df)
+                if len(bars) < max(cfg.strategy.s2_entry_breakout, cfg.strategy.atr_period) + 5:
+                    print(f"Skipping {inst.symbol}: not enough bars ({len(bars)})")
+                    continue
+
+                levels = compute_levels(cfg, bars)
+                last_close = float(bars[-1].close)
+
+                computed[inst.symbol] = {
+                    "cfg": cfg,
+                    "inst": inst,
+                    "levels": levels,
+                    "last_close": last_close,
+                }
+
+                eq = float(equity) if equity is not None else float(cfg.account.starting_equity)
+                suggested = _make_suggested_rows(cfg, levels, last_close=last_close, equity=eq)
+                suggested_rows.extend(suggested)
+
+                # Triggers soon: choose the closest suggested entry per symbol.
+                if suggested:
+                    best = min(
+                        suggested,
+                        key=lambda r: float(
+                            r.get("distance_to_entry_N") if r.get("distance_to_entry_N") is not None else 999.0
+                        ),
+                    )
+                    dist_n = best.get("distance_to_entry_N")
+                    if dist_n is not None and float(dist_n) <= float(args.trigger_threshold_N):
+                        trigger_rows.append(
+                            {
+                                "symbol": inst.symbol,
+                                "exchange": inst.exchange,
+                                "side": best["side"],
+                                "asof": str(levels.asof),
+                                "last_close": float(last_close),
+                                "trigger_price": float(best["entry_stop"]),
+                                "distance": float(best.get("distance_to_entry") or 0.0),
+                                "distance_N": float(dist_n),
+                                "pct_away": float(best.get("pct_to_entry") or 0.0),
+                                "notes": "Closest breakout side",
+                            }
+                        )
+
+                # Open trades are computed in a separate pass (may use a different configs dir)
+
+        # Open trades pass: only evaluate configs for symbols that actually have an open FUT position.
+        for p in open_cfg_paths:
             cfg = load_config(p)
             inst = cfg.instrument
 
-            print(f"[turtle_export] {inst.symbol}: fetching continuous daily bars ({args.duration})")
-
-            cont = client.cont_future(inst.symbol, exchange=inst.exchange, currency=inst.currency)
-            cont = client.qualify(cont)
-
-            try:
-                df = client.fetch_daily_bars(cont, duration=args.duration, use_rth=args.use_rth)
-            except Exception as e:
-                print(f"[turtle_export] {inst.symbol}: failed to fetch history ({type(e).__name__}): {e}")
+            if inst.symbol not in open_symbols:
                 continue
 
-            bars = _bars_from_ib_df(df)
-            if len(bars) < max(cfg.strategy.s2_entry_breakout, cfg.strategy.atr_period) + 5:
-                print(f"Skipping {inst.symbol}: not enough bars ({len(bars)})")
-                continue
+            cached = computed.get(inst.symbol)
+            if cached is not None:
+                levels = cached["levels"]
+                last_close = float(cached["last_close"])
+            else:
+                print(f"[turtle_export] {inst.symbol}: fetching continuous daily bars ({args.duration}) [open-only]")
+                cont = client.cont_future(inst.symbol, exchange=inst.exchange, currency=inst.currency)
+                cont = client.qualify(cont)
 
-            levels = compute_levels(cfg, bars)
-            last_close = float(bars[-1].close)
+                try:
+                    df = client.fetch_daily_bars(cont, duration=args.duration, use_rth=args.use_rth)
+                except Exception as e:
+                    print(f"[turtle_export] {inst.symbol}: failed to fetch history ({type(e).__name__}): {e}")
+                    continue
 
-            eq = float(equity) if equity is not None else float(cfg.account.starting_equity)
-            suggested = _make_suggested_rows(cfg, levels, last_close=last_close, equity=eq)
-            suggested_rows.extend(suggested)
+                bars = _bars_from_ib_df(df)
+                if len(bars) < max(cfg.strategy.s2_entry_breakout, cfg.strategy.atr_period) + 5:
+                    print(f"Skipping {inst.symbol}: not enough bars ({len(bars)})")
+                    continue
 
-            # Triggers soon: choose the closest suggested entry per symbol.
-            if suggested:
-                best = min(
-                    suggested,
-                    key=lambda r: float(r.get("distance_to_entry_N") if r.get("distance_to_entry_N") is not None else 999.0),
-                )
-                dist_n = best.get("distance_to_entry_N")
-                if dist_n is not None and float(dist_n) <= float(args.trigger_threshold_N):
-                    trigger_rows.append(
-                        {
-                            "symbol": inst.symbol,
-                            "exchange": inst.exchange,
-                            "side": best["side"],
-                            "asof": str(levels.asof),
-                            "last_close": float(last_close),
-                            "trigger_price": float(best["entry_stop"]),
-                            "distance": float(best.get("distance_to_entry") or 0.0),
-                            "distance_N": float(dist_n),
-                            "pct_away": float(best.get("pct_to_entry") or 0.0),
-                            "notes": "Closest breakout side",
-                        }
-                    )
+                levels = compute_levels(cfg, bars)
+                last_close = float(bars[-1].close)
 
-            # Open trades: look up front month position + state.
+            # Front month contract + position details
             exec_contract = client.resolve_front_month(
                 symbol=inst.symbol,
                 exchange=inst.exchange,
@@ -254,52 +341,59 @@ def main() -> int:
             preferred_conid = int(getattr(exec_contract, "conId", 0) or 0) or None
             pos_qty, avg_cost, pos_contract = _get_position_for_symbol(client.ib, inst.symbol, preferred_conid)
 
-            if pos_qty != 0:
-                state = load_state(args.state, inst.symbol)
-                if state.units == 0:
-                    state.units = 1
+            if pos_qty == 0:
+                # Symbol was in open positions index, but couldn't be resolved via preferred contract lookup.
+                # Fall back to the raw index result.
+                pos_qty, avg_cost, pos_contract = open_pos_index.get(inst.symbol, (0, None, None))
 
-                side = "long" if pos_qty > 0 else "short"
-                abs_qty = abs(int(pos_qty))
+            if pos_qty == 0:
+                continue
 
-                last_add = state.last_add_price if state.last_add_price is not None else last_close
+            state = load_state(args.state, inst.symbol)
+            if state.units == 0:
+                state.units = 1
 
-                if side == "long":
-                    stop_px = last_add - (cfg.account.stop_loss_N * levels.N)
-                    next_add = last_add + (cfg.account.pyramid_add_every_N * levels.N)
-                else:
-                    stop_px = last_add + (cfg.account.stop_loss_N * levels.N)
-                    next_add = last_add - (cfg.account.pyramid_add_every_N * levels.N)
+            side = "long" if pos_qty > 0 else "short"
+            abs_qty = abs(int(pos_qty))
 
-                stop_px = _round_to_tick(stop_px, inst.tick_size)
-                next_add = _round_to_tick(next_add, inst.tick_size)
+            last_add = state.last_add_price if state.last_add_price is not None else last_close
 
-                contract_used = pos_contract or exec_contract
+            if side == "long":
+                stop_px = last_add - (cfg.account.stop_loss_N * levels.N)
+                next_add = last_add + (cfg.account.pyramid_add_every_N * levels.N)
+            else:
+                stop_px = last_add + (cfg.account.stop_loss_N * levels.N)
+                next_add = last_add - (cfg.account.pyramid_add_every_N * levels.N)
 
-                open_rows.append(
-                    {
-                        "symbol": inst.symbol,
-                        "exchange": inst.exchange,
-                        "currency": inst.currency,
-                        "contract_local_symbol": getattr(contract_used, "localSymbol", None),
-                        "contract_month": getattr(contract_used, "lastTradeDateOrContractMonth", None),
-                        "side": side,
-                        "qty": int(abs_qty),
-                        "avg_price": float(avg_cost or 0.0),
-                        "stop_price": float(stop_px),
-                        "units": int(state.units),
-                        "last_add_price": float(last_add),
-                        "next_add_trigger": float(next_add) if state.units < cfg.account.max_units else None,
-                        "unrealized_pnl": None,
-                        "asof": str(levels.asof),
-                    }
-                )
+            stop_px = _round_to_tick(stop_px, inst.tick_size)
+            next_add = _round_to_tick(next_add, inst.tick_size)
+
+            contract_used = pos_contract or exec_contract
+
+            open_rows.append(
+                {
+                    "symbol": inst.symbol,
+                    "exchange": inst.exchange,
+                    "currency": inst.currency,
+                    "contract_local_symbol": getattr(contract_used, "localSymbol", None),
+                    "contract_month": getattr(contract_used, "lastTradeDateOrContractMonth", None),
+                    "side": side,
+                    "qty": int(abs_qty),
+                    "avg_price": float(avg_cost or 0.0),
+                    "stop_price": float(stop_px),
+                    "units": int(state.units),
+                    "last_add_price": float(last_add),
+                    "next_add_trigger": float(next_add) if state.units < cfg.account.max_units else None,
+                    "unrealized_pnl": None,
+                    "asof": str(getattr(levels, "asof", None) or ""),
+                }
+            )
 
         suggested_payload = {
             "timestamp": now,
             "date": today,
             "system": "S2",
-            "universe": [load_config(p).instrument.symbol for p in cfg_paths],
+            "universe": [load_config(p).instrument.symbol for p in (cfg_paths or open_cfg_paths)],
             "suggested": suggested_rows,
         }
 

@@ -233,7 +233,8 @@ class CalendarOrderPlacer:
                 transmit=transmit,
                 tif='DAY'
             )
-            order.orderRef = f'Cal-{ticker}-{expiry_front[:6]}'
+            # Prefix with FF so TWS layouts/filters can isolate Forward Factor trades.
+            order.orderRef = f'FF-{ticker}-{expiry_front[:6]}'
             
             print(f"\n  Placing COMBO order...")
             print(f"  Spread: SELL {front_option.localSymbol} / BUY {back_option.localSymbol}")

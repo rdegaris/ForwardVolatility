@@ -63,6 +63,27 @@ def _load_configs(configs_dir: Path) -> list[Path]:
     return sorted([p for p in configs_dir.glob("*.json") if p.is_file()])
 
 
+def _get_open_fut_symbols(ib) -> set[str]:
+    """Return set of symbols with nonzero FUT positions."""
+    out: set[str] = set()
+    try:
+        for pos in ib.positions():  # type: ignore[attr-defined]
+            qty = float(getattr(pos, "position", 0) or 0)
+            if qty == 0:
+                continue
+            contract = getattr(pos, "contract", None)
+            if contract is None:
+                continue
+            if getattr(contract, "secType", None) != "FUT":
+                continue
+            sym = (getattr(contract, "symbol", None) or "").upper()
+            if sym:
+                out.add(sym)
+    except Exception:
+        return set()
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         description=(
@@ -88,6 +109,11 @@ def main() -> int:
         action="store_true",
         help="Do not query IB open positions (eligibility will be based on unit_qty only)",
     )
+    ap.add_argument(
+        "--open-only",
+        action="store_true",
+        help="Only scan symbols that currently have an open FUT position in IB",
+    )
 
     args = ap.parse_args()
 
@@ -103,14 +129,17 @@ def main() -> int:
         cluster_open_counts: dict[str, int] = {}
         if not args.skip_positions:
             try:
-                for pos in client.ib.positions():  # type: ignore[attr-defined]
-                    qty = float(getattr(pos, "position", 0) or 0)
-                    if qty == 0:
-                        continue
-                    contract = getattr(pos, "contract", None)
-                    sym = (getattr(contract, "symbol", None) or "").upper()
-                    if sym:
-                        open_symbols.add(sym)
+                if args.open_only:
+                    open_symbols = _get_open_fut_symbols(client.ib)
+                else:
+                    for pos in client.ib.positions():  # type: ignore[attr-defined]
+                        qty = float(getattr(pos, "position", 0) or 0)
+                        if qty == 0:
+                            continue
+                        contract = getattr(pos, "contract", None)
+                        sym = (getattr(contract, "symbol", None) or "").upper()
+                        if sym:
+                            open_symbols.add(sym)
                 for sym in open_symbols:
                     c = _cluster_for_symbol(sym)
                     cluster_open_counts[c] = cluster_open_counts.get(c, 0) + 1
@@ -120,9 +149,14 @@ def main() -> int:
         rows: list[dict[str, Any]] = []
         triggered: list[dict[str, Any]] = []
 
+        open_only_filter = {s.upper() for s in open_symbols} if args.open_only else None
+
         for p in cfg_paths:
             cfg = load_config(p)
             inst = cfg.instrument
+
+            if open_only_filter is not None and inst.symbol.upper() not in open_only_filter:
+                continue
 
             print(f"[trendorama_scan] {inst.symbol}: fetching continuous daily bars ({args.duration})")
             try:

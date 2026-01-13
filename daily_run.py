@@ -24,6 +24,7 @@ from datetime import datetime
 import argparse
 import json
 import logging
+import random
 from pathlib import Path
 
 
@@ -379,6 +380,22 @@ def run_turtle_export():
         print_warning(f"turtle_trader folder not found: {turtle_root}")
         return False
 
+    def _pick_client_id(env_key: str, low: int, high: int) -> int:
+        raw = (os.environ.get(env_key) or "").strip()
+        if raw:
+            try:
+                return int(raw)
+            except Exception:
+                pass
+        return random.randint(low, high)
+
+    export_client_id = _pick_client_id("TURTLE_CLIENT_ID_EXPORT", 601, 699)
+    signals_client_id = _pick_client_id("TURTLE_CLIENT_ID_SIGNALS", 701, 799)
+    if signals_client_id == export_client_id:
+        signals_client_id = (signals_client_id + 1) if signals_client_id < 999 else (signals_client_id - 1)
+
+    print_info(f"Turtle IB clientIds: export={export_client_id}, signals={signals_client_id}")
+
     # Run as a module from within the turtle_trader folder so imports resolve.
     # Write output JSON into the calculator repo root so upload_to_web_repos can copy it.
     ok_export = run_command(
@@ -389,10 +406,14 @@ def run_turtle_export():
             "turtle_trader.scripts.export_web_json",
             "--configs-dir",
             "configs",
+            "--open-configs-dir",
+            "configs_modern",
             "--state",
             "out_live/state.json",
                 "--port",
                 "7498",
+            "--client-id",
+            str(export_client_id),
             "--duration",
             "3 Y",
             "--out-suggested",
@@ -416,6 +437,8 @@ def run_turtle_export():
             "configs_modern",
             "--port",
             "7498",
+            "--client-id",
+            str(signals_client_id),
             "--duration",
             "3 Y",
             "--out",
@@ -625,9 +648,12 @@ def main():
     parser.add_argument('--ib-only', action='store_true', help='Fetch IB positions only (skip scans)')
     parser.add_argument('--nasdaq100', action='store_true', help='Run NASDAQ100 scanner only')
     parser.add_argument('--midcap400', action='store_true', help='Run MidCap400 scanner only')
+    parser.add_argument('--iv-rankings', action='store_true', help='Run IV Rankings scanner only')
+    parser.add_argument('--turtle', action='store_true', help='Run Turtle JSON export + signals scan only')
     parser.add_argument('--earnings-crush', action='store_true', help='Run Earnings Crush scanner only')
     parser.add_argument('--preearnings-straddles', action='store_true', help='Run Pre-Earnings Straddle scanner only')
     parser.add_argument('--no-upload', action='store_true', help='Skip uploading to web repos')
+    parser.add_argument('--upload-only', action='store_true', help='Only upload/commit/push existing latest JSON artifacts')
     
     args = parser.parse_args()
     
@@ -667,7 +693,17 @@ def main():
     }
     
     # Determine what to run
-    run_all = not any([args.scans_only, args.ib_only, args.nasdaq100, args.midcap400, args.earnings_crush, args.preearnings_straddles])
+    run_all = not any([
+        args.scans_only,
+        args.ib_only,
+        args.nasdaq100,
+        args.midcap400,
+        args.iv_rankings,
+        args.turtle,
+        args.earnings_crush,
+        args.preearnings_straddles,
+        args.upload_only,
+    ])
     
     # Run scans in priority order:
     # 1. Portfolio (IB positions) - most important, fast
@@ -676,12 +712,19 @@ def main():
     # 4. NASDAQ 100 - main scanner
     # 5. MidCap 400 - largest, most likely to fail
     
-    if args.ib_only:
+    if args.upload_only:
+        # Upload-only mode: useful when you run scans in separate invocations.
+        pass
+    elif args.ib_only:
         results['ib_positions'] = fetch_ib_positions()
     elif args.nasdaq100:
         results['nasdaq100'] = run_nasdaq100_scan()
     elif args.midcap400:
         results['midcap400'] = run_midcap400_scan()
+    elif args.iv_rankings:
+        results['iv_rankings'] = run_iv_rankings_scan()
+    elif args.turtle:
+        results['turtle_export'] = run_turtle_export()
     elif args.earnings_crush:
         results['earnings_crush'] = run_earnings_crush_scan()
     elif args.preearnings_straddles:
