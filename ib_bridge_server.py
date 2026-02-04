@@ -40,6 +40,48 @@ from urllib.parse import urlparse, parse_qs
 
 import requests
 
+# Load environment variables from .env files
+def _load_env_file(path):
+    """Load KEY=VALUE lines into os.environ (no overrides)."""
+    try:
+        from pathlib import Path
+        path = Path(path)
+        if not path.exists() or not path.is_file():
+            return False
+        for raw in path.read_text(encoding='utf-8').splitlines():
+            line = raw.strip()
+            if not line or line.startswith('#'):
+                continue
+            if line.lower().startswith('export '):
+                line = line[7:].strip()
+            if '=' not in line:
+                continue
+            key, value = line.split('=', 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            if not key:
+                continue
+            if key in os.environ and (os.environ.get(key) or '').strip():
+                continue
+            os.environ[key] = value
+        return True
+    except Exception:
+        return False
+
+def _load_secrets():
+    from pathlib import Path
+    script_dir = Path(__file__).parent.resolve()
+    candidates = [
+        script_dir / '.env',
+        script_dir / '.secrets.env',
+        script_dir.parent / '.env',
+        script_dir.parent / '.secrets.env',
+    ]
+    for path in candidates:
+        _load_env_file(path)
+
+_load_secrets()
+
 try:
     from earnings_checker import EarningsChecker
 
@@ -163,6 +205,65 @@ def fetch_yahoo_quotes(symbols: List[str]) -> Dict[str, Any]:
             "ok": True,
             "asof": datetime.now().isoformat(),
             "quotes": quotes,
+        }
+    
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
+def fetch_finnhub_quotes(symbols: List[str]) -> Dict[str, Any]:
+    """Fetch live quotes from Finnhub API (supports after-hours)."""
+    api_key = _finnhub_key()
+    if not api_key:
+        return {"ok": False, "error": "FINNHUB_API_KEY not configured"}
+    
+    if not symbols:
+        return {"ok": True, "quotes": {}}
+    
+    quotes = {}
+    
+    try:
+        import urllib.request
+        
+        for symbol in symbols:
+            try:
+                url = f"https://finnhub.io/api/v1/quote?symbol={symbol.upper()}&token={api_key}"
+                req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+                
+                with urllib.request.urlopen(req, timeout=10) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
+                
+                # Finnhub returns: c=current, d=change, dp=changePercent, h=high, l=low, o=open, pc=prevClose, t=timestamp
+                current = data.get("c")
+                prev_close = data.get("pc")
+                change = data.get("d", 0)
+                change_pct = data.get("dp", 0)
+                
+                if current is None or current == 0:
+                    continue
+                
+                quotes[symbol.upper()] = {
+                    "symbol": symbol.upper(),
+                    "regularMarketPrice": round(current, 2),
+                    "displayPrice": round(current, 2),  # Finnhub 'c' includes after-hours
+                    "previousClose": round(prev_close, 2) if prev_close else None,
+                    "change": round(change, 2) if change else 0,
+                    "changePercent": round(change_pct, 2) if change_pct else 0,
+                    "marketState": "FINNHUB",  # Finnhub doesn't distinguish market state
+                    "source": "finnhub",
+                }
+            except Exception as e:
+                print(f"  [WARN] Finnhub error for {symbol}: {e}")
+                continue
+        
+        if not quotes:
+            return {"ok": False, "error": "No quotes returned from Finnhub"}
+        
+        return {
+            "ok": True,
+            "asof": datetime.now().isoformat(),
+            "quotes": quotes,
+            "source": "finnhub",
         }
     
     except Exception as e:
@@ -492,7 +593,8 @@ class Handler(BaseHTTPRequestHandler):
             _json_response(self, 200 if payload.get("ok") else 503, payload)
             return
 
-        # Yahoo Finance quotes endpoint: /api/quotes?symbols=GOOGL,QCOM
+        # Live quotes endpoint: /api/quotes?symbols=GOOGL,QCOM
+        # Tries Finnhub first (uses API key from env), falls back to yfinance
         if path == "/api/quotes":
             query_params = parse_qs(parsed.query)
             symbols_param = query_params.get("symbols", [""])[0]
@@ -505,12 +607,22 @@ class Handler(BaseHTTPRequestHandler):
                 _json_response(self, 400, {"ok": False, "error": "No valid symbols provided"})
                 return
             
-            if not YFINANCE_AVAILABLE:
-                _json_response(self, 503, {"ok": False, "error": "yfinance not installed on server"})
+            # Try Finnhub first (more reliable, supports after-hours)
+            payload = fetch_finnhub_quotes(symbols)
+            if payload.get("ok"):
+                _json_response(self, 200, payload)
                 return
             
-            payload = fetch_yahoo_quotes(symbols)
-            _json_response(self, 200 if payload.get("ok") else 500, payload)
+            # Fallback to yfinance if Finnhub fails
+            if YFINANCE_AVAILABLE:
+                print(f"  [INFO] Finnhub failed, trying yfinance: {payload.get('error')}")
+                payload = fetch_yahoo_quotes(symbols)
+                if payload.get("ok"):
+                    _json_response(self, 200, payload)
+                    return
+            
+            # Both failed
+            _json_response(self, 503, {"ok": False, "error": "Could not fetch quotes from Finnhub or Yahoo"})
             return
 
         _json_response(self, 404, {"ok": False, "error": "Not found"})
@@ -534,9 +646,10 @@ def main() -> int:
     print("Endpoints:")
     print("  /api/health           - Server health check")
     print("  /api/preearnings/open - Open pre-earnings straddle positions")
-    print("  /api/quotes?symbols=  - Live Yahoo Finance quotes (comma-separated)")
+    print("  /api/quotes?symbols=  - Live quotes (Finnhub → yfinance fallback)")
     print(f"IB ports tried: {IB_PORTS}")
-    print(f"yfinance available: {YFINANCE_AVAILABLE}")
+    print(f"Finnhub API key: {'configured' if _finnhub_key() else 'NOT SET'}")
+    print(f"yfinance fallback: {'available' if YFINANCE_AVAILABLE else 'not installed'}")
     print(f"Refresh interval: {REFRESH_SECONDS}s")
 
     try:
