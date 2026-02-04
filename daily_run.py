@@ -448,7 +448,36 @@ def run_turtle_export():
         cwd=str(turtle_root),
     )
 
-    return bool(ok_export and ok_signals)
+    # Grail Trade scan (Holy Grail from Street Smarts - ADX > 30, pullback to EMA)
+    grail_client_id = _pick_client_id("GRAIL_CLIENT_ID", 801, 899)
+    print_info(f"Grail Trade IB clientId: {grail_client_id}")
+    
+    ok_grail = run_command(
+        [
+            PYTHON_EXE,
+            "-u",
+            "-m",
+            "turtle_trader.scripts.grail_trade_scan",
+            "--configs-dir",
+            "configs_modern",
+            "--port",
+            "7498",
+            "--client-id",
+            str(grail_client_id),
+            "--duration",
+            "1 Y",
+            "--adx-threshold",
+            "30",
+            "--ema-touch-pct",
+            "2.0",
+            "--out",
+            "../grail_signals_latest.json",
+        ],
+        "Grail Trade scan (Holy Grail - ADX pullback to EMA)",
+        cwd=str(turtle_root),
+    )
+
+    return bool(ok_export and ok_signals and ok_grail)
 
 
 def fetch_ib_positions():
@@ -517,6 +546,9 @@ def upload_to_web_repos():
         ("turtle_open_trades_latest.json", "turtle_open_trades_latest.json"),
         ("turtle_triggers_latest.json", "turtle_triggers_latest.json"),
         ("turtle_signals_latest.json", "turtle_signals_latest.json"),
+        
+        # Grail Trade (Holy Grail) signals
+        ("grail_signals_latest.json", "grail_signals_latest.json"),
     ]
     
     copied = 0
