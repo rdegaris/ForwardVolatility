@@ -36,7 +36,7 @@ from dataclasses import asdict, dataclass
 from datetime import date, datetime, timedelta
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 
 import requests
 
@@ -46,6 +46,12 @@ try:
     EARNINGS_CHECKER_AVAILABLE = True
 except Exception:
     EARNINGS_CHECKER_AVAILABLE = False
+
+try:
+    import yfinance as yf
+    YFINANCE_AVAILABLE = True
+except Exception:
+    YFINANCE_AVAILABLE = False
 
 try:
     import asyncio
@@ -90,6 +96,77 @@ def _finnhub_key() -> str:
 
 
 _earnings_checker = EarningsChecker(use_yahoo_fallback=True) if EARNINGS_CHECKER_AVAILABLE else None
+
+
+def fetch_yahoo_quotes(symbols: List[str]) -> Dict[str, Any]:
+    """Fetch live/after-hours quotes from Yahoo Finance using yfinance library."""
+    if not YFINANCE_AVAILABLE:
+        return {"ok": False, "error": "yfinance not installed"}
+    
+    if not symbols:
+        return {"ok": True, "quotes": {}}
+    
+    quotes = {}
+    
+    try:
+        # yfinance can fetch multiple tickers at once
+        tickers = yf.Tickers(" ".join(symbols))
+        
+        for symbol in symbols:
+            try:
+                ticker = tickers.tickers.get(symbol.upper())
+                if not ticker:
+                    continue
+                
+                info = ticker.fast_info
+                
+                # Get regular market data
+                regular_price = getattr(info, 'last_price', None) or getattr(info, 'previous_close', None)
+                previous_close = getattr(info, 'previous_close', None)
+                
+                # Try to get extended hours data from history
+                try:
+                    hist = ticker.history(period="1d", interval="1m", prepost=True)
+                    if not hist.empty:
+                        # Latest price including pre/post market
+                        display_price = float(hist['Close'].iloc[-1])
+                        regular_price = regular_price or display_price
+                    else:
+                        display_price = regular_price
+                except Exception:
+                    display_price = regular_price
+                
+                if regular_price is None and display_price is None:
+                    continue
+                
+                # Calculate changes
+                change = 0.0
+                change_pct = 0.0
+                if previous_close and display_price:
+                    change = display_price - previous_close
+                    change_pct = (change / previous_close) * 100.0
+                
+                quotes[symbol.upper()] = {
+                    "symbol": symbol.upper(),
+                    "regularMarketPrice": round(regular_price, 2) if regular_price else None,
+                    "displayPrice": round(display_price, 2) if display_price else None,
+                    "previousClose": round(previous_close, 2) if previous_close else None,
+                    "change": round(change, 2),
+                    "changePercent": round(change_pct, 2),
+                    "marketState": "UNKNOWN",  # yfinance doesn't easily expose this
+                }
+            except Exception as e:
+                print(f"  [WARN] Error fetching quote for {symbol}: {e}")
+                continue
+        
+        return {
+            "ok": True,
+            "asof": datetime.now().isoformat(),
+            "quotes": quotes,
+        }
+    
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
 
 
 def _json_response(handler: BaseHTTPRequestHandler, status: int, payload: Any) -> None:
@@ -415,6 +492,27 @@ class Handler(BaseHTTPRequestHandler):
             _json_response(self, 200 if payload.get("ok") else 503, payload)
             return
 
+        # Yahoo Finance quotes endpoint: /api/quotes?symbols=GOOGL,QCOM
+        if path == "/api/quotes":
+            query_params = parse_qs(parsed.query)
+            symbols_param = query_params.get("symbols", [""])[0]
+            if not symbols_param:
+                _json_response(self, 400, {"ok": False, "error": "Missing 'symbols' query parameter"})
+                return
+            
+            symbols = [s.strip().upper() for s in symbols_param.split(",") if s.strip()]
+            if not symbols:
+                _json_response(self, 400, {"ok": False, "error": "No valid symbols provided"})
+                return
+            
+            if not YFINANCE_AVAILABLE:
+                _json_response(self, 503, {"ok": False, "error": "yfinance not installed on server"})
+                return
+            
+            payload = fetch_yahoo_quotes(symbols)
+            _json_response(self, 200 if payload.get("ok") else 500, payload)
+            return
+
         _json_response(self, 404, {"ok": False, "error": "Not found"})
 
     def log_message(self, format: str, *args) -> None:
@@ -433,8 +531,12 @@ def main() -> int:
 
     httpd = HTTPServer((HOST, PORT), Handler)
     print(f"IB Bridge listening on http://{HOST}:{PORT}")
-    print("Endpoints: /api/health , /api/preearnings/open")
+    print("Endpoints:")
+    print("  /api/health           - Server health check")
+    print("  /api/preearnings/open - Open pre-earnings straddle positions")
+    print("  /api/quotes?symbols=  - Live Yahoo Finance quotes (comma-separated)")
     print(f"IB ports tried: {IB_PORTS}")
+    print(f"yfinance available: {YFINANCE_AVAILABLE}")
     print(f"Refresh interval: {REFRESH_SECONDS}s")
 
     try:
