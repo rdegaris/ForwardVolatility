@@ -157,7 +157,13 @@ class IBScanner:
 
         # Performance toggles
         self.fetch_ma_200 = os.environ.get('FETCH_MA_200', '1').strip().lower() not in ('0', 'false', 'no', 'n')
-    
+
+    def _exclude_ticker(self, ticker: str, *, reason: str, source: str) -> bool:
+        """Add ticker to exclusion list only when TWS is connected."""
+        if not self.connected:
+            return False
+        return self.excluded_tickers.add(ticker, reason=reason, source=source)
+
     def connect(self, max_retries=3):
         """Connect to IB Gateway or TWS with retry logic."""
         for attempt in range(max_retries):
@@ -239,7 +245,7 @@ class IBScanner:
 
         # Error 200 is the canonical "no security definition" / unknown contract.
         if symbol and int(error_code or 0) == 200:
-            self.excluded_tickers.add(symbol, reason=str(error_string), source='ib_errorEvent:200')
+            self._exclude_ticker(symbol, reason=str(error_string), source='ib_errorEvent:200')
 
     def _should_exclude_on_exception(self, ticker: str, exc: Exception) -> bool:
         msg = str(exc)
@@ -275,14 +281,14 @@ class IBScanner:
                 self.ib.qualifyContracts(stock)
             except Exception as e:
                 if self._should_exclude_on_exception(ticker, e):
-                    self.excluded_tickers.add(ticker, reason=str(e), source='qualifyContracts:stock')
+                    self._exclude_ticker(ticker, reason=str(e), source='qualifyContracts:stock')
                 raise
 
             # qualifyContracts may not raise even when IB returns error 200.
             if not getattr(stock, 'conId', 0):
                 last = self._last_ib_error_by_symbol.get(ticker.upper())
                 if last and int(last.get('code') or 0) == 200:
-                    self.excluded_tickers.add(ticker, reason=str(last.get('msg') or 'Error 200'), source='qualifyContracts:stock')
+                    self._exclude_ticker(ticker, reason=str(last.get('msg') or 'Error 200'), source='qualifyContracts:stock')
                 return None
 
             # Fast path: snapshot tick (avoids a fixed multi-second sleep)
@@ -349,13 +355,13 @@ class IBScanner:
                 self.ib.qualifyContracts(stock)
             except Exception as e:
                 if self._should_exclude_on_exception(ticker, e):
-                    self.excluded_tickers.add(ticker, reason=str(e), source='qualifyContracts:ma200')
+                    self._exclude_ticker(ticker, reason=str(e), source='qualifyContracts:ma200')
                 raise
 
             if not getattr(stock, 'conId', 0):
                 last = self._last_ib_error_by_symbol.get(ticker.upper())
                 if last and int(last.get('code') or 0) == 200:
-                    self.excluded_tickers.add(ticker, reason=str(last.get('msg') or 'Error 200'), source='qualifyContracts:ma200')
+                    self._exclude_ticker(ticker, reason=str(last.get('msg') or 'Error 200'), source='qualifyContracts:ma200')
                 return None
             
             # Request 200 days of daily bars
@@ -444,13 +450,13 @@ class IBScanner:
                 self.ib.qualifyContracts(stock)
             except Exception as e:
                 if self._should_exclude_on_exception(ticker, e):
-                    self.excluded_tickers.add(ticker, reason=str(e), source='qualifyContracts:optParams')
+                    self._exclude_ticker(ticker, reason=str(e), source='qualifyContracts:optParams')
                 raise
 
             if not getattr(stock, 'conId', 0):
                 last = self._last_ib_error_by_symbol.get(ticker.upper())
                 if last and int(last.get('code') or 0) == 200:
-                    self.excluded_tickers.add(ticker, reason=str(last.get('msg') or 'Error 200'), source='qualifyContracts:optParams')
+                    self._exclude_ticker(ticker, reason=str(last.get('msg') or 'Error 200'), source='qualifyContracts:optParams')
                 self._opt_params_cache[ticker] = []
                 return []
 
@@ -1228,13 +1234,13 @@ def rank_tickers_by_underlying_iv(
                 scanner.ib.qualifyContracts(contract)
             except Exception as e:
                 if scanner._should_exclude_on_exception(symbol, e):
-                    scanner.excluded_tickers.add(symbol, reason=str(e), source='qualifyContracts:underlyingIV')
+                    scanner._exclude_ticker(symbol, reason=str(e), source='qualifyContracts:underlyingIV')
                 return
 
             if not getattr(contract, 'conId', 0):
                 last = scanner._last_ib_error_by_symbol.get(symbol.upper())
                 if last and int(last.get('code') or 0) == 200:
-                    scanner.excluded_tickers.add(symbol, reason=str(last.get('msg') or 'Error 200'), source='qualifyContracts:underlyingIV')
+                    scanner._exclude_ticker(symbol, reason=str(last.get('msg') or 'Error 200'), source='qualifyContracts:underlyingIV')
                 return
 
             tickers_data = scanner.ib.reqTickers(contract)
@@ -1264,7 +1270,7 @@ def rank_tickers_by_underlying_iv(
 
         except Exception as e:
             if scanner._should_exclude_on_exception(symbol, e):
-                scanner.excluded_tickers.add(symbol, reason=str(e), source='reqTickers:underlyingIV')
+                scanner._exclude_ticker(symbol, reason=str(e), source='reqTickers:underlyingIV')
             return
 
     # Build + qualify stock contracts in batches, then snapshot them.
@@ -1289,7 +1295,7 @@ def rank_tickers_by_underlying_iv(
                 if not getattr(c, 'conId', 0):
                     last = scanner._last_ib_error_by_symbol.get(str(sym).upper())
                     if last and int(last.get('code') or 0) == 200:
-                        scanner.excluded_tickers.add(sym, reason=str(last.get('msg') or 'Error 200'), source='qualifyContracts:underlyingIV')
+                        scanner._exclude_ticker(sym, reason=str(last.get('msg') or 'Error 200'), source='qualifyContracts:underlyingIV')
 
             try:
                 tickers_data = scanner.ib.reqTickers(*contracts)
