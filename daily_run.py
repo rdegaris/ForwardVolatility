@@ -20,11 +20,12 @@ import subprocess
 import sys
 import os
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 import argparse
 import json
 import logging
 import random
+import re
 from pathlib import Path
 
 
@@ -94,6 +95,13 @@ def load_local_secrets():
 
 # Delay between IB scans to let TWS recover from rate limits
 IB_SCAN_DELAY_SECONDS = 10
+JSON_RETENTION_DAYS = 5
+
+HISTORICAL_JSON_PATTERNS = (
+    re.compile(r"^iv_rankings_[a-z0-9]+_(\d{8})(?:_\d{6})?\.json$", re.IGNORECASE),
+    re.compile(r"^(?:nasdaq100|midcap400|mag7)_results_(\d{8})(?:_\d{6})?\.json$", re.IGNORECASE),
+    re.compile(r"^scan_results_(\d{8})(?:_\d{6})?\.json$", re.IGNORECASE),
+)
 
 
 def get_venv_python():
@@ -237,12 +245,66 @@ def wait_for_ib_recovery(seconds=None):
     time.sleep(delay)
 
 
+def prune_historical_json_outputs(retention_days=JSON_RETENTION_DAYS):
+    """Delete dated historical JSON outputs older than the retention window."""
+    keep_days = max(int(retention_days), 1)
+    cutoff_date = datetime.now().date() - timedelta(days=keep_days - 1)
+    roots = [Path(__file__).parent.resolve()]
+
+    earnings_root = Path(__file__).parent.parent.parent / 'EarningsCrush' / 'earnings-crush-calculator'
+    if earnings_root.exists():
+        roots.append(earnings_root)
+
+    deleted = 0
+    for root in roots:
+        for path in root.glob('*.json'):
+            file_date = None
+            for pattern in HISTORICAL_JSON_PATTERNS:
+                match = pattern.match(path.name)
+                if not match:
+                    continue
+                try:
+                    file_date = datetime.strptime(match.group(1), '%Y%m%d').date()
+                except ValueError:
+                    file_date = None
+                break
+
+            if file_date is None or file_date >= cutoff_date:
+                continue
+
+            try:
+                path.unlink()
+                deleted += 1
+                print_info(f"Removed old JSON output: {path.name}")
+            except Exception as e:
+                print_warning(f"Failed to remove old JSON output {path.name}: {e}")
+
+    if deleted == 0:
+        print_info(f"No historical JSON outputs older than {keep_days} days found")
+    else:
+        print_success(f"Pruned {deleted} historical JSON output file(s) older than {keep_days} days")
+
+    return deleted
+
+
+def _build_stage_env(client_id=None, extra_env=None):
+    """Build subprocess environment overrides for a specific daily-run stage."""
+    env = os.environ.copy()
+    if client_id is not None:
+        env['IB_CLIENT_ID'] = str(client_id)
+    if extra_env:
+        for key, value in extra_env.items():
+            env[key] = str(value)
+    return env
+
+
 def run_mag7_scan():
     """Run MAG7 scanner."""
     print_section("Running MAG7 Scanner")
     return run_command(
         [PYTHON_EXE, "-u", "run_mag7_scan.py"],
-        "MAG7 scan"
+        "MAG7 scan",
+        env=_build_stage_env(client_id=617),
     )
 
 
@@ -251,14 +313,15 @@ def run_nasdaq100_scan():
     print_section("Running NASDAQ 100 Scanner")
     return run_command(
         [PYTHON_EXE, "-u", "run_nasdaq100_scan.py"],
-        "NASDAQ 100 scan"
+        "NASDAQ 100 scan",
+        env=_build_stage_env(client_id=615),
     )
 
 
 def run_midcap400_scan():
     """Run MidCap 400 scanner."""
     print_section("Running MidCap 400 Scanner")
-    env = os.environ.copy()
+    env = _build_stage_env(client_id=616)
     # MidCap 400 is the slowest scan; MA200 historical data requests add a lot of latency.
     # Disable MA200 fetch for this subprocess only.
     env['FETCH_MA_200'] = env.get('FETCH_MA_200_MIDCAP400', '0')
@@ -293,7 +356,8 @@ def run_iv_rankings_scan():
         print_info(f"Scanning {universe} for IV rankings...")
         result = run_command(
             [PYTHON_EXE, "-u", "run_iv_rankings.py", universe],
-            f"IV Rankings scan ({universe})"
+            f"IV Rankings scan ({universe})",
+            env=_build_stage_env(client_id=613 if universe == 'nasdaq100' else 614),
         )
         if result:
             success_count += 1
@@ -332,7 +396,8 @@ def run_earnings_crush_scan():
     success = run_command(
         [PYTHON_EXE, "-u", str(scan_script)],
         "Earnings Crush scan (Finnhub + IB)",
-        cwd=str(earnings_crush_path)
+        cwd=str(earnings_crush_path),
+        env=_build_stage_env(client_id=611),
     )
     
     return success
@@ -365,7 +430,8 @@ def run_preearnings_straddle_scan():
     success = run_command(
         [PYTHON_EXE, "-u", str(scan_script)],
         "Pre-Earnings Straddle scan (Finnhub + IB)",
-        cwd=str(earnings_crush_path)
+        cwd=str(earnings_crush_path),
+        env=_build_stage_env(client_id=612),
     )
 
     return success
@@ -491,7 +557,8 @@ def fetch_ib_positions():
     
     success = run_command(
         [PYTHON_EXE, "-u", "fetch_ib_positions.py"],
-        "IB positions fetch"
+        "IB positions fetch",
+        env=_build_stage_env(client_id=610),
     )
     
     if success and os.path.exists("trades.json"):
@@ -510,6 +577,57 @@ def fetch_ib_positions():
             pass
     
     return success
+
+
+def publish_incremental(file_pairs, label="incremental update"):
+    """Copy specific files to the web repo and git commit+push immediately.
+
+    Args:
+        file_pairs: list of (src_filename, dst_filename) tuples.
+        label: short description used in the commit message.
+
+    Returns True if files were pushed, False otherwise.
+    """
+    import shutil as _shutil
+    import subprocess as _sp
+
+    web_data = os.path.join("..", "forward-volatility-web", "public", "data")
+    web_repo = os.path.join("..", "forward-volatility-web")
+    if not os.path.exists(web_data):
+        return False
+
+    copied = 0
+    for src, dst in file_pairs:
+        if not os.path.exists(src):
+            continue
+        if src.lower().endswith('.json'):
+            try:
+                with open(src, 'r', encoding='utf-8') as f:
+                    json.load(f)
+            except Exception:
+                print_warning(f"Skipping invalid JSON: {src}")
+                continue
+        try:
+            _shutil.copy2(src, os.path.join(web_data, dst))
+            copied += 1
+        except Exception as e:
+            print_warning(f"Failed to copy {src}: {e}")
+
+    if copied == 0:
+        return False
+
+    try:
+        _sp.run(["git", "add", "-A"], cwd=web_repo, check=True, capture_output=True)
+        result = _sp.run(["git", "diff", "--cached", "--quiet"], cwd=web_repo, capture_output=True)
+        if result.returncode != 0:
+            msg = f"{label} - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+            _sp.run(["git", "commit", "-m", msg], cwd=web_repo, check=True, capture_output=True)
+            _sp.run(["git", "push"], cwd=web_repo, check=True, capture_output=True)
+            print_success(f"Published {copied} file(s): {label}")
+            return True
+    except Exception as e:
+        print_warning(f"Incremental publish failed ({label}): {e}")
+    return False
 
 
 def upload_to_web_repos():
@@ -540,6 +658,7 @@ def upload_to_web_repos():
         ("nasdaq100_iv_rankings_latest.json", "nasdaq100_iv_rankings_latest.json"),
         ("midcap400_iv_rankings_latest.json", "midcap400_iv_rankings_latest.json"),
         ("trades.json", "trades.json"),
+        ("directional_trades.json", "directional_trades.json"),
 
         # Turtle strategy web payloads
         ("turtle_suggested_latest.json", "turtle_suggested_latest.json"),
@@ -765,29 +884,71 @@ def main():
         # Run in priority order - portfolio first, midcap last
         # Add delays between IB scans to prevent rate limiting
         
+        incremental = not args.no_upload
+        
         results['ib_positions'] = fetch_ib_positions()
+        if incremental:
+            publish_incremental([
+                ("trades.json", "trades.json"),
+                ("directional_trades.json", "directional_trades.json"),
+            ], label="IB positions")
         wait_for_ib_recovery(5)  # Short delay after positions
         
         results['earnings_crush'] = run_earnings_crush_scan()
+        if incremental:
+            ec_path = str(Path(__file__).parent.parent.parent / 'EarningsCrush' / 'earnings-crush-calculator' / 'earnings_crush_latest.json')
+            publish_incremental([
+                (ec_path, "earnings_crush_latest.json"),
+            ], label="Earnings crush")
         if results['earnings_crush'] is not None:
             wait_for_ib_recovery()  # Full delay after earnings crush
 
         results['preearnings_straddles'] = run_preearnings_straddle_scan()
+        if incremental:
+            pe_path = str(Path(__file__).parent.parent.parent / 'EarningsCrush' / 'earnings-crush-calculator' / 'pre_earnings_straddle_latest.json')
+            if not os.path.exists(pe_path):
+                pe_path = 'pre_earnings_straddle_latest.json'
+            publish_incremental([
+                (pe_path, "pre_earnings_straddle_latest.json"),
+            ], label="Pre-earnings straddles")
         if results['preearnings_straddles'] is not None:
             wait_for_ib_recovery()  # Full delay after pre-earnings straddles
         
         results['iv_rankings'] = run_iv_rankings_scan()
+        if incremental:
+            publish_incremental([
+                ("nasdaq100_iv_rankings_latest.json", "nasdaq100_iv_rankings_latest.json"),
+                ("midcap400_iv_rankings_latest.json", "midcap400_iv_rankings_latest.json"),
+            ], label="IV rankings")
         wait_for_ib_recovery()  # Full delay after IV rankings
 
         results['turtle_export'] = run_turtle_export()
+        if incremental:
+            publish_incremental([
+                ("turtle_suggested_latest.json", "turtle_suggested_latest.json"),
+                ("turtle_open_trades_latest.json", "turtle_open_trades_latest.json"),
+                ("turtle_triggers_latest.json", "turtle_triggers_latest.json"),
+                ("turtle_signals_latest.json", "turtle_signals_latest.json"),
+                ("grail_signals_latest.json", "grail_signals_latest.json"),
+            ], label="Turtle/Grail signals")
         wait_for_ib_recovery(5)
         
         results['nasdaq100'] = run_nasdaq100_scan()
+        if incremental:
+            publish_incremental([
+                ("nasdaq100_results_latest.json", "nasdaq100_results_latest.json"),
+            ], label="NASDAQ 100 scan")
         wait_for_ib_recovery()  # Full delay after NASDAQ100
         
         results['midcap400'] = run_midcap400_scan()
+        if incremental:
+            publish_incremental([
+                ("midcap400_results_latest.json", "midcap400_results_latest.json"),
+            ], label="MidCap 400 scan")
         # No delay needed after last scan
     
+    prune_historical_json_outputs()
+
     # ALWAYS upload to web repos (even if some scans failed)
     if not args.no_upload and not args.ib_only:
         results['upload'] = upload_to_web_repos()

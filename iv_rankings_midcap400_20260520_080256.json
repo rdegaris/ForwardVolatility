@@ -1,742 +1,13 @@
 {
-  "timestamp": "2026-02-06T09:49:43.896426",
-  "date": "2026-02-06",
+  "timestamp": "2026-05-20T08:02:56.275272",
+  "date": "2026-05-20",
   "universe": "S&P MidCap 400",
-  "total_scanned": 448,
+  "total_scanned": 384,
   "rankings": [
     {
-      "ticker": "Cmbm",
-      "price": 1.4101,
-      "iv": 229.264014311922,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SABR",
-      "price": 1.155,
-      "iv": 214.27721959482437,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PAYO",
-      "price": 6.2,
-      "iv": 130.0342418978996,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "IART",
-      "price": 11.12,
-      "iv": 127.10665652015692,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CCOI",
-      "price": 23.57,
-      "iv": 127.0910438336499,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "AMN",
-      "price": 20.22,
-      "iv": 112.19455730786933,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "UIS",
-      "price": 2.35,
-      "iv": 110.61009973498312,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ASPN",
-      "price": 3.44,
-      "iv": 108.83133518810178,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
       "ticker": "DAVA",
-      "price": 5.47,
-      "iv": 105.89189139347299,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "RYI",
-      "price": 29.89,
-      "iv": 102.46648288326317,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "UCB",
-      "price": 36.66,
-      "iv": 96.6455453265023,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "INSP",
-      "price": 65.6,
-      "iv": 96.51674560982616,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HPP",
-      "price": 7.96,
-      "iv": 96.4000410549659,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "FUN",
-      "price": 18.65,
-      "iv": 94.37642267675787,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "NSP",
-      "price": 39.74,
-      "iv": 93.50095563510185,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "XHR",
-      "price": 15.49,
-      "iv": 90.31167921432231,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SPSC",
-      "price": 78.72,
-      "iv": 88.70454840140664,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "BLKB",
-      "price": 46.71,
-      "iv": 87.92007936939008,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CXM",
-      "price": 5.95,
-      "iv": 87.49576806029808,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HUBG",
-      "price": 41.85,
-      "iv": 87.30637538189208,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ENTG",
-      "price": 119.98,
-      "iv": 86.32738306738793,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PRAA",
-      "price": 11.62,
-      "iv": 86.1465595708425,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ROCK",
-      "price": 54.04,
-      "iv": 85.72513922332452,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MD",
-      "price": 20.85,
-      "iv": 85.66059988970551,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HNI",
-      "price": 52.230000000000004,
-      "iv": 84.34072497731292,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "QTWO",
-      "price": 56.42,
-      "iv": 83.29458972115398,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "AOSL",
-      "price": 21.14,
-      "iv": 82.29212564528567,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "AVNT",
-      "price": 38.85,
-      "iv": 81.93290561924474,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ACHC",
-      "price": 13.2,
-      "iv": 81.92955331404099,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CBZ",
-      "price": 38.11,
-      "iv": 81.8927881158133,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "UNF",
-      "price": 203.22000000000003,
-      "iv": 81.71306379121236,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SXC",
-      "price": 8.31,
-      "iv": 81.66817762298143,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "JACK",
-      "price": 22.98,
-      "iv": 81.08883990430704,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CNO",
-      "price": 43.63,
-      "iv": 80.82235013024581,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "COTY",
-      "price": 2.62,
-      "iv": 80.10559088236229,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SFM",
-      "price": 67.9,
-      "iv": 80.02195239113202,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PRG",
-      "price": 34.61,
-      "iv": 78.79280482993725,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SBH",
-      "price": 16.65,
-      "iv": 78.13701445976872,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "LSCC",
-      "price": 85.41,
-      "iv": 78.08633237777798,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "BXC",
-      "price": 78.28,
-      "iv": 77.75864074305444,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ALKS",
-      "price": 34.44,
-      "iv": 77.62088849051142,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MEDP",
-      "price": 542.77,
-      "iv": 77.42534550534246,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CENTA",
-      "price": 33.77,
-      "iv": 76.65249447706812,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SAH",
-      "price": 62.08,
-      "iv": 76.56435855789913,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MEG",
-      "price": 24.5,
-      "iv": 76.2433452084316,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SAIA",
-      "price": 412.18,
-      "iv": 76.05273360866379,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "NTCT",
-      "price": 27.31,
-      "iv": 76.04377987863805,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "WST",
-      "price": 244.69,
-      "iv": 75.38934867050422,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PBI",
-      "price": 10.725,
-      "iv": 75.06807592025534,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SN",
-      "price": 116.09,
-      "iv": 75.02111415042442,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "FLR",
-      "price": 47.26,
-      "iv": 74.61356788842215,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "FBP",
-      "price": 23.34,
-      "iv": 74.565258229817,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "TTI",
-      "price": 11.48,
-      "iv": 73.44625111755253,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CLOV",
-      "price": 2.11,
-      "iv": 73.21015899416258,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CRL",
-      "price": 188.17,
-      "iv": 73.0163838599048,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MOV",
-      "price": 24.52,
-      "iv": 73.00050341939675,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PBF",
-      "price": 35.27,
-      "iv": 72.37790951015847,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HCC",
-      "price": 89.95,
-      "iv": 71.85303532413909,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "WWW",
-      "price": 18.53,
-      "iv": 71.4793255927625,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MATW",
-      "price": 26.7,
-      "iv": 70.79120248242482,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ICLR",
-      "price": 150.09,
-      "iv": 70.25595497576035,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "FAF",
-      "price": 67.88,
-      "iv": 69.97803864945423,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "STC",
-      "price": 71.29,
-      "iv": 69.94374675915115,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HUN",
-      "price": 13.45,
-      "iv": 69.84814574888568,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "LEG",
-      "price": 12.7,
-      "iv": 69.80448378952914,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ACLS",
-      "price": 86.57,
-      "iv": 69.06836235671393,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "DNLI",
-      "price": 21.06,
-      "iv": 68.84909249706605,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HGV",
-      "price": 47.46,
-      "iv": 68.09307994427286,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "RXO",
-      "price": 16.52,
-      "iv": 68.02780561099331,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "LIVN",
-      "price": 66.73,
-      "iv": 67.83909422057005,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "FHI",
-      "price": 52.28,
-      "iv": 67.6830729532139,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "RMBS",
-      "price": 104.17,
-      "iv": 67.39691157013462,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "FORM",
-      "price": 91.11,
-      "iv": 66.53635224982646,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PODD",
-      "price": 241.44,
-      "iv": 66.52326440849879,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "UTL",
-      "price": 50.86,
-      "iv": 66.31908184785374,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "OI",
-      "price": 16.5,
-      "iv": 66.28296460134212,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ARCO",
-      "price": 8.55,
-      "iv": 66.21173513034995,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SMPL",
-      "price": 17.34,
-      "iv": 65.93702435424552,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CVI",
-      "price": 24.7,
-      "iv": 65.34562487769509,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "OFG",
-      "price": 41.23,
-      "iv": 65.26300854768516,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "OII",
-      "price": 31.86,
-      "iv": 65.1502106016585,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SCL",
-      "price": 63.33,
-      "iv": 64.66012913292509,
+      "price": 3.94,
+      "iv": 109.62334195907115,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
@@ -744,188 +15,80 @@
     },
     {
       "ticker": "MOD",
-      "price": 218.88,
-      "iv": 64.64655569515526,
+      "price": 253.81,
+      "iv": 98.46113601565993,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "PRM",
-      "price": 27.03,
-      "iv": 64.12687459497928,
+      "ticker": "IHRT",
+      "price": 4.79,
+      "iv": 97.18653741764268,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "WSC",
-      "price": 22.31,
-      "iv": 63.903623864211724,
+      "ticker": "CIEN",
+      "price": 561.95,
+      "iv": 94.45848793887794,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "TRNO",
-      "price": 64.75,
-      "iv": 63.753200038715796,
+      "ticker": "HPP",
+      "price": 10.64,
+      "iv": 90.03245401836463,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "HRI",
-      "price": 179.37,
-      "iv": 63.63101493461163,
+      "ticker": "ASPN",
+      "price": 5.065,
+      "iv": 87.69381883031788,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "HELE",
-      "price": 18.84,
-      "iv": 63.109341975584265,
+      "ticker": "AOSL",
+      "price": 40.08,
+      "iv": 86.96021857257098,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "KN",
-      "price": 27.09,
-      "iv": 62.81307277433152,
+      "ticker": "CCOI",
+      "price": 17.96,
+      "iv": 85.52270425354534,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "RIG",
-      "price": 5.285,
-      "iv": 62.75658134302591,
+      "ticker": "ENTA",
+      "price": 14.08,
+      "iv": 82.0038659030486,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "EBF",
-      "price": 20.3,
-      "iv": 62.272977957208965,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "TEX",
-      "price": 63.39,
-      "iv": 62.258857823099945,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "OLN",
-      "price": 24.55,
-      "iv": 62.0765894763371,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "NSA",
-      "price": 32.4,
-      "iv": 61.78023184228003,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "LBRT",
-      "price": 25.34,
-      "iv": 61.74742203738754,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "FIGS",
-      "price": 10.95,
-      "iv": 60.64645569410203,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CNK",
-      "price": 25.69,
-      "iv": 60.419101483684344,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "WLK",
-      "price": 94.985,
-      "iv": 60.12696016137108,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "WCC",
-      "price": 314.43,
-      "iv": 59.97144051187957,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SHOO",
-      "price": 36.03,
-      "iv": 59.96540227933826,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "WEN",
-      "price": 7.95,
-      "iv": 59.61701540072377,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "AKR",
-      "price": 21.1,
-      "iv": 59.51867337579914,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SFBS",
-      "price": 87.61,
-      "iv": 59.5087715486589,
+      "ticker": "FORM",
+      "price": 125.77,
+      "iv": 81.3340441121791,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
@@ -933,197 +96,17 @@
     },
     {
       "ticker": "AMWD",
-      "price": 65.75,
-      "iv": 59.39629545800275,
+      "price": 34.82,
+      "iv": 81.03532282483523,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "CVBF",
-      "price": 21.375,
-      "iv": 59.088992944313645,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SCCO",
-      "price": 197.33,
-      "iv": 59.08091608750949,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SANM",
-      "price": 149.37,
-      "iv": 58.73957139736474,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CRI",
-      "price": 38.04,
-      "iv": 58.704577811219835,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CXW",
-      "price": 18.71,
-      "iv": 58.675250772044166,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CUZ",
-      "price": 25.55,
-      "iv": 58.60733070395641,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ICUI",
-      "price": 153.04,
-      "iv": 58.125228160129325,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "THC",
-      "price": 201.6,
-      "iv": 57.9935797302328,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "LYV",
-      "price": 141.31,
-      "iv": 57.75878243006042,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "UE",
-      "price": 20.96,
-      "iv": 57.749115056138656,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "LTH",
-      "price": 29.45,
-      "iv": 57.639333203045176,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SM",
-      "price": 20.855,
-      "iv": 57.62536000638848,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PSTG",
-      "price": 70.23,
-      "iv": 57.62042268727772,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ROG",
-      "price": 105.91,
-      "iv": 57.5585431980806,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "TNC",
-      "price": 82.28,
-      "iv": 57.23767348378818,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "TRU",
-      "price": 72.93,
-      "iv": 57.07005099683878,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "LPX",
-      "price": 96.96,
-      "iv": 56.66956569840528,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CNS",
-      "price": 62.4,
-      "iv": 56.56969911689659,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "REZI",
-      "price": 35.945,
-      "iv": 56.54939152755173,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "RUSHA",
-      "price": 72.43,
-      "iv": 56.000401690047966,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "RTO",
-      "price": 32.15,
-      "iv": 55.93255040969394,
+      "ticker": "RMBS",
+      "price": 128.16,
+      "iv": 80.04373237732287,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
@@ -1131,755 +114,188 @@
     },
     {
       "ticker": "NX",
-      "price": 21.08,
-      "iv": 55.785242310774095,
+      "price": 16.985,
+      "iv": 79.94732802760367,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "VNO",
+      "ticker": "JBLU",
+      "price": 4.59,
+      "iv": 76.34392147485694,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "BLKB",
       "price": 30.99,
-      "iv": 55.78406601739648,
+      "iv": 73.80256214433568,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "KTB",
-      "price": 67.26,
-      "iv": 54.8608373369204,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "JXN",
-      "price": 119.21,
-      "iv": 54.60440361549562,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SKY",
-      "price": 82.94,
-      "iv": 54.58092141435087,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "RGLD",
-      "price": 263.63,
-      "iv": 54.548357001622726,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MHK",
-      "price": 131.54,
-      "iv": 54.50751728414286,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ST",
-      "price": 36.1,
-      "iv": 54.16442100903963,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "RAMP",
-      "price": 23.06,
-      "iv": 53.57520084096659,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "GFF",
-      "price": 94.2,
-      "iv": 53.56019509565009,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "GRMN",
-      "price": 199.2,
-      "iv": 53.45898547131064,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "BWXT",
-      "price": 197.06,
-      "iv": 53.19468239824287,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "NPO",
-      "price": 267.7,
-      "iv": 53.17438211303176,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "TPH",
-      "price": 35.15,
-      "iv": 53.13030712279861,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MAN",
-      "price": 37.14,
-      "iv": 52.480694302029974,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "DSGX",
-      "price": 67.09,
-      "iv": 52.219948556693254,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "EEFT",
-      "price": 73.34,
-      "iv": 52.135713357762626,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CRS",
-      "price": 367.23,
-      "iv": 51.87616426656161,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "APOG",
-      "price": 41.51,
-      "iv": 51.79042157256494,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "BKU",
-      "price": 51.21,
-      "iv": 51.70760406943734,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "GTES",
-      "price": 26.73,
-      "iv": 51.35905776953316,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "TRMB",
-      "price": 65.55,
-      "iv": 51.34614006783411,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "VAL",
-      "price": 61.94,
-      "iv": 51.31536102428521,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MTSI",
-      "price": 237.95,
-      "iv": 51.084629401946366,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CSGP",
-      "price": 49.67,
-      "iv": 51.037406975145636,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "NASDAQ100",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SXT",
-      "price": 97.51,
-      "iv": 50.46110211255785,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "TOL",
-      "price": 151.34,
-      "iv": 50.4467296460288,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "LKQ",
-      "price": 34.31,
-      "iv": 50.41232327405151,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "DAR",
-      "price": 48.62,
-      "iv": 50.30174994096128,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ACIW",
-      "price": 41.58,
-      "iv": 50.121796328189404,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "WSO",
-      "price": 416.75,
-      "iv": 50.06020296922156,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "LAD",
-      "price": 343.91,
-      "iv": 49.857540199763754,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "GO",
-      "price": 9.91,
-      "iv": 49.81521603704156,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MUR",
-      "price": 31.88,
-      "iv": 49.69575305668284,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HAS",
-      "price": 94.98,
-      "iv": 49.473849483235504,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "IPAR",
-      "price": 102.31,
-      "iv": 49.42829248224723,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "LNC",
-      "price": 40.17,
-      "iv": 49.36436195683387,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CVLT",
-      "price": 85.92,
-      "iv": 49.24190650018178,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "NVT",
-      "price": 109.16,
-      "iv": 49.2295239815,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CBU",
-      "price": 66.5,
-      "iv": 49.17223177884134,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "VIAV",
-      "price": 26.08,
-      "iv": 49.167353473614725,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MRCY",
-      "price": 82.25,
-      "iv": 49.15893607707844,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SON",
-      "price": 51.31,
-      "iv": 49.15529572905093,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "RGR",
-      "price": 38.2,
-      "iv": 49.14456871775192,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "WD",
-      "price": 63.49,
-      "iv": 49.12945993544664,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HTH",
-      "price": 39.87,
-      "iv": 48.99046358589312,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PWR",
-      "price": 505.37,
-      "iv": 48.71387522625043,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CRC",
-      "price": 55.24,
-      "iv": 47.82595774818017,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CDP",
-      "price": 31.86,
-      "iv": 47.159419240694604,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "IBP",
-      "price": 329.44,
-      "iv": 47.05409659594907,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "COKE",
-      "price": 157.7,
-      "iv": 46.89706861755834,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "BDC",
-      "price": 137.76,
-      "iv": 46.25858212429726,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "TRN",
-      "price": 30.38,
-      "iv": 46.19180568610277,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "WH",
-      "price": 76.28,
-      "iv": 46.17443290194838,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "FIBK",
-      "price": 38.98,
-      "iv": 46.17442819916892,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HP",
-      "price": 35.91,
-      "iv": 46.03095253996285,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SITE",
-      "price": 151.08,
-      "iv": 46.01713758379787,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "KBH",
-      "price": 61.12,
-      "iv": 45.93669159548798,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SLG",
-      "price": 43.38,
-      "iv": 45.778016200195324,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PTEN",
-      "price": 8.565,
-      "iv": 45.761947271215625,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ATKR",
-      "price": 67.51,
-      "iv": 45.73454823643843,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PAGS",
-      "price": 10.77,
-      "iv": 45.45072412053212,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "VMI",
-      "price": 474.13,
-      "iv": 45.25683514908205,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "IOSP",
-      "price": 86.34,
-      "iv": 45.06759644107909,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "COLB",
-      "price": 32.08,
-      "iv": 44.94440251269996,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "R",
-      "price": 216.64,
-      "iv": 44.933878875717795,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
+      "next_earnings": "2026-04-28"
     },
     {
-      "ticker": "ARCB",
-      "price": 111.62,
-      "iv": 44.901062016944834,
+      "ticker": "PRAA",
+      "price": 14.69,
+      "iv": 72.7626999370792,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "EAT",
-      "price": 167.89,
-      "iv": 44.87693678410634,
+      "ticker": "JACK",
+      "price": 11.28,
+      "iv": 72.65518671413625,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "SAFE",
-      "price": 14.9,
-      "iv": 44.80120153626262,
+      "ticker": "CYH",
+      "price": 2.835,
+      "iv": 72.26860874180171,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
-      "next_earnings": null
+      "next_earnings": "2026-02-16"
     },
     {
-      "ticker": "LGND",
-      "price": 190.84,
-      "iv": 44.7609786573925,
+      "ticker": "NSP",
+      "price": 31.64,
+      "iv": 71.97460087977359,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "KBR",
-      "price": 43.1,
-      "iv": 44.60097315264558,
+      "ticker": "BURL",
+      "price": 299.64,
+      "iv": 71.10937194843478,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "KMT",
-      "price": 40.63,
-      "iv": 44.47517303947041,
+      "ticker": "CLOV",
+      "price": 3.595,
+      "iv": 70.90180223982553,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
-      "next_earnings": null
+      "next_earnings": "2026-05-06"
     },
     {
-      "ticker": "UDR",
-      "price": 37.16,
-      "iv": 44.237108564219575,
+      "ticker": "PBF",
+      "price": 41.8,
+      "iv": 70.49400676447019,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "MTX",
-      "price": 73.0,
-      "iv": 43.94717635062358,
+      "ticker": "ICLR",
+      "price": 113.39,
+      "iv": 70.48322548818174,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "MOS",
-      "price": 28.55,
-      "iv": 43.87147663211016,
+      "ticker": "COTY",
+      "price": 1.935,
+      "iv": 70.1258062729089,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "IDCC",
-      "price": 369.6,
-      "iv": 43.862386787313476,
+      "ticker": "HL",
+      "price": 16.885,
+      "iv": 69.45337986061172,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "KFY",
-      "price": 68.56,
-      "iv": 43.614781505359765,
+      "ticker": "BXC",
+      "price": 47.2,
+      "iv": 68.9884733215436,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "HAE",
-      "price": 60.775,
-      "iv": 43.36466476932293,
+      "ticker": "FUN",
+      "price": 19.49,
+      "iv": 68.63128329548098,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "KFRC",
-      "price": 36.48,
-      "iv": 43.33106263907665,
+      "ticker": "MP",
+      "price": 55.31,
+      "iv": 68.59319904996597,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "CW",
-      "price": 651.85,
-      "iv": 43.30444123819257,
+      "ticker": "CC",
+      "price": 22.24,
+      "iv": 68.18515651514807,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "EQH",
-      "price": 45.51,
-      "iv": 43.19630066020938,
+      "ticker": "ACLS",
+      "price": 149.43,
+      "iv": 67.31422306208083,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "UNFI",
-      "price": 40.22,
-      "iv": 43.18304884285708,
+      "ticker": "DNLI",
+      "price": 18.78,
+      "iv": 67.09468578645156,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "MTH",
-      "price": 74.82,
-      "iv": 43.00516493463976,
+      "ticker": "RH",
+      "price": 127.2,
+      "iv": 67.04496229324278,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "WHR",
-      "price": 86.54,
-      "iv": 42.99514026206999,
+      "ticker": "AMN",
+      "price": 26.34,
+      "iv": 66.79352134595199,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
@@ -1887,566 +303,143 @@
     },
     {
       "ticker": "DY",
-      "price": 395.435,
-      "iv": 42.989158692350834,
+      "price": 417.18,
+      "iv": 66.65252688196657,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "BRC",
-      "price": 92.61,
-      "iv": 42.983628405569405,
+      "ticker": "FIGS",
+      "price": 11.98,
+      "iv": 66.41853736859424,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "PVH",
-      "price": 66.11,
-      "iv": 42.83830491079516,
+      "ticker": "ENTG",
+      "price": 126.64,
+      "iv": 66.31325239273687,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "H",
-      "price": 165.48,
-      "iv": 42.831273119481075,
+      "ticker": "LSCC",
+      "price": 133.95,
+      "iv": 65.83940812749192,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "BWA",
-      "price": 51.5,
-      "iv": 42.815873309277066,
+      "ticker": "HELE",
+      "price": 23.25,
+      "iv": 64.19065046623338,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "XPO",
-      "price": 198.98,
-      "iv": 42.71393992259538,
+      "ticker": "AKR",
+      "price": 21.28,
+      "iv": 64.06659727897818,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "TCBI",
-      "price": 105.61,
-      "iv": 42.67130531713074,
+      "ticker": "RIG",
+      "price": 7.45,
+      "iv": 62.84371055576451,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "ATI",
-      "price": 135.12,
-      "iv": 42.49772732487336,
+      "ticker": "INSP",
+      "price": 42.66,
+      "iv": 62.453675293167386,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "TAP",
-      "price": 51.41,
-      "iv": 42.48256343096825,
+      "ticker": "WHR",
+      "price": 41.07,
+      "iv": 62.447785295696626,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "RBA",
-      "price": 116.5,
-      "iv": 42.23162756065648,
+      "ticker": "FIX",
+      "price": 1870.9,
+      "iv": 62.359388666124275,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "PFS",
-      "price": 23.89,
-      "iv": 42.17715337230049,
+      "ticker": "MAN",
+      "price": 27.14,
+      "iv": 62.10356526627998,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "OC",
-      "price": 135.46,
-      "iv": 41.92034381303135,
+      "ticker": "GO",
+      "price": 7.99,
+      "iv": 61.25192030657448,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "TFX",
-      "price": 106.64,
-      "iv": 41.91915535227025,
+      "ticker": "OI",
+      "price": 8.95,
+      "iv": 61.24413784929407,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "VRE",
-      "price": 16.47,
-      "iv": 41.759434665596245,
+      "ticker": "CVI",
+      "price": 33.16,
+      "iv": 61.09186666860993,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "ENVA",
-      "price": 164.025,
-      "iv": 41.69556224525555,
+      "ticker": "SKY",
+      "price": 67.17,
+      "iv": 60.87849716617865,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "ENS",
-      "price": 172.23,
-      "iv": 41.580019345504326,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "KAI",
-      "price": 342.11,
-      "iv": 41.53881419268192,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PAG",
-      "price": 165.32,
-      "iv": 41.51159158659719,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SSD",
-      "price": 195.35,
-      "iv": 41.50454305408145,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MATX",
-      "price": 161.32,
-      "iv": 41.40871469464078,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "DKS",
-      "price": 210.66,
-      "iv": 41.36699129126036,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "JEF",
-      "price": 59.25,
-      "iv": 41.300634753613416,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "RHP",
-      "price": 96.64,
-      "iv": 41.24431398100018,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CLH",
-      "price": 266.18,
-      "iv": 41.21894505675938,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "AMG",
-      "price": 302.4,
-      "iv": 41.16966205932497,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "TPB",
-      "price": 128.92,
-      "iv": 41.150603718118454,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CHDN",
-      "price": 94.42,
-      "iv": 41.030019776946226,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "NOV",
-      "price": 18.78,
-      "iv": 40.89677497150456,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SNCR",
-      "price": 8.87,
-      "iv": 40.71728423677762,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "XYL",
-      "price": 141.33,
-      "iv": 40.343208576062004,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SPB",
-      "price": 76.33,
-      "iv": 40.240502095396145,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HCI",
-      "price": 163.77,
-      "iv": 40.234110833814505,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "BLD",
-      "price": 515.15,
-      "iv": 40.21372228060238,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HOMB",
-      "price": 30.64,
-      "iv": 40.06631758682413,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ORA",
-      "price": 122.44,
-      "iv": 39.978431775594956,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "BMI",
-      "price": 150.07,
-      "iv": 39.87744293859838,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CNM",
-      "price": 57.95,
-      "iv": 39.7147866362149,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HTLD",
-      "price": 11.66,
-      "iv": 39.69871095763716,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MTZ",
-      "price": 258.58,
-      "iv": 39.678649839310076,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "APG",
-      "price": 44.2,
-      "iv": 39.511438331838946,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PRI",
-      "price": 274.09,
-      "iv": 39.39581687180312,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "IVZ",
-      "price": 26.41,
-      "iv": 39.388909052198116,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "JLL",
-      "price": 342.3,
-      "iv": 39.30094725423455,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "GATX",
-      "price": 189.2,
-      "iv": 39.30083025505214,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SHO",
-      "price": 9.1,
-      "iv": 39.123455962630395,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CHRD",
-      "price": 101.98,
-      "iv": 39.03887413355992,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "TPR",
-      "price": 151.05,
-      "iv": 38.86476851190088,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MC",
-      "price": 72.61,
-      "iv": 38.84436435081406,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "WEX",
-      "price": 155.75,
-      "iv": 38.834611877776766,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ABCB",
-      "price": 85.71,
-      "iv": 38.83028447970527,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "GVA",
-      "price": 129.82,
-      "iv": 38.7360957038801,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MUSA",
-      "price": 386.36,
-      "iv": 38.55518128712402,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "KRC",
-      "price": 34.81,
-      "iv": 38.46013888953467,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "OVV",
-      "price": 46.315,
-      "iv": 38.43776398005831,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CBSH",
-      "price": 55.05,
-      "iv": 38.39377257183962,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "STLD",
-      "price": 200.01,
-      "iv": 38.37500329848069,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PLXS",
-      "price": 204.87,
-      "iv": 38.05254973909752,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "REXR",
-      "price": 38.61,
-      "iv": 37.98740717295507,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "BOX",
-      "price": 24.65,
-      "iv": 37.92935600583522,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "GIII",
-      "price": 30.43,
-      "iv": 37.7732719971396,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PEB",
-      "price": 12.12,
-      "iv": 37.608916304909826,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "FSS",
-      "price": 116.61,
-      "iv": 37.405649292269814,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SSB",
-      "price": 108.13,
-      "iv": 37.3016709976186,
+      "ticker": "CXM",
+      "price": 5.24,
+      "iv": 60.75159859785101,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
@@ -2454,296 +447,116 @@
     },
     {
       "ticker": "FOR",
-      "price": 29.53,
-      "iv": 37.185164181761195,
+      "price": 25.7,
+      "iv": 60.44391566518754,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "ABG",
-      "price": 230.26,
-      "iv": 37.15935200195076,
+      "ticker": "REZI",
+      "price": 28.12,
+      "iv": 60.268820588343466,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "BFH",
-      "price": 79.11,
-      "iv": 37.00247315048505,
+      "ticker": "HNI",
+      "price": 29.61,
+      "iv": 59.854817227076026,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "MIDD",
-      "price": 159.19,
-      "iv": 36.99982128202818,
+      "ticker": "KFRC",
+      "price": 40.37,
+      "iv": 59.58476669456919,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "RL",
-      "price": 343.13,
-      "iv": 36.98348855573439,
+      "ticker": "PVH",
+      "price": 82.83,
+      "iv": 58.935254071440866,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "LXP",
-      "price": 51.35,
-      "iv": 36.914619004388165,
+      "ticker": "RKT",
+      "price": 13.19,
+      "iv": 58.50738777823652,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "CBRE",
-      "price": 168.96,
-      "iv": 36.81926558382143,
+      "ticker": "CENTA",
+      "price": 34.38,
+      "iv": 58.507174291086564,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "TKR",
-      "price": 106.23,
-      "iv": 36.72254843583611,
+      "ticker": "LBRT",
+      "price": 33.5,
+      "iv": 58.26318750005635,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "CATY",
-      "price": 54.04,
-      "iv": 36.66434693477057,
+      "ticker": "ACHC",
+      "price": 24.55,
+      "iv": 57.446518014222406,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "ZWS",
-      "price": 52.52,
-      "iv": 36.48641520548821,
+      "ticker": "QTWO",
+      "price": 46.14,
+      "iv": 57.29506720310512,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "CPF",
-      "price": 34.75,
-      "iv": 36.28308137154392,
+      "ticker": "WWW",
+      "price": 15.08,
+      "iv": 56.60195464604478,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "CMC",
-      "price": 83.07,
-      "iv": 36.27808374375007,
+      "ticker": "PEGA",
+      "price": 33.88,
+      "iv": 56.51439434446816,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "FHB",
-      "price": 27.09,
-      "iv": 36.27453332612403,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "OUT",
-      "price": 26.72,
-      "iv": 36.216801565616336,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "FNF",
-      "price": 57.87,
-      "iv": 36.08607124930138,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "EHC",
-      "price": 110.01,
-      "iv": 36.03440906594311,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SWK",
-      "price": 90.63,
-      "iv": 35.9842398564847,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "KEX",
-      "price": 122.41,
-      "iv": 35.90018299786935,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "WAB",
-      "price": 245.29,
-      "iv": 35.85352571938443,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "AGCO",
-      "price": 130.37,
-      "iv": 35.696567215491626,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MMS",
-      "price": 76.72,
-      "iv": 35.68098560889935,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PIPR",
-      "price": 362.22,
-      "iv": 35.642630102496994,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PRGO",
-      "price": 14.56,
-      "iv": 35.4778373928895,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "G",
-      "price": 39.38,
-      "iv": 35.41247054063177,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "AX",
-      "price": 101.3,
-      "iv": 35.402966857470346,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "RS",
-      "price": 351.43,
-      "iv": 35.39744498699374,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ARW",
-      "price": 151.77,
-      "iv": 35.382240241710065,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "NWSA",
-      "price": 22.83,
-      "iv": 35.31719532880735,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "WMB",
-      "price": 67.92,
-      "iv": 35.263974082882974,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MAC",
-      "price": 19.47,
-      "iv": 35.23573806913448,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "FULT",
-      "price": 22.78,
-      "iv": 35.1581467423795,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "THO",
-      "price": 119.63,
-      "iv": 34.901931076695135,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MTN",
-      "price": 138.95,
-      "iv": 34.84878743372136,
+      "ticker": "BOX",
+      "price": 25.49,
+      "iv": 56.28480068904995,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
@@ -2751,62 +564,98 @@
     },
     {
       "ticker": "PATK",
-      "price": 138.87,
-      "iv": 34.73888056632444,
+      "price": 88.66999999999999,
+      "iv": 56.107238200463826,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "LH",
-      "price": 274.62,
-      "iv": 34.67689184216197,
+      "ticker": "OLN",
+      "price": 26.28,
+      "iv": 55.59969327539266,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "BANR",
-      "price": 64.76,
-      "iv": 34.647954883543605,
+      "ticker": "ESRT",
+      "price": 5.45,
+      "iv": 55.57762032802255,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "GEF",
-      "price": 75.23,
-      "iv": 34.60717044268486,
+      "ticker": "SCCO",
+      "price": 173.93,
+      "iv": 55.394982539279916,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "EXR",
-      "price": 139.14,
-      "iv": 34.60325210445749,
+      "ticker": "CBZ",
+      "price": 30.48,
+      "iv": 55.252132845411786,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "BCPC",
-      "price": 174.48,
-      "iv": 34.5926592372457,
+      "ticker": "CSGP",
+      "price": 33.25,
+      "iv": 55.07501567555128,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "NASDAQ100",
+      "next_earnings": null
+    },
+    {
+      "ticker": "WSM",
+      "price": 176.03,
+      "iv": 55.02651090271563,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "KNX",
-      "price": 59.49,
-      "iv": 34.55278375404712,
+      "ticker": "PTEN",
+      "price": 12.565,
+      "iv": 54.941307029654915,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "SMPL",
+      "price": 11.24,
+      "iv": 54.64038377820658,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "MBI",
+      "price": 5.93,
+      "iv": 54.62768450756364,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "WLK",
+      "price": 88.43,
+      "iv": 53.23705063977263,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
@@ -2814,287 +663,125 @@
     },
     {
       "ticker": "BY",
-      "price": 33.61,
-      "iv": 34.518128201262705,
+      "price": 32.89,
+      "iv": 52.87836940114345,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "PK",
-      "price": 11.41,
-      "iv": 34.481197042604336,
+      "ticker": "GNRC",
+      "price": 242.68,
+      "iv": 52.83660467349593,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "HLI",
-      "price": 170.8,
-      "iv": 34.42965220416945,
+      "ticker": "MOV",
+      "price": 26.79,
+      "iv": 52.66723130168944,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "WAL",
-      "price": 93.75,
-      "iv": 34.421685796494096,
+      "ticker": "LEG",
+      "price": 9.38,
+      "iv": 52.66051620517237,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "HSIC",
-      "price": 78.78,
-      "iv": 34.38795228854914,
+      "ticker": "NVT",
+      "price": 161.9,
+      "iv": 52.62186035191449,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "ALLY",
-      "price": 42.7,
-      "iv": 34.383256075668385,
+      "ticker": "SIG",
+      "price": 76.81,
+      "iv": 52.37302332210787,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "LPLA",
-      "price": 384.65,
-      "iv": 34.187220923146214,
+      "ticker": "SM",
+      "price": 35.22,
+      "iv": 52.1744429062956,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "NVST",
-      "price": 28.97,
-      "iv": 34.07790015297277,
+      "ticker": "PRM",
+      "price": 33.87,
+      "iv": 52.085735572738756,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "CWT",
-      "price": 44.92,
-      "iv": 33.96142172182012,
+      "ticker": "ROCK",
+      "price": 34.45,
+      "iv": 52.06698228065374,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "VVV",
-      "price": 37.51,
-      "iv": 33.927095282435225,
+      "ticker": "DKS",
+      "price": 215.37,
+      "iv": 51.99904844954975,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "BKH",
-      "price": 73.87,
-      "iv": 33.925356230169434,
+      "ticker": "MATW",
+      "price": 26.93,
+      "iv": 51.97854151747791,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "CNX",
-      "price": 39.99,
-      "iv": 33.86405681893761,
+      "ticker": "PRGO",
+      "price": 10.79,
+      "iv": 51.97402911666937,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "EME",
-      "price": 752.59,
-      "iv": 33.595752836401196,
+      "ticker": "WSC",
+      "price": 23.34,
+      "iv": 51.81805696778788,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "LII",
-      "price": 527.84,
-      "iv": 33.30515184801247,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "IQV",
-      "price": 185.69,
-      "iv": 33.2634896004872,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "LEA",
-      "price": 139.27,
-      "iv": 33.198909916215634,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "EXP",
-      "price": 227.57,
-      "iv": 33.05203149352619,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "NUE",
-      "price": 192.41,
-      "iv": 33.033986753687714,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "TEL",
-      "price": 218.15,
-      "iv": 32.99006956894556,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "EBC",
-      "price": 21.99,
-      "iv": 32.98830033519121,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "AIT",
-      "price": 291.92,
-      "iv": 32.92778963355395,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "UHS",
-      "price": 218.49,
-      "iv": 32.84613385550797,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CBT",
-      "price": 75.23,
-      "iv": 32.75446509267587,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "IEX",
-      "price": 214.97,
-      "iv": 32.68004683300664,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SKT",
-      "price": 33.46,
-      "iv": 32.55346136881607,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "AN",
-      "price": 219.66,
-      "iv": 32.51086483206434,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "TGT",
-      "price": 115.46,
-      "iv": 32.509107585739855,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CALM",
-      "price": 84.44,
-      "iv": 32.41880227291024,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "WMS",
-      "price": 175.27,
-      "iv": 32.36088861323893,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "USFD",
-      "price": 90.26,
-      "iv": 32.32596705601629,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "TRGP",
-      "price": 211.04,
-      "iv": 32.05775910417908,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "OZK",
-      "price": 51.03,
-      "iv": 32.02491204621489,
+      "ticker": "CRL",
+      "price": 151.68,
+      "iv": 51.438316149931175,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
@@ -3102,908 +789,161 @@
     },
     {
       "ticker": "PLNT",
-      "price": 91.73,
-      "iv": 31.98964482705885,
+      "price": 50.55,
+      "iv": 51.40598559538191,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "IRT",
-      "price": 16.564999999999998,
-      "iv": 31.854965494780423,
+      "ticker": "CRI",
+      "price": 36.18,
+      "iv": 51.36676526456389,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "VLY",
-      "price": 13.77,
-      "iv": 31.75956663717522,
+      "ticker": "HCC",
+      "price": 84.18,
+      "iv": 51.17358330363943,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "FLS",
-      "price": 84.86,
-      "iv": 31.730685735293513,
+      "ticker": "PAYO",
+      "price": 4.92,
+      "iv": 50.98616681323019,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "AXS",
-      "price": 106.66,
-      "iv": 31.65539001003462,
+      "ticker": "NVST",
+      "price": 22.94,
+      "iv": 50.80324616862374,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "JBHT",
-      "price": 226.42,
-      "iv": 31.521311743455087,
+      "ticker": "BWXT",
+      "price": 201.37,
+      "iv": 50.72376674450236,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "WMG",
-      "price": 30.1,
-      "iv": 31.440810341434766,
+      "ticker": "WMS",
+      "price": 134.59,
+      "iv": 50.34797008427198,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "WOR",
-      "price": 59.15,
-      "iv": 31.304226291539894,
+      "ticker": "IBP",
+      "price": 208.25,
+      "iv": 50.21978241247132,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "EWBC",
-      "price": 122.69,
-      "iv": 31.211549791600362,
+      "ticker": "CRS",
+      "price": 418.58,
+      "iv": 50.0846865565039,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "MTG",
-      "price": 27.705,
-      "iv": 31.04870183059435,
+      "ticker": "MD",
+      "price": 22.57,
+      "iv": 49.87977644356568,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "NEU",
-      "price": 722.99,
-      "iv": 31.029774484421218,
+      "ticker": "EBF",
+      "price": 20.18,
+      "iv": 49.78422037720338,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "SBRA",
-      "price": 19.06,
-      "iv": 31.02464780694021,
+      "ticker": "EAT",
+      "price": 129.13,
+      "iv": 49.7799191309418,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "OSK",
-      "price": 171.41,
-      "iv": 31.021194794086487,
+      "ticker": "KTB",
+      "price": 63.77,
+      "iv": 49.630642068361865,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "BXP",
-      "price": 64.38,
-      "iv": 31.015462590116087,
+      "ticker": "PEB",
+      "price": 14.62,
+      "iv": 49.45612141494044,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "RITM",
-      "price": 10.77,
-      "iv": 30.983310299696694,
+      "ticker": "CNM",
+      "price": 46.42,
+      "iv": 49.38975521516227,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "CFR",
-      "price": 147.43,
-      "iv": 30.935766366181237,
+      "ticker": "HAE",
+      "price": 57.86,
+      "iv": 49.29166508987717,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "DOX",
-      "price": 73.36,
-      "iv": 30.84209120230656,
+      "ticker": "MOS",
+      "price": 21.52,
+      "iv": 49.28593956538719,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
       "next_earnings": null
     },
     {
-      "ticker": "MSCI",
-      "price": 554.78,
-      "iv": 30.798000050750503,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MLI",
-      "price": 117.39,
-      "iv": 30.775316819590238,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "WSFS",
-      "price": 70.84,
-      "iv": 30.71400657737865,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SFNC",
-      "price": 21.73,
-      "iv": 30.70550775346374,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SBAC",
-      "price": 179.84,
-      "iv": 30.63060995576293,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MSM",
-      "price": 95.34,
-      "iv": 30.609244216864084,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "BJ",
-      "price": 100.31,
-      "iv": 30.601066082689325,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SWX",
-      "price": 83.93,
-      "iv": 30.563351270576884,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "AWR",
-      "price": 71.57,
-      "iv": 30.249126156465568,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HIW",
-      "price": 25.84,
-      "iv": 30.09225335310186,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "JKHY",
-      "price": 171.21,
-      "iv": 30.041435603314522,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "JOE",
-      "price": 68.92,
-      "iv": 29.90085020776805,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "RGA",
-      "price": 224.61,
-      "iv": 29.864880868226347,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CPK",
-      "price": 131.83,
-      "iv": 29.659277872574453,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "VIRT",
-      "price": 38.25,
-      "iv": 29.58240277057102,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "FNB",
-      "price": 18.99,
-      "iv": 29.445063946846922,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "MS",
-      "price": 179.65,
-      "iv": 29.32112692947947,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PKG",
-      "price": 236.1,
-      "iv": 29.089942181033845,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ELS",
-      "price": 65.9,
-      "iv": 29.04536830650997,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "TTC",
-      "price": 97.84,
-      "iv": 29.00705721303846,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "RSG",
-      "price": 219.26,
-      "iv": 28.869647114535063,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CPB",
-      "price": 28.59,
-      "iv": 28.79076836742965,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "J",
-      "price": 147.24,
-      "iv": 28.765939586226747,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ZION",
-      "price": 66.0,
-      "iv": 28.754550572554372,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SEM",
-      "price": 15.71,
-      "iv": 28.553667694407725,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SRCE",
-      "price": 70.44,
-      "iv": 28.532455920905225,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HEI",
-      "price": 327.83,
-      "iv": 28.52220097894374,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "AWI",
-      "price": 197.79,
-      "iv": 28.4262471538224,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CTRE",
-      "price": 38.87,
-      "iv": 28.38122010256913,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "EXPO",
-      "price": 80.18,
-      "iv": 28.33454844251006,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SF",
-      "price": 130.74,
-      "iv": 28.2676172530544,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "AOS",
-      "price": 78.68,
-      "iv": 28.078821399576782,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "KIM",
-      "price": 21.72,
-      "iv": 27.718845453721276,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HWC",
-      "price": 75.17,
-      "iv": 27.385322936339623,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "OGS",
-      "price": 82.69,
-      "iv": 27.274305048248372,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HBAN",
-      "price": 19.39,
-      "iv": 27.137393241402723,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "RBC",
-      "price": 543.05,
-      "iv": 27.105524324519713,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ASR",
-      "price": 368.32,
-      "iv": 27.0747352980041,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ESE",
-      "price": 250.65,
-      "iv": 27.006883826536725,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "TIPT",
-      "price": 17.7,
-      "iv": 26.93078077823114,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "BRX",
-      "price": 28.1,
-      "iv": 26.769047347396878,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "STRA",
-      "price": 80.94,
-      "iv": 26.58129044666062,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "DRI",
-      "price": 217.48,
-      "iv": 26.525856689880477,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "NWE",
-      "price": 69.28,
-      "iv": 26.49188495900392,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "RNR",
-      "price": 303.67,
-      "iv": 26.391894223388608,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "DCI",
-      "price": 109.21,
-      "iv": 26.313230307361717,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "UGI",
-      "price": 37.55,
-      "iv": 26.24372863202425,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "SNX",
-      "price": 171.15,
-      "iv": 26.225908282689648,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "NHI",
-      "price": 83.77,
-      "iv": 25.818946210380755,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ENSG",
-      "price": 195.19,
-      "iv": 25.760797058386416,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "STAG",
-      "price": 38.97,
-      "iv": 25.759368667574563,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "UBSI",
-      "price": 45.76,
-      "iv": 25.611113990108507,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "NFG",
-      "price": 86.14,
-      "iv": 25.51635412543795,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "NNN",
-      "price": 42.68,
-      "iv": 25.355574809636817,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "AM",
-      "price": 19.365,
-      "iv": 25.346038947430326,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HR",
-      "price": 16.81,
-      "iv": 25.31822074482719,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "EPR",
-      "price": 56.19,
-      "iv": 25.213477809752106,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HRL",
-      "price": 25.14,
-      "iv": 25.1158169992401,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "LNT",
-      "price": 66.36,
-      "iv": 25.08608394580359,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "ORI",
-      "price": 41.92,
-      "iv": 25.043646781072564,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "EGP",
-      "price": 188.48,
-      "iv": 24.948528141413092,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "THG",
-      "price": 178.21,
-      "iv": 24.771214935149636,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "POST",
-      "price": 113.86,
-      "iv": 24.666258966464436,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CLX",
-      "price": 119.61,
-      "iv": 24.33435251597035,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PH",
-      "price": 976.5,
-      "iv": 24.302172225798692,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "RMD",
-      "price": 269.31,
-      "iv": 24.212150837813134,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "FR",
-      "price": 59.57,
-      "iv": 24.153577658323908,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PBH",
-      "price": 65.31,
-      "iv": 23.94689601488991,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "VTR",
-      "price": 80.8,
-      "iv": 23.93208288230229,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "FRT",
-      "price": 105.22,
-      "iv": 23.788567333950994,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "CHE",
-      "price": 451.49,
-      "iv": 23.671200907112198,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "GNW",
-      "price": 9.045,
-      "iv": 23.66862790469789,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "GNL",
-      "price": 9.62,
-      "iv": 22.937383687360196,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "HI",
-      "price": 31.91,
-      "iv": 22.78148716009847,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "NJR",
-      "price": 52.78,
-      "iv": 22.011537460324227,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "GTY",
-      "price": 30.9,
-      "iv": 21.903333509982957,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "TXT",
-      "price": 95.02,
-      "iv": 21.591148209520153,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "IDA",
-      "price": 135.29,
-      "iv": 21.370949321172304,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "BOKF",
-      "price": 136.4,
-      "iv": 21.312281506524513,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "AVA",
-      "price": 41.69,
-      "iv": 21.202211678441543,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "PNW",
-      "price": 93.56,
-      "iv": 21.168016843287234,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "WBS",
-      "price": 73.0,
-      "iv": 20.721993019957672,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "OGE",
-      "price": 44.02,
-      "iv": 18.36835812589868,
-      "ma_200": null,
-      "above_ma_200": null,
-      "universe": "MIDCAP400",
-      "next_earnings": null
-    },
-    {
-      "ticker": "OHI",
-      "price": 45.12,
-      "iv": 18.19879452236818,
+      "ticker": "OII",
+      "price": 38.685,
+      "iv": 49.15232977474686,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
@@ -4011,8 +951,2474 @@
     },
     {
       "ticker": "OLP",
-      "price": 22.44,
-      "iv": 17.941276628672473,
+      "price": 22.94,
+      "iv": 48.95936406700825,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "EXPE",
+      "price": 212.75,
+      "iv": 48.83991201340452,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "SHOO",
+      "price": 39.43,
+      "iv": 48.71945251306736,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ARCB",
+      "price": 122.59,
+      "iv": 48.663174570381486,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ENS",
+      "price": 220.97,
+      "iv": 48.41518585307752,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PAGS",
+      "price": 9.27,
+      "iv": 48.40140089522028,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ATI",
+      "price": 154.97,
+      "iv": 48.32109922634176,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "HP",
+      "price": 40.83,
+      "iv": 48.30908879220711,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "DSGX",
+      "price": 72.16,
+      "iv": 48.23808284055603,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "SHAK",
+      "price": 61.96,
+      "iv": 48.205732489075444,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "FLR",
+      "price": 42.91,
+      "iv": 48.16653435495119,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "KMT",
+      "price": 35.34,
+      "iv": 48.1404408197583,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PENN",
+      "price": 16.05,
+      "iv": 48.10582238340553,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "INSM",
+      "price": 108.33,
+      "iv": 48.079140073968254,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CVBF",
+      "price": 20.41,
+      "iv": 47.96068560735035,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "SLG",
+      "price": 40.66,
+      "iv": 47.834837825062145,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ARCO",
+      "price": 8.68,
+      "iv": 47.200949205466806,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "SFNC",
+      "price": 21.31,
+      "iv": 47.12704788791373,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PRG",
+      "price": 33.49,
+      "iv": 46.986045693913915,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "XPO",
+      "price": 209.21,
+      "iv": 46.641822421924815,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "KN",
+      "price": 34.71,
+      "iv": 46.39953529268546,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "APOG",
+      "price": 33.96,
+      "iv": 46.25990980351876,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "NRG",
+      "price": 129.72500000000002,
+      "iv": 46.02494241848826,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "FBP",
+      "price": 24.21,
+      "iv": 45.94646669885574,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PFS",
+      "price": 22.23,
+      "iv": 45.68929219616084,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "LPX",
+      "price": 68.235,
+      "iv": 45.57160471577389,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "EEFT",
+      "price": 67.11,
+      "iv": 45.43546937132661,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "IDCC",
+      "price": 265.92,
+      "iv": 45.3315651632609,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "BWA",
+      "price": 61.94,
+      "iv": 45.232295996301254,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PODD",
+      "price": 155.09,
+      "iv": 45.19227318681636,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "RL",
+      "price": 328.65,
+      "iv": 45.01819627896358,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CUZ",
+      "price": 25.98,
+      "iv": 44.864646701455854,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": "2026-04-29"
+    },
+    {
+      "ticker": "G",
+      "price": 31.835,
+      "iv": 44.80273880944602,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CXW",
+      "price": 21.16,
+      "iv": 44.78217098026608,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PWR",
+      "price": 720.83,
+      "iv": 44.63152216199791,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "HEI",
+      "price": 297.605,
+      "iv": 44.580256025946454,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "SCL",
+      "price": 50.13,
+      "iv": 44.48661179198841,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "HAFC",
+      "price": 29.990000000000002,
+      "iv": 44.23903289410698,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "HGV",
+      "price": 47.09,
+      "iv": 44.217124166336504,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "FLS",
+      "price": 65.19,
+      "iv": 44.15673134269994,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "KBH",
+      "price": 45.61,
+      "iv": 43.900674340104295,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "SFM",
+      "price": 88.9,
+      "iv": 43.8854613868593,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CDP",
+      "price": 31.94,
+      "iv": 43.852230692604955,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "RGLD",
+      "price": 221.01,
+      "iv": 43.521205932819775,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CRC",
+      "price": 62.57,
+      "iv": 43.36907548538486,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "OSK",
+      "price": 123.72,
+      "iv": 43.23833230650268,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CVLT",
+      "price": 101.83,
+      "iv": 43.15476770876489,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "LIVN",
+      "price": 73.24,
+      "iv": 43.13313608872234,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CMC",
+      "price": 70.26,
+      "iv": 43.012225893888896,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CHRD",
+      "price": 145.88,
+      "iv": 42.83242608983045,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "HOG",
+      "price": 23.21,
+      "iv": 42.36312269682107,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "KRC",
+      "price": 33.62,
+      "iv": 42.313497788324746,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ALKS",
+      "price": 37.45,
+      "iv": 42.257109315790316,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "BJ",
+      "price": 95.87,
+      "iv": 42.24420513900276,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "MMS",
+      "price": 59.53,
+      "iv": 42.23074830387292,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "LPLA",
+      "price": 287.9,
+      "iv": 42.20509594983587,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PBH",
+      "price": 47.12,
+      "iv": 42.18039160154044,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ICUI",
+      "price": 125.36,
+      "iv": 41.82465603174565,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "KNX",
+      "price": 71.06,
+      "iv": 41.796770378235095,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "MGM",
+      "price": 36.12,
+      "iv": 41.65101793667907,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "MC",
+      "price": 63.61,
+      "iv": 41.60652155459443,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "BMI",
+      "price": 116.7,
+      "iv": 41.594270469200026,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "JJSF",
+      "price": 72.68,
+      "iv": 41.56514502757353,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PLXS",
+      "price": 257.0,
+      "iv": 41.498382639241875,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "SITE",
+      "price": 112.71,
+      "iv": 41.483386476495895,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "DAR",
+      "price": 59.61,
+      "iv": 41.4830002634277,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "EQH",
+      "price": 42.34,
+      "iv": 41.449243083964504,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PIPR",
+      "price": 79.58,
+      "iv": 41.367460866550076,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "GTES",
+      "price": 24.02,
+      "iv": 41.33989700754172,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "LGND",
+      "price": 216.3,
+      "iv": 41.26591754222658,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ENVA",
+      "price": 162.985,
+      "iv": 41.26193904599703,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CPF",
+      "price": 34.905,
+      "iv": 41.02405314960834,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": "2026-04-21"
+    },
+    {
+      "ticker": "ATKR",
+      "price": 73.24,
+      "iv": 40.98828361657147,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": "2026-05-05"
+    },
+    {
+      "ticker": "BFH",
+      "price": 85.09,
+      "iv": 40.983055645048765,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CATY",
+      "price": 57.13,
+      "iv": 40.933411026167285,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ABM",
+      "price": 39.17,
+      "iv": 40.68332669343082,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "OVV",
+      "price": 61.28,
+      "iv": 40.67369151839181,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "BC",
+      "price": 74.17,
+      "iv": 40.62779011912406,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "DOX",
+      "price": 61.7,
+      "iv": 40.504966264784045,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "LTH",
+      "price": 32.88,
+      "iv": 40.439992702329306,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "NPO",
+      "price": 301.46,
+      "iv": 40.38794950702483,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "BANR",
+      "price": 64.75,
+      "iv": 40.34302334317811,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "MHK",
+      "price": 96.29,
+      "iv": 40.17236097843503,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "IPAR",
+      "price": 86.86,
+      "iv": 39.841301283113786,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "GFF",
+      "price": 81.04,
+      "iv": 39.825835234143945,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "OC",
+      "price": 110.21,
+      "iv": 39.801841954677755,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CNK",
+      "price": 26.39,
+      "iv": 39.78660703364069,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "JEF",
+      "price": 51.93,
+      "iv": 39.77249162803979,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ESNT",
+      "price": 61.66,
+      "iv": 39.685930875271886,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ARW",
+      "price": 212.5,
+      "iv": 39.50004534812263,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "MATX",
+      "price": 185.69,
+      "iv": 39.39332744485246,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "SFBS",
+      "price": 77.56,
+      "iv": 39.3619090462977,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "EME",
+      "price": 865.44,
+      "iv": 39.104225250811794,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PBI",
+      "price": 15.525,
+      "iv": 39.0705552718404,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "NTCT",
+      "price": 39.23,
+      "iv": 39.064041736821935,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "IQV",
+      "price": 167.7,
+      "iv": 39.05155930258346,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ROG",
+      "price": 129.48,
+      "iv": 39.03803970683586,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PDM",
+      "price": 7.97,
+      "iv": 38.96438286557773,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "FAF",
+      "price": 67.91,
+      "iv": 38.93472921063114,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "LII",
+      "price": 488.07,
+      "iv": 38.92210917591142,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "LXP",
+      "price": 51.65,
+      "iv": 38.88395231730644,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "HALO",
+      "price": 68.32,
+      "iv": 38.70292095439537,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "COKE",
+      "price": 173.84,
+      "iv": 38.67195406856479,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "MGY",
+      "price": 30.08,
+      "iv": 38.54462409733171,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "NSA",
+      "price": 42.63,
+      "iv": 38.51030598325755,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "AGCO",
+      "price": 113.51,
+      "iv": 38.50016699183898,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ABG",
+      "price": 179.86,
+      "iv": 38.499878396332875,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PHM",
+      "price": 113.75,
+      "iv": 38.419524968496496,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "AVT",
+      "price": 84.44,
+      "iv": 38.36201663974721,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CPB",
+      "price": 19.91,
+      "iv": 38.10027942038198,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "KBR",
+      "price": 32.03,
+      "iv": 37.925396407162935,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "MEDP",
+      "price": 411.8,
+      "iv": 37.82944232506812,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "KAI",
+      "price": 305.9,
+      "iv": 37.71047742112072,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "NOV",
+      "price": 21.27,
+      "iv": 37.66805230053323,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "SF",
+      "price": 73.48,
+      "iv": 37.607333655881014,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "LSTR",
+      "price": 188.45,
+      "iv": 37.351117333837664,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "BKU",
+      "price": 46.34,
+      "iv": 37.28278485793628,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "RGR",
+      "price": 39.39,
+      "iv": 37.28253695452693,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "IVZ",
+      "price": 26.88,
+      "iv": 37.251360756130154,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "WSO",
+      "price": 386.41,
+      "iv": 37.24274712885549,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CWT",
+      "price": 43.0,
+      "iv": 37.218724671974705,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "KFY",
+      "price": 65.29,
+      "iv": 37.17701042488833,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "LAD",
+      "price": 261.03,
+      "iv": 37.16548667458795,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PPC",
+      "price": 28.56,
+      "iv": 37.136966969799936,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "IOSP",
+      "price": 77.84,
+      "iv": 37.08782844454287,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "EXP",
+      "price": 198.4,
+      "iv": 37.03098036460943,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "H",
+      "price": 169.47,
+      "iv": 36.972453901442435,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "AMG",
+      "price": 301.37,
+      "iv": 36.84752570175337,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "AN",
+      "price": 180.63,
+      "iv": 36.81004367395938,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "JLL",
+      "price": 289.23,
+      "iv": 36.784402668045935,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CW",
+      "price": 727.7,
+      "iv": 36.77792685545692,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "FSS",
+      "price": 111.64,
+      "iv": 36.61281670428415,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "MIDD",
+      "price": 142.71,
+      "iv": 36.46499162576839,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "HOMB",
+      "price": 26.66,
+      "iv": 36.23736667004801,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "JXN",
+      "price": 110.01,
+      "iv": 36.21791677264873,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "APG",
+      "price": 41.67,
+      "iv": 36.15075068294375,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ORA",
+      "price": 132.29,
+      "iv": 36.08730031696095,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "EXPO",
+      "price": 56.99,
+      "iv": 36.05900810858084,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CNS",
+      "price": 71.97,
+      "iv": 35.97532324002046,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "LNC",
+      "price": 35.17,
+      "iv": 35.796120739104,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "LKQ",
+      "price": 24.89,
+      "iv": 35.693307406128284,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "HIW",
+      "price": 25.19,
+      "iv": 35.618475258015266,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "GEF",
+      "price": 61.97,
+      "iv": 35.43978104697408,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "R",
+      "price": 234.03,
+      "iv": 35.38589260274232,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "JBHT",
+      "price": 263.4,
+      "iv": 35.33985174621402,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "NWSA",
+      "price": 25.77,
+      "iv": 35.29179506679772,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "WST",
+      "price": 302.04,
+      "iv": 35.27799430347632,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CNX",
+      "price": 36.77,
+      "iv": 35.223043818962275,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PK",
+      "price": 11.2,
+      "iv": 35.20946546269812,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ESE",
+      "price": 298.79,
+      "iv": 35.19361530599535,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CBRE",
+      "price": 129.6,
+      "iv": 35.17008240680746,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "NTR",
+      "price": 70.48,
+      "iv": 35.07038357603937,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "AX",
+      "price": 85.67,
+      "iv": 35.05692674473768,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "FHB",
+      "price": 27.12,
+      "iv": 34.876324400555916,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "JOE",
+      "price": 63.88,
+      "iv": 34.74131581880907,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ABCB",
+      "price": 84.62,
+      "iv": 34.66791493110123,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "WMG",
+      "price": 33.93,
+      "iv": 34.58606105368853,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "HCI",
+      "price": 155.5,
+      "iv": 34.53575573707357,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "XHR",
+      "price": 16.68,
+      "iv": 34.4151829473776,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "MCY",
+      "price": 102.11,
+      "iv": 34.314835828484014,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "LYV",
+      "price": 162.2,
+      "iv": 34.23273126264931,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CBU",
+      "price": 63.94,
+      "iv": 34.23028279122575,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "NUE",
+      "price": 223.55,
+      "iv": 34.13106259703011,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "LEA",
+      "price": 130.09,
+      "iv": 34.12766988657071,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "HLI",
+      "price": 148.36,
+      "iv": 34.070239728075165,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "EQT",
+      "price": 58.26,
+      "iv": 34.05476695824288,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "EHC",
+      "price": 105.11,
+      "iv": 34.04959349498883,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "DCI",
+      "price": 81.72,
+      "iv": 33.904515359867005,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "KEX",
+      "price": 148.23,
+      "iv": 33.8573615781881,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "BRC",
+      "price": 85.55,
+      "iv": 33.84930325080222,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "OUT",
+      "price": 32.98,
+      "iv": 33.69122227653931,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "POST",
+      "price": 96.41,
+      "iv": 33.37066169836322,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CBSH",
+      "price": 52.44,
+      "iv": 33.26344735725621,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "FHI",
+      "price": 54.22,
+      "iv": 33.14293353876335,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ASR",
+      "price": 305.43,
+      "iv": 33.084603637876214,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "RBC",
+      "price": 573.53,
+      "iv": 33.05159129974288,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "FULT",
+      "price": 21.39,
+      "iv": 33.046378007185176,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CBT",
+      "price": 78.88,
+      "iv": 32.981745597017756,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "FNB",
+      "price": 17.53,
+      "iv": 32.8358722381832,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "EBC",
+      "price": 19.72,
+      "iv": 32.746339220148855,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "FNF",
+      "price": 48.7,
+      "iv": 32.69131209004164,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "GVA",
+      "price": 132.28,
+      "iv": 32.686198563317625,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ALLY",
+      "price": 42.19,
+      "iv": 32.623630697100985,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "HAS",
+      "price": 90.01,
+      "iv": 32.59501519548576,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PKG",
+      "price": 211.34,
+      "iv": 32.534492133169074,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "MAC",
+      "price": 22.27,
+      "iv": 32.51939484920194,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "J",
+      "price": 112.73,
+      "iv": 32.409331378058745,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "FIBK",
+      "price": 35.325,
+      "iv": 32.320248601476926,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ZWS",
+      "price": 47.1,
+      "iv": 32.304731700460756,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "OFG",
+      "price": 45.54,
+      "iv": 32.26715470768867,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CLX",
+      "price": 93.33,
+      "iv": 32.247010886466846,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "AWI",
+      "price": 155.97,
+      "iv": 32.17119511742746,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PAG",
+      "price": 157.19,
+      "iv": 31.999768336888955,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "WOR",
+      "price": 54.12,
+      "iv": 31.92987506947273,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ATR",
+      "price": 114.28,
+      "iv": 31.75749922030263,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "BXP",
+      "price": 59.05,
+      "iv": 31.69412703609512,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "WSFS",
+      "price": 72.05,
+      "iv": 31.56918664214577,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "SHO",
+      "price": 10.37,
+      "iv": 31.556344367580706,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "JKHY",
+      "price": 138.66,
+      "iv": 30.99531668198824,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "KRG",
+      "price": 26.33,
+      "iv": 30.8821393961132,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ENSG",
+      "price": 176.9,
+      "iv": 30.685902664726942,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CALM",
+      "price": 77.79,
+      "iv": 30.646363951611654,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "IRT",
+      "price": 16.55,
+      "iv": 30.602974432181462,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "REXR",
+      "price": 35.47,
+      "iv": 30.409156853893887,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "GATX",
+      "price": 170.63,
+      "iv": 30.28641772827987,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "MLI",
+      "price": 132.64,
+      "iv": 30.266121083322368,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "DRI",
+      "price": 195.77,
+      "iv": 30.217546497160523,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CLH",
+      "price": 291.98,
+      "iv": 30.134709349889288,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "RHP",
+      "price": 110.33,
+      "iv": 30.095135934513838,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "XYL",
+      "price": 107.09,
+      "iv": 29.777081014916508,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "COLB",
+      "price": 29.57,
+      "iv": 29.67002819924029,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "FR",
+      "price": 61.84,
+      "iv": 29.42638872737809,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "NWE",
+      "price": 71.28,
+      "iv": 29.22096997354312,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "AOS",
+      "price": 55.77,
+      "iv": 29.18536808960031,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ZION",
+      "price": 61.56,
+      "iv": 29.162372916498864,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "RBA",
+      "price": 103.92,
+      "iv": 29.027728041589242,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PH",
+      "price": 855.45,
+      "iv": 28.93203425260567,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "EWBC",
+      "price": 123.35,
+      "iv": 28.898516230014078,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "RMD",
+      "price": 210.25,
+      "iv": 28.89389760101369,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "BKH",
+      "price": 73.53,
+      "iv": 28.72736502760403,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "IEX",
+      "price": 206.37,
+      "iv": 28.655818312603525,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "OZK",
+      "price": 48.14,
+      "iv": 28.49018400965761,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "GNW",
+      "price": 9.255,
+      "iv": 28.47635651562767,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "RITM",
+      "price": 9.2,
+      "iv": 28.414418188295485,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "LH",
+      "price": 254.95,
+      "iv": 28.281767057006928,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "HBAN",
+      "price": 15.77,
+      "iv": 28.050749993937192,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "AIT",
+      "price": 306.37,
+      "iv": 27.920396653670643,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "BLD",
+      "price": 405.88,
+      "iv": 27.90650055663228,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "BCPC",
+      "price": 160.22,
+      "iv": 27.566225694851955,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ONB",
+      "price": 23.8,
+      "iv": 27.491532672947482,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "KIM",
+      "price": 23.6,
+      "iv": 27.46868632894967,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "SKT",
+      "price": 35.38,
+      "iv": 27.434638750378575,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PM",
+      "price": 187.58,
+      "iv": 27.417382242796307,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "MAIN",
+      "price": 51.23,
+      "iv": 27.41390132587491,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "AM",
+      "price": 22.33,
+      "iv": 27.329720666960732,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "GRMN",
+      "price": 231.14,
+      "iv": 26.934850636678874,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CFR",
+      "price": 139.15,
+      "iv": 26.7869802353577,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "AXS",
+      "price": 100.42,
+      "iv": 26.49284661098974,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CHE",
+      "price": 438.42499999999995,
+      "iv": 26.355750574088155,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "AVA",
+      "price": 41.28,
+      "iv": 26.303823368004874,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "BOKF",
+      "price": 128.9,
+      "iv": 26.091277064397556,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "RGA",
+      "price": 214.07,
+      "iv": 25.35880912268158,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CPK",
+      "price": 127.2,
+      "iv": 25.215590986686436,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "RNR",
+      "price": 303.35,
+      "iv": 25.18452043403272,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "WMB",
+      "price": 78.97,
+      "iv": 25.14055662393136,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ROL",
+      "price": 53.26,
+      "iv": 25.053297966422882,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CTRE",
+      "price": 41.6,
+      "iv": 24.983248732358653,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "OGS",
+      "price": 83.03,
+      "iv": 24.94182715942963,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "HR",
+      "price": 20.41,
+      "iv": 24.888805543493515,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "LAMR",
+      "price": 151.28,
+      "iv": 24.81629663701689,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CL",
+      "price": 89.87,
+      "iv": 24.37182281049532,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PRI",
+      "price": 280.45,
+      "iv": 24.34452782138804,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "EXR",
+      "price": 142.96,
+      "iv": 24.318094860018256,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ELS",
+      "price": 63.08,
+      "iv": 24.198851975866262,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "WRB",
+      "price": 68.06,
+      "iv": 23.94730942681791,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "PNW",
+      "price": 101.7,
+      "iv": 23.90829623419233,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "DTM",
+      "price": 150.45,
+      "iv": 23.602014063957213,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "IDA",
+      "price": 142.06,
+      "iv": 23.186962286479307,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "SBRA",
+      "price": 21.16,
+      "iv": 22.676577988464423,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ORI",
+      "price": 39.99,
+      "iv": 22.66275103474682,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "AWR",
+      "price": 75.68,
+      "iv": 22.324106514659235,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "LNT",
+      "price": 73.18,
+      "iv": 21.615609466392975,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "GTY",
+      "price": 33.3,
+      "iv": 21.16582326813392,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "EGP",
+      "price": 203.42,
+      "iv": 20.57845731247546,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "CNO",
+      "price": 47.47,
+      "iv": 20.34289071578455,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "OHI",
+      "price": 48.980000000000004,
+      "iv": 20.299416547587338,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "EPR",
+      "price": 58.1,
+      "iv": 20.274641249349166,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "MKL",
+      "price": 1845.16,
+      "iv": 20.037056174297728,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "GNL",
+      "price": 9.37,
+      "iv": 19.868845359938994,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "FRT",
+      "price": 115.3,
+      "iv": 19.78152618673694,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "ESS",
+      "price": 273.62,
+      "iv": 19.744650011753414,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "BRX",
+      "price": 30.17,
+      "iv": 19.483101483146292,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "OGE",
+      "price": 48.19,
+      "iv": 18.5737055135964,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "SEM",
+      "price": 16.53,
+      "iv": 16.767279297893516,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "NNN",
+      "price": 45.28,
+      "iv": 16.255126299108586,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
@@ -4020,8 +3426,8 @@
     },
     {
       "ticker": "BHF",
-      "price": 63.91,
-      "iv": 15.788285298410004,
+      "price": 62.63,
+      "iv": 15.40094013432187,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
@@ -4029,8 +3435,26 @@
     },
     {
       "ticker": "PEN",
-      "price": 341.5,
-      "iv": 14.810135552493788,
+      "price": 326.11,
+      "iv": 15.205085849504552,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "RAMP",
+      "price": 37.76,
+      "iv": 5.427640820767276,
+      "ma_200": null,
+      "above_ma_200": null,
+      "universe": "MIDCAP400",
+      "next_earnings": null
+    },
+    {
+      "ticker": "GTLS",
+      "price": 207.16,
+      "iv": 5.197475936861664,
       "ma_200": null,
       "above_ma_200": null,
       "universe": "MIDCAP400",
@@ -4038,9 +3462,9 @@
     }
   ],
   "summary": {
-    "highest_iv": 229.264014311922,
-    "lowest_iv": 14.810135552493788,
-    "average_iv": 47.75,
-    "median_iv": 41.580019345504326
+    "highest_iv": 109.62334195907115,
+    "lowest_iv": 5.197475936861664,
+    "average_iv": 42.66,
+    "median_iv": 39.77249162803979
   }
 }
