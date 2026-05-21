@@ -365,6 +365,94 @@ def export_to_json(calendar_spreads, filename='trades.json'):
     return filename
 
 
+def identify_directional_trades(option_positions, calendar_spreads, ib):
+    """
+    Identify single-leg option positions that are NOT part of a calendar spread.
+
+    Returns:
+        List of directional trade dicts ready for JSON export.
+    """
+    print("\n[INFO] Identifying directional (single-leg) option positions...")
+
+    # Build a set of contract IDs used in calendar spreads
+    cal_conIds = set()
+    for spread in calendar_spreads:
+        cal_conIds.add(spread['front']['contract'].conId)
+        cal_conIds.add(spread['back']['contract'].conId)
+
+    directional = []
+    for pos in option_positions:
+        contract = pos['contract']
+        if contract.conId in cal_conIds:
+            continue  # skip legs that belong to a calendar spread
+
+        # Request market data
+        ib.qualifyContracts(contract)
+        ticker = ib.reqMktData(contract, '', False, False)
+        ib.sleep(2)
+
+        underlying = Stock(contract.symbol, 'SMART', 'USD')
+        ib.qualifyContracts(underlying)
+        underlying_ticker = ib.reqMktData(underlying, '', False, False)
+        ib.sleep(2)
+
+        current_price = get_option_price(ticker)
+        underlying_price = get_stock_price(underlying_ticker)
+
+        if current_price is None or underlying_price is None:
+            print(f"  [WARN] Skipping {contract.symbol} ${contract.strike} {contract.right} - no market data")
+            continue
+
+        entry_price = abs(pos['avgCost']) / 100  # cents -> dollars
+        qty = int(abs(pos['position']))
+        is_long = pos['position'] > 0
+
+        # P&L: long => (current - entry) * qty * 100 ; short => (entry - current) * qty * 100
+        if is_long:
+            unrealized_pnl = (current_price - entry_price) * qty * 100
+        else:
+            unrealized_pnl = (entry_price - current_price) * qty * 100
+
+        stable_id = f"ibdir_{contract.symbol}_{contract.right}_{float(contract.strike)}_{contract.lastTradeDateOrContractMonth}"
+
+        trade = {
+            'id': stable_id,
+            'source': 'ib',
+            'symbol': contract.symbol,
+            'strike': float(contract.strike),
+            'callOrPut': 'CALL' if contract.right == 'C' else 'PUT',
+            'quantity': qty if is_long else -qty,
+            'expiration': format_date(contract.lastTradeDateOrContractMonth),
+            'entryPrice': round(entry_price, 2),
+            'currentPrice': round(current_price, 2),
+            'underlyingEntryPrice': round(underlying_price, 2),
+            'underlyingCurrentPrice': round(underlying_price, 2),
+            'entryDate': date.today().strftime('%Y-%m-%d'),
+            'unrealizedPnL': round(unrealized_pnl, 2),
+            'status': 'open',
+            'asOf': datetime.now().isoformat(),
+        }
+        directional.append(trade)
+
+        direction = "Long" if is_long else "Short"
+        print(f"  [+] {direction} {qty}x {contract.symbol} ${contract.strike} {contract.right} exp {format_date(contract.lastTradeDateOrContractMonth)}")
+        print(f"      Entry: ${entry_price:.2f} | Current: ${current_price:.2f} | P&L: ${unrealized_pnl:.2f}")
+
+    if not directional:
+        print("  [INFO] No single-leg option positions found")
+
+    return directional
+
+
+def export_directional_trades(trades, filename='directional_trades.json'):
+    """Export directional (single-leg) option trades to JSON."""
+    print(f"\n[INFO] Exporting {len(trades)} directional trades to {filename}...")
+    with open(filename, 'w') as f:
+        json.dump(trades, f, indent=2)
+    print(f"[OK] Exported to {filename}")
+    return filename
+
+
 def main():
     """Main function to fetch and export IB positions."""
     print("=" * 60)
@@ -387,6 +475,7 @@ def main():
         if not option_positions:
             print("\n[INFO] No option positions found. Writing empty trades.json so the web app clears old positions.")
             export_to_json([], filename='trades.json')
+            export_directional_trades([], filename='directional_trades.json')
             return
         
         # Identify calendar spreads
@@ -395,13 +484,17 @@ def main():
         if not calendar_spreads:
             print("\n[INFO] No calendar spreads found in positions. Writing empty trades.json so the web app clears old positions.")
             export_to_json([], filename='trades.json')
-            return
-        
-        # Export to JSON
-        filename = export_to_json(calendar_spreads)
-        
-        print(f"\n[OK] Complete! Found {len(calendar_spreads)} calendar spreads")
-        print(f"   JSON file: {os.path.abspath(filename)}")
+        else:
+            # Export calendar spreads
+            filename = export_to_json(calendar_spreads)
+            print(f"\n[OK] Found {len(calendar_spreads)} calendar spreads")
+            print(f"   JSON file: {os.path.abspath(filename)}")
+
+        # Identify and export directional (single-leg) trades
+        directional_trades = identify_directional_trades(option_positions, calendar_spreads, ib)
+        export_directional_trades(directional_trades, filename='directional_trades.json')
+        if directional_trades:
+            print(f"\n[OK] Found {len(directional_trades)} directional trades")
         
     except Exception as e:
         print(f"\n[ERROR] Error: {e}")

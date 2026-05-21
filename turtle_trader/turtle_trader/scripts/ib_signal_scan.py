@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from decimal import Decimal
 
 from turtle_trader.brokers.ib.client import IBClient, IBConfig
 from turtle_trader.config import load_config
@@ -55,6 +56,19 @@ def _bars_from_ib_df(df) -> list[Bar]:
             )
         )
     return bars
+
+
+def _tick_decimals(tick_size: float) -> int:
+    if tick_size <= 0:
+        return 6
+    exponent = Decimal(str(tick_size)).normalize().as_tuple().exponent
+    return max(0, -exponent)
+
+
+def _normalize_price(value: float | None, tick_size: float) -> float | None:
+    if value is None:
+        return None
+    return round(float(value), _tick_decimals(tick_size))
 
 
 def _load_configs(configs_dir: Path) -> list[Path]:
@@ -181,12 +195,21 @@ def main() -> int:
             # Unit sizing uses account starting equity (net liq not fetched in this scan).
             unit_qty = int(compute_unit_qty(cfg, equity=float(cfg.account.starting_equity), N=float(levels.N)))
 
+            long_entry = _normalize_price(levels.long_entry, cfg.instrument.tick_size)
+            short_entry = _normalize_price(levels.short_entry, cfg.instrument.tick_size)
+
             long_stop_loss = None
             short_stop_loss = None
             if levels.long_entry is not None:
-                long_stop_loss = float(round_to_tick(float(levels.long_entry) - (cfg.account.stop_loss_N * float(levels.N)), cfg.instrument.tick_size))
+                long_stop_loss = _normalize_price(
+                    round_to_tick(float(levels.long_entry) - (cfg.account.stop_loss_N * float(levels.N)), cfg.instrument.tick_size),
+                    cfg.instrument.tick_size,
+                )
             if levels.short_entry is not None:
-                short_stop_loss = float(round_to_tick(float(levels.short_entry) + (cfg.account.stop_loss_N * float(levels.N)), cfg.instrument.tick_size))
+                short_stop_loss = _normalize_price(
+                    round_to_tick(float(levels.short_entry) + (cfg.account.stop_loss_N * float(levels.N)), cfg.instrument.tick_size),
+                    cfg.instrument.tick_size,
+                )
 
             row = {
                 "symbol": inst.symbol,
@@ -198,10 +221,10 @@ def main() -> int:
                 "last_high": float(last.high),
                 "last_low": float(last.low),
                 "last_close": float(last.close),
-                "long_entry": float(levels.long_entry) if levels.long_entry is not None else None,
-                "short_entry": float(levels.short_entry) if levels.short_entry is not None else None,
-                "long_stop_loss": float(long_stop_loss) if long_stop_loss is not None else None,
-                "short_stop_loss": float(short_stop_loss) if short_stop_loss is not None else None,
+                "long_entry": long_entry,
+                "short_entry": short_entry,
+                "long_stop_loss": long_stop_loss,
+                "short_stop_loss": short_stop_loss,
                 "unit_qty": int(unit_qty),
                 "long_triggered": bool(long_triggered),
                 "short_triggered": bool(short_triggered),
@@ -209,7 +232,7 @@ def main() -> int:
             rows.append(row)
 
             # Triggered list is actionable and side-specific.
-            if long_triggered and levels.long_entry is not None and long_stop_loss is not None:
+            if long_triggered and long_entry is not None and long_stop_loss is not None:
                 cluster = _cluster_for_symbol(inst.symbol)
                 cluster_open = int(cluster_open_counts.get(cluster, 0))
                 cap = int(args.cluster_cap)
@@ -233,8 +256,8 @@ def main() -> int:
                         "side": "long",
                         "asof": str(levels.asof),
                         "last_close": float(last.close),
-                        "entry_stop": float(levels.long_entry),
-                        "stop_loss": float(long_stop_loss),
+                        "entry_stop": long_entry,
+                        "stop_loss": long_stop_loss,
                         "unit_qty": int(unit_qty),
                         "N": float(levels.N),
                         "cluster": cluster,
@@ -245,7 +268,7 @@ def main() -> int:
                         "notes": "Breakout hit on latest bar; only an entry if flat + allowed by your rules",
                     }
                 )
-            if short_triggered and levels.short_entry is not None and short_stop_loss is not None:
+            if short_triggered and short_entry is not None and short_stop_loss is not None:
                 cluster = _cluster_for_symbol(inst.symbol)
                 cluster_open = int(cluster_open_counts.get(cluster, 0))
                 cap = int(args.cluster_cap)
@@ -269,8 +292,8 @@ def main() -> int:
                         "side": "short",
                         "asof": str(levels.asof),
                         "last_close": float(last.close),
-                        "entry_stop": float(levels.short_entry),
-                        "stop_loss": float(short_stop_loss),
+                        "entry_stop": short_entry,
+                        "stop_loss": short_stop_loss,
                         "unit_qty": int(unit_qty),
                         "N": float(levels.N),
                         "cluster": cluster,

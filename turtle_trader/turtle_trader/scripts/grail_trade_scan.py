@@ -295,7 +295,7 @@ def scan_grail_setup(
         
         if price_at_ema:
             # Calculate stop and target
-            stop_loss = min(last_bar.low, recent_low) * 0.995  # Slightly below recent low
+            stop_loss = recent_low * 0.995  # Just under the recent swing low
             target = recent_high  # Target retest of recent high
             
             return GrailSignal(
@@ -311,12 +311,12 @@ def scan_grail_setup(
                 minus_di=last_minus_di,
                 recent_high=recent_high,
                 recent_low=recent_low,
-                entry_zone=last_ema,
+                entry_zone=last_bar.high,
                 stop_loss=stop_loss,
                 target=target,
                 distance_to_ema_pct=distance_to_ema_pct,
                 eligible=True,
-                reason="Uptrend pullback to EMA - Holy Grail long setup"
+                reason="Uptrend pullback to EMA - enter above bar high"
             )
         else:
             return GrailSignal(
@@ -345,7 +345,7 @@ def scan_grail_setup(
         
         if price_at_ema:
             # Calculate stop and target
-            stop_loss = max(last_bar.high, recent_high) * 1.005  # Slightly above recent high
+            stop_loss = recent_high * 1.005  # Just above the recent swing high
             target = recent_low  # Target retest of recent low
             
             return GrailSignal(
@@ -361,12 +361,12 @@ def scan_grail_setup(
                 minus_di=last_minus_di,
                 recent_high=recent_high,
                 recent_low=recent_low,
-                entry_zone=last_ema,
+                entry_zone=last_bar.low,
                 stop_loss=stop_loss,
                 target=target,
                 distance_to_ema_pct=distance_to_ema_pct,
                 eligible=True,
-                reason="Downtrend rally to EMA - Holy Grail short setup"
+                reason="Downtrend rally to EMA - enter below bar low"
             )
         else:
             return GrailSignal(
