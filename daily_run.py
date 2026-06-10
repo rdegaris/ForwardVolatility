@@ -460,7 +460,10 @@ def run_turtle_export():
     if signals_client_id == export_client_id:
         signals_client_id = (signals_client_id + 1) if signals_client_id < 999 else (signals_client_id - 1)
 
-    print_info(f"Turtle IB clientIds: export={export_client_id}, signals={signals_client_id}")
+    odid_client_id = _pick_client_id("ODID_CLIENT_ID", 851, 949)
+    print_info(
+        f"Turtle IB clientIds: export={export_client_id}, signals={signals_client_id}, odid={odid_client_id}"
+    )
 
     # Run as a module from within the turtle_trader folder so imports resolve.
     # Write output JSON into the calculator repo root so upload_to_web_repos can copy it.
@@ -543,7 +546,34 @@ def run_turtle_export():
         cwd=str(turtle_root),
     )
 
-    return bool(ok_export and ok_signals and ok_grail)
+    ok_odid = run_command(
+        [
+            PYTHON_EXE,
+            "-u",
+            "-m",
+            "turtle_trader.scripts.odid_breakout_scan",
+            "--configs-dir",
+            "configs_modern",
+            "--port",
+            "7498",
+            "--client-id",
+            str(odid_client_id),
+            "--duration",
+            "1 Y",
+            "--arm-alert-pct",
+            "1.0",
+            "--out-signals",
+            "../odid_signals_latest.json",
+            "--out-alerts",
+            "../odid_alerts_latest.json",
+            "--out-open",
+            "../odid_open_trades_latest.json",
+        ],
+        "OD/ID breakout scan (Outside Day / Inside Day)",
+        cwd=str(turtle_root),
+    )
+
+    return bool(ok_export and ok_signals and ok_grail and ok_odid)
 
 
 def fetch_ib_positions():
@@ -668,6 +698,11 @@ def upload_to_web_repos():
         
         # Grail Trade (Holy Grail) signals
         ("grail_signals_latest.json", "grail_signals_latest.json"),
+
+        # OD/ID breakout strategy payloads
+        ("odid_signals_latest.json", "odid_signals_latest.json"),
+        ("odid_alerts_latest.json", "odid_alerts_latest.json"),
+        ("odid_open_trades_latest.json", "odid_open_trades_latest.json"),
     ]
     
     copied = 0
@@ -930,6 +965,9 @@ def main():
                 ("turtle_triggers_latest.json", "turtle_triggers_latest.json"),
                 ("turtle_signals_latest.json", "turtle_signals_latest.json"),
                 ("grail_signals_latest.json", "grail_signals_latest.json"),
+                ("odid_signals_latest.json", "odid_signals_latest.json"),
+                ("odid_alerts_latest.json", "odid_alerts_latest.json"),
+                ("odid_open_trades_latest.json", "odid_open_trades_latest.json"),
             ], label="Turtle/Grail signals")
         wait_for_ib_recovery(5)
         
