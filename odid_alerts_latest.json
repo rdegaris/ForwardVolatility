@@ -1,0 +1,20 @@
+{
+  "timestamp": "2026-06-10T18:40:51Z",
+  "date": "2026-06-10",
+  "system": "odid",
+  "total_alerts": 1,
+  "alerts": [
+    {
+      "symbol": "ES",
+      "severity": "medium",
+      "type": "setup_armed",
+      "side": "short",
+      "asof": "2026-06-10",
+      "message": "OD/ID setup armed, 0.82% from SHORT breakout level 7247.2500",
+      "entry_stop": 7247.25,
+      "stop_loss": 7491.0,
+      "eligible": true,
+      "blocked_reason": null
+    }
+  ]
+}

@@ -1,1 +1,19 @@
-[]
+[
+  {
+    "id": "ibdir_QQQ_P_698.0_20260610",
+    "source": "ib",
+    "symbol": "QQQ",
+    "strike": 698.0,
+    "callOrPut": "PUT",
+    "quantity": -1,
+    "expiration": "2026-06-10",
+    "entryPrice": 2.68,
+    "currentPrice": 1.23,
+    "underlyingEntryPrice": 700.02,
+    "underlyingCurrentPrice": 700.02,
+    "entryDate": "2026-06-10",
+    "unrealizedPnL": 145.24,
+    "status": "open",
+    "asOf": "2026-06-10T11:15:29.419180"
+  }
+]
