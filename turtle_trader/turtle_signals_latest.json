@@ -1,0 +1,183 @@
+{
+  "timestamp": "2026-07-22T13:43:22.699211",
+  "date": "2026-07-22",
+  "system": "S2",
+  "total_scanned": 13,
+  "triggered": [
+    {
+      "symbol": "6E",
+      "side": "short",
+      "asof": "2026-07-22",
+      "last_close": 1.1437499523162842,
+      "entry_stop": 1.25,
+      "stop_loss": 1.2605,
+      "eligible": true,
+      "notes": "55-day breakout trigger on latest bar"
+    },
+    {
+      "symbol": "6B",
+      "side": "long",
+      "asof": "2026-07-22",
+      "last_close": 1.337499976158142,
+      "entry_stop": 1.25,
+      "stop_loss": 1.236,
+      "eligible": true,
+      "notes": "55-day breakout trigger on latest bar"
+    },
+    {
+      "symbol": "ZN",
+      "side": "short",
+      "asof": "2026-07-22",
+      "last_close": 108.421875,
+      "entry_stop": 108.5,
+      "stop_loss": 109.4708,
+      "eligible": true,
+      "notes": "55-day breakout trigger on latest bar"
+    }
+  ],
+  "rows": [
+    {
+      "symbol": "ES",
+      "exchange": "CME",
+      "currency": "USD",
+      "asof": "2026-07-22",
+      "N": 91.14384708309413,
+      "last_close": 7548.25,
+      "long_entry": 7632.25,
+      "short_entry": 7199.5,
+      "unit_qty": 0
+    },
+    {
+      "symbol": "NQ",
+      "exchange": "CME",
+      "currency": "USD",
+      "asof": "2026-07-22",
+      "N": 665.7183315743893,
+      "last_close": 29216.5,
+      "long_entry": 30968.0,
+      "short_entry": 27536.25,
+      "unit_qty": 0
+    },
+    {
+      "symbol": "RTY",
+      "exchange": "CME",
+      "currency": "USD",
+      "asof": "2026-07-22",
+      "N": 54.13046734589729,
+      "last_close": 2972.800048828125,
+      "long_entry": 3068.4,
+      "short_entry": 2728.4,
+      "unit_qty": 0
+    },
+    {
+      "symbol": "YM",
+      "exchange": "CME",
+      "currency": "USD",
+      "asof": "2026-07-22",
+      "N": 618.9588005076064,
+      "last_close": 52521.0,
+      "long_entry": 53656.0,
+      "short_entry": 49016.0,
+      "unit_qty": 1
+    },
+    {
+      "symbol": "GC",
+      "exchange": "COMEX",
+      "currency": "USD",
+      "asof": "2026-07-22",
+      "N": 82.31809934373166,
+      "last_close": 4140.89990234375,
+      "long_entry": 4765.2,
+      "short_entry": 3962.5,
+      "unit_qty": 0
+    },
+    {
+      "symbol": "SI",
+      "exchange": "CME",
+      "currency": "USD",
+      "asof": "2026-07-22",
+      "N": 2.259358152321216,
+      "last_close": 60.150001525878906,
+      "long_entry": 89.0,
+      "short_entry": 55.0,
+      "unit_qty": 442
+    },
+    {
+      "symbol": "CL",
+      "exchange": "NYMEX",
+      "currency": "USD",
+      "asof": "2026-07-22",
+      "N": 4.259809400931899,
+      "last_close": 86.38999938964844,
+      "long_entry": 109.47,
+      "short_entry": 67.04,
+      "unit_qty": 0
+    },
+    {
+      "symbol": "NG",
+      "exchange": "CME",
+      "currency": "USD",
+      "asof": "2026-07-22",
+      "N": 0.1266513533680375,
+      "last_close": 2.944000005722046,
+      "long_entry": 3.5,
+      "short_entry": 2.75,
+      "unit_qty": 7895
+    },
+    {
+      "symbol": "6E",
+      "exchange": "CME",
+      "currency": "USD",
+      "asof": "2026-07-22",
+      "N": 0.005272087660049483,
+      "last_close": 1.1437499523162842,
+      "long_entry": 1.25,
+      "short_entry": 1.25,
+      "unit_qty": 189678
+    },
+    {
+      "symbol": "6J",
+      "exchange": "CME",
+      "currency": "USD",
+      "asof": "2026-07-22",
+      "N": 2.6217695327743547e-05,
+      "last_close": 0.0061559998430311,
+      "long_entry": null,
+      "short_entry": null,
+      "unit_qty": 38142177
+    },
+    {
+      "symbol": "6B",
+      "exchange": "CME",
+      "currency": "USD",
+      "asof": "2026-07-22",
+      "N": 0.006977028223550156,
+      "last_close": 1.337499976158142,
+      "long_entry": 1.25,
+      "short_entry": 1.25,
+      "unit_qty": 143327
+    },
+    {
+      "symbol": "ZB",
+      "exchange": "CME",
+      "currency": "USD",
+      "asof": "2026-07-22",
+      "N": 0.8463308429262206,
+      "last_close": 109.96875,
+      "long_entry": 114.5,
+      "short_entry": 109.5,
+      "unit_qty": 1181
+    },
+    {
+      "symbol": "ZN",
+      "exchange": "CME",
+      "currency": "USD",
+      "asof": "2026-07-22",
+      "N": 0.4853887773548233,
+      "last_close": 108.421875,
+      "long_entry": 111.0,
+      "short_entry": 108.5,
+      "unit_qty": 2060
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-07-22T13:43:23.040095",
+  "date": "2026-07-22",
+  "total_armed": 6,
+  "triggered": [
+    {
+      "symbol": "ES",
+      "side": "long",
+      "asof": "2026-07-22",
+      "entry_stop": 7554.0,
+      "stop_loss": 7473.0,
+      "eligible": true,
+      "notes": "Confirmed OUTSIDE_DAY upside breakout"
+    },
+    {
+      "symbol": "YM",
+      "side": "long",
+      "asof": "2026-07-22",
+      "entry_stop": 52590.0,
+      "stop_loss": 52035.0,
+      "eligible": true,
+      "notes": "Confirmed INSIDE_DAY upside breakout"
+    },
+    {
+      "symbol": "GC",
+      "side": "long",
+      "asof": "2026-07-22",
+      "entry_stop": 4071.10009765625,
+      "stop_loss": 3999.699951171875,
+      "eligible": true,
+      "notes": "Confirmed OUTSIDE_DAY upside breakout"
+    },
+    {
+      "symbol": "NG",
+      "side": "long",
+      "asof": "2026-07-22",
+      "entry_stop": 2.9059998989105225,
+      "stop_loss": 2.83899998664856,
+      "eligible": true,
+      "notes": "Confirmed INSIDE_DAY upside breakout"
+    }
+  ]
+}
