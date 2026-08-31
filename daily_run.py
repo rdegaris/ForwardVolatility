@@ -576,6 +576,23 @@ def run_turtle_export():
     return bool(ok_export and ok_signals and ok_grail and ok_odid)
 
 
+def run_paper_trading():
+    """Update paper trading signals, monitor stops/targets, and recalculate performance."""
+    print_section("Processing Paper Trades & Performance")
+    try:
+        from paper_trade_manager import process_daily_paper_trades
+        perf = process_daily_paper_trades()
+        print_success(
+            f"Paper trading updated: {perf.get('total_trades', 0)} total trades, "
+            f"{perf.get('open_trades_count', 0)} open, Net PnL: ${perf.get('net_pnl', 0.0):,.2f}"
+        )
+        return True
+    except Exception as e:
+        print_error(f"Paper trading update failed: {e}")
+        return False
+
+
+
 def fetch_ib_positions():
     """Fetch IB positions and export to JSON."""
     print_section("Fetching IB Positions")
@@ -703,6 +720,11 @@ def upload_to_web_repos():
         ("odid_signals_latest.json", "odid_signals_latest.json"),
         ("odid_alerts_latest.json", "odid_alerts_latest.json"),
         ("odid_open_trades_latest.json", "odid_open_trades_latest.json"),
+
+        # Paper trading & execution tracking payloads
+        ("executed_trades.json", "executed_trades.json"),
+        ("paper_trades_latest.json", "paper_trades_latest.json"),
+        ("paper_trade_performance.json", "paper_trade_performance.json"),
     ]
     
     copied = 0
@@ -958,6 +980,7 @@ def main():
         wait_for_ib_recovery()  # Full delay after IV rankings
 
         results['turtle_export'] = run_turtle_export()
+        results['paper_trading'] = run_paper_trading()
         if incremental:
             publish_incremental([
                 ("turtle_suggested_latest.json", "turtle_suggested_latest.json"),
@@ -968,7 +991,10 @@ def main():
                 ("odid_signals_latest.json", "odid_signals_latest.json"),
                 ("odid_alerts_latest.json", "odid_alerts_latest.json"),
                 ("odid_open_trades_latest.json", "odid_open_trades_latest.json"),
-            ], label="Turtle/Grail signals")
+                ("executed_trades.json", "executed_trades.json"),
+                ("paper_trades_latest.json", "paper_trades_latest.json"),
+                ("paper_trade_performance.json", "paper_trade_performance.json"),
+            ], label="Turtle/Grail & Paper Trades")
         wait_for_ib_recovery(5)
         
         results['nasdaq100'] = run_nasdaq100_scan()

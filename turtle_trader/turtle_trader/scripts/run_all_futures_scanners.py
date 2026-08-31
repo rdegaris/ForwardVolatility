@@ -329,8 +329,16 @@ def main():
     run_trendorama(data_dir)
     run_odid(data_dir)
 
+    # Process Paper Trades & Performance Log
+    try:
+        from paper_trade_manager import process_daily_paper_trades
+        process_daily_paper_trades()
+    except Exception as e:
+        print(f"  [PAPER TRADING] Error running paper trade updates: {e}")
+
     print("\n=== FULL FUTURES SCANNER FINISHED SUCCESSFULLY ===")
 
 
 if __name__ == "__main__":
     main()
+
