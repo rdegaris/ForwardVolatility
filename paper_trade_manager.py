@@ -138,6 +138,38 @@ def get_symbol_name(symbol: str) -> str:
 
 STARTING_PORTFOLIO_CAPITAL: float = 1000000.0  # $1,000,000 starting portfolio capital
 DEFAULT_RISK_PER_TRADE_PCT: float = 0.02       # 2% risk of total equity per trade
+MAX_PORTFOLIO_OPEN_TRADES: int = 8             # Max 8 concurrent open trades (16% max portfolio heat)
+
+CLUSTERS: Dict[str, set[str]] = {
+    "equities": {"ES", "NQ", "RTY", "YM"},
+    "rates": {"ZB", "ZN", "ZF", "ZT"},
+    "energies": {"CL", "NG", "HO", "RB"},
+    "metals": {"GC", "SI", "HG"},
+    "fx": {"6E", "6B", "6J", "6A", "6C", "EUR", "GBP", "JPY", "CAD", "AUD"},
+    "grains": {"ZC", "ZW", "ZS", "ZL"},
+    "softs": {"KC", "SB", "CT"},
+    "livestock": {"HE", "LE"},
+}
+
+CLUSTER_CAPS: Dict[str, int] = {
+    "equities": 2,
+    "rates": 2,
+    "energies": 2,
+    "metals": 1,
+    "fx": 2,
+    "grains": 2,
+    "softs": 2,
+    "livestock": 1,
+    "other": 2,
+}
+
+
+def get_symbol_cluster(symbol: str) -> str:
+    sym = symbol.upper().strip()
+    for cluster_name, syms in CLUSTERS.items():
+        if sym in syms:
+            return cluster_name
+    return "other"
 
 
 def calculate_position_size(
@@ -258,6 +290,10 @@ class PaperTradeManager:
     def ingest_strategy_signals(self) -> int:
         """
         Reads latest signal JSON files and creates new paper trades for any newly fired signals.
+        Enforces institutional CTA constraints:
+        - Max 8 concurrent open portfolio trades (16% total risk budget).
+        - Symbol exclusivity (max 1 active trade per market symbol across all strategies).
+        - Sector correlation cluster caps (e.g. max 2 equities, max 2 rates, max 1 metal).
         Returns the number of new trades created.
         """
         existing_trades = self.load_executed_trades()
@@ -267,7 +303,42 @@ class PaperTradeManager:
             for t in existing_trades
         }
 
+        # Track currently open trades & cluster usage
+        open_trades = [t for t in existing_trades if t.get("status") == "OPEN"]
+        open_symbols = {t.get("symbol", "").upper() for t in open_trades}
+        cluster_open_counts: Dict[str, int] = {}
+        for t in open_trades:
+            c = get_symbol_cluster(t.get("symbol", ""))
+            cluster_open_counts[c] = cluster_open_counts.get(c, 0) + 1
+
         new_trades: List[Dict[str, Any]] = []
+
+        def can_open_trade(sym: str) -> tuple[bool, str]:
+            sym_upper = sym.upper().strip()
+            # 1. Global open trades cap
+            total_active = len(open_trades) + len(new_trades)
+            if total_active >= MAX_PORTFOLIO_OPEN_TRADES:
+                return False, f"Global portfolio cap reached ({total_active}/{MAX_PORTFOLIO_OPEN_TRADES})"
+
+            # 2. Market exclusivity (1 trade max per symbol)
+            active_symbols = open_symbols | {t.get("symbol", "").upper() for t in new_trades}
+            if sym_upper in active_symbols:
+                return False, f"Symbol {sym_upper} already has an active position"
+
+            # 3. Correlation cluster cap
+            cluster = get_symbol_cluster(sym_upper)
+            cap = CLUSTER_CAPS.get(cluster, 2)
+            cur_count = cluster_open_counts.get(cluster, 0)
+            if cur_count >= cap:
+                return False, f"Sector cluster cap reached for {cluster} ({cur_count}/{cap})"
+
+            return True, "OK"
+
+        def register_new_trade(pt: Dict[str, Any], key: tuple):
+            new_trades.append(pt)
+            existing_keys.add(key)
+            c = get_symbol_cluster(pt.get("symbol", ""))
+            cluster_open_counts[c] = cluster_open_counts.get(c, 0) + 1
 
         # 1. Trendorama (Turtle S2) Signals
         turtle_files = [
@@ -289,6 +360,9 @@ class PaperTradeManager:
                                 continue
                             key = (asof_date, sym, "Trendorama", side)
                             if key not in existing_keys:
+                                can_open, reason = can_open_trade(sym)
+                                if not can_open:
+                                    continue
                                 entry_price = float(sig.get("entry_stop") or sig.get("last_close") or 0.0)
                                 stop_loss = float(sig.get("stop_loss") or (entry_price * 0.98 if side == "long" else entry_price * 1.02))
                                 target = self.compute_default_profit_target("Trendorama", side, entry_price, stop_loss, sym)
@@ -304,8 +378,7 @@ class PaperTradeManager:
                                     qty=unit_qty if unit_qty > 0 else None,
                                     notes=sig.get("notes", "55-day breakout trigger"),
                                 )
-                                new_trades.append(pt)
-                                existing_keys.add(key)
+                                register_new_trade(pt, key)
                 except Exception as e:
                     print(f"[PaperTradeManager] Error parsing turtle signals from {tf}: {e}")
                 break
@@ -332,6 +405,9 @@ class PaperTradeManager:
                             sym = sig.get("symbol")
                             key = (asof_date, sym, "YouHaveChosenWisely", side)
                             if key not in existing_keys:
+                                can_open, reason = can_open_trade(sym)
+                                if not can_open:
+                                    continue
                                 entry_price = float(sig.get("entry_zone") or sig.get("close") or 0.0)
                                 stop_loss = float(sig.get("stop_loss") or (entry_price * 0.98 if side == "long" else entry_price * 1.02))
                                 target = float(sig.get("target") or self.compute_default_profit_target("YouHaveChosenWisely", side, entry_price, stop_loss, sym))
@@ -345,8 +421,7 @@ class PaperTradeManager:
                                     profit_target=target,
                                     notes=sig.get("reason", "ADX pullback to 20 EMA"),
                                 )
-                                new_trades.append(pt)
-                                existing_keys.add(key)
+                                register_new_trade(pt, key)
                 except Exception as e:
                     print(f"[PaperTradeManager] Error parsing grail signals from {gf}: {e}")
                 break
@@ -373,6 +448,9 @@ class PaperTradeManager:
                             side = "long" if "BUY" in phase or action == "BUY" else "short"
                             key = (asof_date, sym, "The Bradman", side)
                             if key not in existing_keys:
+                                can_open, reason = can_open_trade(sym)
+                                if not can_open:
+                                    continue
                                 entry_price = float(sig.get("last_close") or sig.get("entry_target") or 0.0)
                                 stop_loss = float(sig.get("stop_loss") or (entry_price * 0.985 if side == "long" else entry_price * 1.015))
                                 target = float(sig.get("objective_target") or sig.get("target_high") or sig.get("target_low") or self.compute_default_profit_target("The Bradman", side, entry_price, stop_loss, sym))
@@ -386,8 +464,7 @@ class PaperTradeManager:
                                     profit_target=target,
                                     notes=f"Taylor {phase} Setup",
                                 )
-                                new_trades.append(pt)
-                                existing_keys.add(key)
+                                register_new_trade(pt, key)
                 except Exception as e:
                     print(f"[PaperTradeManager] Error parsing taylor signals from {tf}: {e}")
                 break
@@ -412,6 +489,9 @@ class PaperTradeManager:
                             side = sig.get("side", "long").lower()
                             key = (asof_date, sym, "TooHot TooCold", side)
                             if key not in existing_keys:
+                                can_open, reason = can_open_trade(sym)
+                                if not can_open:
+                                    continue
                                 entry_price = float(sig.get("entry_stop") or sig.get("last_close") or 0.0)
                                 stop_loss = float(sig.get("stop_loss") or (entry_price * 0.98 if side == "long" else entry_price * 1.02))
                                 target = self.compute_default_profit_target("TooHot TooCold", side, entry_price, stop_loss, sym)
@@ -425,8 +505,7 @@ class PaperTradeManager:
                                     profit_target=target,
                                     notes=sig.get("notes", "OD/ID Range Expansion Breakout"),
                                 )
-                                new_trades.append(pt)
-                                existing_keys.add(key)
+                                register_new_trade(pt, key)
                 except Exception as e:
                     print(f"[PaperTradeManager] Error parsing odid signals from {of}: {e}")
                 break
@@ -450,7 +529,10 @@ class PaperTradeManager:
                             side = sig.get("side", "long").lower()
                             key = (asof_date, sym, "The Linda", side)
                             if key not in existing_keys:
-                                entry_price = float(sig.get("close") or sig.get("entry_zone") or 0.0)
+                                can_open, reason = can_open_trade(sym)
+                                if not can_open:
+                                    continue
+                                entry_price = float(sig.get("entry_price") or sig.get("close") or 0.0)
                                 stop_loss = float(sig.get("stop_loss") or (entry_price * 0.98 if side == "long" else entry_price * 1.02))
                                 target = float(sig.get("target") or self.compute_default_profit_target("The Linda", side, entry_price, stop_loss, sym))
                                 pt = self._create_paper_trade_dict(
@@ -461,10 +543,9 @@ class PaperTradeManager:
                                     entry_price=entry_price,
                                     stop_loss=stop_loss,
                                     profit_target=target,
-                                    notes="Linda Raschke Trend Momentum Setup",
+                                    notes=sig.get("setup", "Linda Raschke Setup"),
                                 )
-                                new_trades.append(pt)
-                                existing_keys.add(key)
+                                register_new_trade(pt, key)
                 except Exception as e:
                     print(f"[PaperTradeManager] Error parsing linda signals from {lf}: {e}")
                 break
@@ -553,13 +634,53 @@ class PaperTradeManager:
                 pass
         return None
 
+    def get_symbol_technicals(self, symbol: str) -> Optional[Dict[str, Any]]:
+        """
+        Retrieves the latest bar and key technical levels (20-day Donchian, 20 EMA) for a symbol.
+        """
+        sym = symbol.upper()
+        csv_file = self.data_dir / f"{sym}.csv"
+        if csv_file.exists():
+            try:
+                import pandas as pd
+                df = pd.read_csv(csv_file)
+                if not df.empty:
+                    dt_col = "Date" if "Date" in df.columns else ("datetime" if "datetime" in df.columns else df.columns[0])
+                    last_row = df.iloc[-1]
+                    highs = df["High"].tail(22).values if "High" in df.columns else df["high"].tail(22).values
+                    lows = df["Low"].tail(22).values if "Low" in df.columns else df["low"].tail(22).values
+                    closes = df["Close"] if "Close" in df.columns else df["close"]
+                    ema20 = closes.ewm(span=20, adjust=False).mean().iloc[-1] if len(closes) >= 5 else float(last_row.get("Close", 0))
+
+                    donchian_low_20 = float(min(lows[:-1])) if len(lows) > 1 else float(min(lows))
+                    donchian_high_20 = float(max(highs[:-1])) if len(highs) > 1 else float(max(highs))
+
+                    return {
+                        "date": str(last_row[dt_col]).split(" ")[0],
+                        "open": float(last_row.get("Open", last_row.get("open", 0))),
+                        "high": float(last_row.get("High", last_row.get("high", 0))),
+                        "low": float(last_row.get("Low", last_row.get("low", 0))),
+                        "close": float(last_row.get("Close", last_row.get("close", 0))),
+                        "donchian_low_20": donchian_low_20,
+                        "donchian_high_20": donchian_high_20,
+                        "ema_20": float(ema20),
+                    }
+            except Exception:
+                pass
+        bar = self.get_latest_market_bar(symbol)
+        return bar
+
     def evaluate_daily_monitoring(self) -> Dict[str, Any]:
         """
-        Monitors active paper trades daily:
-        - Evaluates Stop Loss hits
-        - Evaluates Profit Target hits
-        - Updates Unrealized & Realized PnL based on point multiplier
-        - Updates trade duration
+        Monitors active paper trades daily with institutional strategy-specific exits:
+        - Stop Loss hits (all strategies)
+        - Profit Target / Objective hits (all strategies)
+        - Trendorama: 20-day Donchian trailing breakout exit
+        - The Bradman: Taylor 3-day cycle exit (max 3 days holding)
+        - YouHaveChosenWisely: 20 EMA cross exit or 5-day max duration
+        - TooHot TooCold: 4-day time exit
+        - The Linda: 5-day time exit
+        - Updates Unrealized & Realized PnL based on point multiplier and risk sizing
         """
         trades = self.load_executed_trades()
         if not trades:
@@ -574,6 +695,9 @@ class PaperTradeManager:
             "closed": 0,
             "hit_target": 0,
             "stopped_out": 0,
+            "donchian_exit": 0,
+            "time_exit": 0,
+            "ema_exit": 0,
             "updated": 0,
         }
 
@@ -584,6 +708,7 @@ class PaperTradeManager:
             t["symbol_name"] = get_symbol_name(sym)
 
             side = t.get("side", "long").lower()
+            strat = t.get("strategy", "")
             entry_price = float(t.get("entry_price") or 0.0)
             stop_loss = float(t.get("stop_loss") or 0.0)
             profit_target = float(t.get("profit_target")) if t.get("profit_target") is not None else None
@@ -595,83 +720,119 @@ class PaperTradeManager:
                 duration = (now_dt - entry_dt).days
                 t["duration_days"] = max(0, duration)
             except Exception:
+                duration = 0
                 t["duration_days"] = 0
 
             if t.get("status") == "OPEN":
                 stats["open"] += 1
-                latest_bar = self.get_latest_market_bar(sym)
+                tech = self.get_symbol_technicals(sym)
 
-                if latest_bar:
-                    high = float(latest_bar["high"])
-                    low = float(latest_bar["low"])
-                    close = float(latest_bar["close"])
-                    bar_date = str(latest_bar["date"])
+                if tech:
+                    high = float(tech["high"])
+                    low = float(tech["low"])
+                    close = float(tech["close"])
+                    bar_date = str(tech["date"])
 
                     t["current_price"] = round(close, 4)
 
-                    # Check Long Stop / Target
-                    if side == "long":
-                        if stop_loss > 0 and low <= stop_loss:
-                            # Stopped Out
-                            t["status"] = "STOPPED_OUT"
-                            t["exit_price"] = round(stop_loss, 4)
-                            t["exit_date"] = bar_date
-                            realized = (stop_loss - entry_price) * point_val * qty
-                            t["realized_pnl"] = round(realized, 2)
-                            t["unrealized_pnl"] = 0.0
-                            t["return_pct"] = round(((stop_loss - entry_price) / entry_price) * 100, 2) if entry_price > 0 else 0.0
-                            stats["stopped_out"] += 1
-                            stats["open"] -= 1
-                            stats["closed"] += 1
-                        elif profit_target is not None and profit_target > 0 and high >= profit_target:
-                            # Hit Target
-                            t["status"] = "HIT_TARGET"
-                            t["exit_price"] = round(profit_target, 4)
-                            t["exit_date"] = bar_date
-                            realized = (profit_target - entry_price) * point_val * qty
-                            t["realized_pnl"] = round(realized, 2)
-                            t["unrealized_pnl"] = 0.0
-                            t["return_pct"] = round(((profit_target - entry_price) / entry_price) * 100, 2) if entry_price > 0 else 0.0
-                            stats["hit_target"] += 1
-                            stats["open"] -= 1
-                            stats["closed"] += 1
-                        else:
-                            # Still Open, update unrealized PnL
-                            unrealized = (close - entry_price) * point_val * qty
-                            t["unrealized_pnl"] = round(unrealized, 2)
-                            t["return_pct"] = round(((close - entry_price) / entry_price) * 100, 2) if entry_price > 0 else 0.0
+                    # 1. Stop Loss check
+                    is_stopped = (side == "long" and stop_loss > 0 and low <= stop_loss) or \
+                                 (side == "short" and stop_loss > 0 and high >= stop_loss)
 
-                    # Check Short Stop / Target
-                    elif side == "short":
-                        if stop_loss > 0 and high >= stop_loss:
-                            # Stopped Out
-                            t["status"] = "STOPPED_OUT"
-                            t["exit_price"] = round(stop_loss, 4)
-                            t["exit_date"] = bar_date
-                            realized = (entry_price - stop_loss) * point_val * qty
-                            t["realized_pnl"] = round(realized, 2)
-                            t["unrealized_pnl"] = 0.0
-                            t["return_pct"] = round(((entry_price - stop_loss) / entry_price) * 100, 2) if entry_price > 0 else 0.0
-                            stats["stopped_out"] += 1
-                            stats["open"] -= 1
-                            stats["closed"] += 1
-                        elif profit_target is not None and profit_target > 0 and low <= profit_target:
-                            # Hit Target
-                            t["status"] = "HIT_TARGET"
-                            t["exit_price"] = round(profit_target, 4)
-                            t["exit_date"] = bar_date
-                            realized = (entry_price - profit_target) * point_val * qty
-                            t["realized_pnl"] = round(realized, 2)
-                            t["unrealized_pnl"] = 0.0
-                            t["return_pct"] = round(((entry_price - profit_target) / entry_price) * 100, 2) if entry_price > 0 else 0.0
-                            stats["hit_target"] += 1
-                            stats["open"] -= 1
-                            stats["closed"] += 1
-                        else:
-                            # Still Open, update unrealized PnL
-                            unrealized = (entry_price - close) * point_val * qty
-                            t["unrealized_pnl"] = round(unrealized, 2)
-                            t["return_pct"] = round(((entry_price - close) / entry_price) * 100, 2) if entry_price > 0 else 0.0
+                    # 2. Profit Target check
+                    hit_target = (side == "long" and profit_target and profit_target > 0 and high >= profit_target) or \
+                                 (side == "short" and profit_target and profit_target > 0 and low <= profit_target)
+
+                    # 3. Trendorama Donchian 20 Trailing Exit
+                    donchian_exit = False
+                    if strat == "Trendorama" and tech:
+                        if side == "long" and tech.get("donchian_low_20") and low <= tech["donchian_low_20"]:
+                            donchian_exit = True
+                        elif side == "short" and tech.get("donchian_high_20") and high >= tech["donchian_high_20"]:
+                            donchian_exit = True
+
+                    # 4. Strategy Time Exits
+                    time_exit = False
+                    if strat == "The Bradman" and duration >= 3:
+                        time_exit = True
+                    elif strat == "TooHot TooCold" and duration >= 4:
+                        time_exit = True
+                    elif strat in ("YouHaveChosenWisely", "The Linda") and duration >= 5:
+                        time_exit = True
+
+                    # 5. Holy Grail EMA Exit
+                    ema_exit = False
+                    if strat == "YouHaveChosenWisely" and tech and tech.get("ema_20"):
+                        if side == "long" and close < tech["ema_20"]:
+                            ema_exit = True
+                        elif side == "short" and close > tech["ema_20"]:
+                            ema_exit = True
+
+                    if is_stopped:
+                        t["status"] = "STOPPED_OUT"
+                        exit_price = stop_loss
+                        t["exit_price"] = round(exit_price, 4)
+                        t["exit_date"] = bar_date
+                        pnl = (exit_price - entry_price if side == "long" else entry_price - exit_price) * point_val * qty
+                        t["realized_pnl"] = round(pnl, 2)
+                        t["unrealized_pnl"] = 0.0
+                        t["return_pct"] = round(((exit_price - entry_price) / entry_price) * 100, 2) if entry_price > 0 else 0.0
+                        stats["stopped_out"] += 1
+                        stats["open"] -= 1
+                        stats["closed"] += 1
+                    elif hit_target:
+                        t["status"] = "HIT_TARGET"
+                        exit_price = profit_target
+                        t["exit_price"] = round(exit_price, 4)
+                        t["exit_date"] = bar_date
+                        pnl = (exit_price - entry_price if side == "long" else entry_price - exit_price) * point_val * qty
+                        t["realized_pnl"] = round(pnl, 2)
+                        t["unrealized_pnl"] = 0.0
+                        t["return_pct"] = round(((exit_price - entry_price) / entry_price) * 100, 2) if entry_price > 0 else 0.0
+                        stats["hit_target"] += 1
+                        stats["open"] -= 1
+                        stats["closed"] += 1
+                    elif donchian_exit:
+                        t["status"] = "DONCHIAN_EXIT"
+                        exit_price = tech["donchian_low_20"] if side == "long" else tech["donchian_high_20"]
+                        t["exit_price"] = round(exit_price, 4)
+                        t["exit_date"] = bar_date
+                        pnl = (exit_price - entry_price if side == "long" else entry_price - exit_price) * point_val * qty
+                        t["realized_pnl"] = round(pnl, 2)
+                        t["unrealized_pnl"] = 0.0
+                        t["return_pct"] = round(((exit_price - entry_price) / entry_price) * 100, 2) if entry_price > 0 else 0.0
+                        stats["donchian_exit"] += 1
+                        stats["open"] -= 1
+                        stats["closed"] += 1
+                    elif ema_exit:
+                        t["status"] = "EMA_EXIT"
+                        exit_price = close
+                        t["exit_price"] = round(exit_price, 4)
+                        t["exit_date"] = bar_date
+                        pnl = (exit_price - entry_price if side == "long" else entry_price - exit_price) * point_val * qty
+                        t["realized_pnl"] = round(pnl, 2)
+                        t["unrealized_pnl"] = 0.0
+                        t["return_pct"] = round(((exit_price - entry_price) / entry_price) * 100, 2) if entry_price > 0 else 0.0
+                        stats["ema_exit"] += 1
+                        stats["open"] -= 1
+                        stats["closed"] += 1
+                    elif time_exit:
+                        t["status"] = "TIME_EXIT"
+                        exit_price = close
+                        t["exit_price"] = round(exit_price, 4)
+                        t["exit_date"] = bar_date
+                        pnl = (exit_price - entry_price if side == "long" else entry_price - exit_price) * point_val * qty
+                        t["realized_pnl"] = round(pnl, 2)
+                        t["unrealized_pnl"] = 0.0
+                        t["return_pct"] = round(((exit_price - entry_price) / entry_price) * 100, 2) if entry_price > 0 else 0.0
+                        stats["time_exit"] += 1
+                        stats["open"] -= 1
+                        stats["closed"] += 1
+                    else:
+                        # Trade stays open
+                        unrealized = (close - entry_price if side == "long" else entry_price - close) * point_val * qty
+                        t["unrealized_pnl"] = round(unrealized, 2)
+                        t["return_pct"] = round(((close - entry_price if side == "long" else entry_price - close) / entry_price) * 100, 2) if entry_price > 0 else 0.0
 
                     t["updated_at"] = datetime.utcnow().isoformat()
                     stats["updated"] += 1
@@ -681,6 +842,12 @@ class PaperTradeManager:
                     stats["hit_target"] += 1
                 elif t.get("status") == "STOPPED_OUT":
                     stats["stopped_out"] += 1
+                elif t.get("status") == "DONCHIAN_EXIT":
+                    stats["donchian_exit"] += 1
+                elif t.get("status") == "TIME_EXIT":
+                    stats["time_exit"] += 1
+                elif t.get("status") == "EMA_EXIT":
+                    stats["ema_exit"] += 1
 
         self.save_executed_trades(trades)
         return stats
@@ -725,7 +892,7 @@ class PaperTradeManager:
             self._export_json("paper_trades_latest.json", {"timestamp": now_iso, "date": today_str, "trades": []})
             return empty_payload
 
-        closed_trades = [t for t in trades if t.get("status") in ("HIT_TARGET", "STOPPED_OUT", "MANUALLY_CLOSED")]
+        closed_trades = [t for t in trades if t.get("status") in ("HIT_TARGET", "STOPPED_OUT", "MANUALLY_CLOSED", "DONCHIAN_EXIT", "TIME_EXIT", "EMA_EXIT")]
         open_trades = [t for t in trades if t.get("status") == "OPEN"]
 
         total_realized = sum(float(t.get("realized_pnl", 0.0)) for t in closed_trades)
