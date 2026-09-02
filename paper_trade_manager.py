@@ -743,7 +743,50 @@ class PaperTradeManager:
                     hit_target = (side == "long" and profit_target and profit_target > 0 and high >= profit_target) or \
                                  (side == "short" and profit_target and profit_target > 0 and low <= profit_target)
 
-                    # 3. Trendorama Donchian 20 Trailing Exit
+                    # 3. The Linda: Same-Day Mean Reversion with Mandatory EOD Exit
+                    if strat == "The Linda":
+                        if is_stopped:
+                            t["status"] = "STOPPED_OUT"
+                            exit_price = stop_loss
+                            t["exit_price"] = round(exit_price, 4)
+                            t["exit_date"] = bar_date
+                            pnl = (exit_price - entry_price if side == "long" else entry_price - exit_price) * point_val * qty
+                            t["realized_pnl"] = round(pnl, 2)
+                            t["unrealized_pnl"] = 0.0
+                            t["return_pct"] = round(((exit_price - entry_price) / entry_price) * 100, 2) if entry_price > 0 else 0.0
+                            stats["stopped_out"] += 1
+                            stats["open"] -= 1
+                            stats["closed"] += 1
+                        elif hit_target:
+                            t["status"] = "HIT_TARGET"
+                            exit_price = profit_target
+                            t["exit_price"] = round(exit_price, 4)
+                            t["exit_date"] = bar_date
+                            pnl = (exit_price - entry_price if side == "long" else entry_price - exit_price) * point_val * qty
+                            t["realized_pnl"] = round(pnl, 2)
+                            t["unrealized_pnl"] = 0.0
+                            t["return_pct"] = round(((exit_price - entry_price) / entry_price) * 100, 2) if entry_price > 0 else 0.0
+                            stats["hit_target"] += 1
+                            stats["open"] -= 1
+                            stats["closed"] += 1
+                        else:
+                            # Mandatory Same-Day End of Day (EOD) Exit
+                            t["status"] = "EOD_EXIT"
+                            exit_price = close
+                            t["exit_price"] = round(exit_price, 4)
+                            t["exit_date"] = bar_date
+                            pnl = (exit_price - entry_price if side == "long" else entry_price - exit_price) * point_val * qty
+                            t["realized_pnl"] = round(pnl, 2)
+                            t["unrealized_pnl"] = 0.0
+                            t["return_pct"] = round(((exit_price - entry_price) / entry_price) * 100, 2) if entry_price > 0 else 0.0
+                            stats["eod_exit"] = stats.get("eod_exit", 0) + 1
+                            stats["open"] -= 1
+                            stats["closed"] += 1
+                        t["updated_at"] = datetime.utcnow().isoformat()
+                        stats["updated"] += 1
+                        continue
+
+                    # 4. Trendorama Donchian 20 Trailing Exit
                     donchian_exit = False
                     if strat == "Trendorama" and tech:
                         if side == "long" and tech.get("donchian_low_20") and low <= tech["donchian_low_20"]:
@@ -751,16 +794,16 @@ class PaperTradeManager:
                         elif side == "short" and tech.get("donchian_high_20") and high >= tech["donchian_high_20"]:
                             donchian_exit = True
 
-                    # 4. Strategy Time Exits
+                    # 5. Strategy Time Exits
                     time_exit = False
                     if strat == "The Bradman" and duration >= 3:
                         time_exit = True
                     elif strat == "TooHot TooCold" and duration >= 4:
                         time_exit = True
-                    elif strat in ("YouHaveChosenWisely", "The Linda") and duration >= 5:
+                    elif strat == "YouHaveChosenWisely" and duration >= 5:
                         time_exit = True
 
-                    # 5. Holy Grail EMA Exit
+                    # 6. Holy Grail EMA Exit
                     ema_exit = False
                     if strat == "YouHaveChosenWisely" and tech and tech.get("ema_20"):
                         if side == "long" and close < tech["ema_20"]:
@@ -848,6 +891,8 @@ class PaperTradeManager:
                     stats["time_exit"] += 1
                 elif t.get("status") == "EMA_EXIT":
                     stats["ema_exit"] += 1
+                elif t.get("status") == "EOD_EXIT":
+                    stats["eod_exit"] = stats.get("eod_exit", 0) + 1
 
         self.save_executed_trades(trades)
         return stats
@@ -892,7 +937,7 @@ class PaperTradeManager:
             self._export_json("paper_trades_latest.json", {"timestamp": now_iso, "date": today_str, "trades": []})
             return empty_payload
 
-        closed_trades = [t for t in trades if t.get("status") in ("HIT_TARGET", "STOPPED_OUT", "MANUALLY_CLOSED", "DONCHIAN_EXIT", "TIME_EXIT", "EMA_EXIT")]
+        closed_trades = [t for t in trades if t.get("status") in ("HIT_TARGET", "STOPPED_OUT", "MANUALLY_CLOSED", "DONCHIAN_EXIT", "TIME_EXIT", "EMA_EXIT", "EOD_EXIT")]
         open_trades = [t for t in trades if t.get("status") == "OPEN"]
 
         total_realized = sum(float(t.get("realized_pnl", 0.0)) for t in closed_trades)
