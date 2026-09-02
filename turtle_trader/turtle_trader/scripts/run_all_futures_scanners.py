@@ -140,8 +140,8 @@ def run_grail(data_dir: Path):
 def create_default_turtle_config(sym: str) -> TurtleConfig:
     return TurtleConfig(
         account=AccountConfig(
-            starting_equity=100000.0,
-            risk_per_unit_pct=1.0,
+            starting_equity=1000000.0,
+            risk_per_unit_pct=0.02,
             max_units=4,
             pyramid_add_every_N=0.5,
             stop_loss_N=2.0,
@@ -341,4 +341,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

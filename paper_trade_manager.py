@@ -136,6 +136,31 @@ def get_symbol_name(symbol: str) -> str:
     return SYMBOL_NAMES.get(sym, sym)
 
 
+STARTING_PORTFOLIO_CAPITAL: float = 1000000.0  # $1,000,000 starting portfolio capital
+DEFAULT_RISK_PER_TRADE_PCT: float = 0.02       # 2% risk of total equity per trade
+
+
+def calculate_position_size(
+    entry_price: float,
+    stop_loss: float,
+    point_value: float,
+    equity: float = STARTING_PORTFOLIO_CAPITAL,
+    risk_pct: float = DEFAULT_RISK_PER_TRADE_PCT,
+) -> int:
+    """
+    Calculate position contract quantity so that total trade risk is risk_pct (2%) of equity.
+    Dollar risk budget = equity * risk_pct ($20,000 on $1,000,000 equity).
+    Per-contract dollar risk = abs(entry_price - stop_loss) * point_value.
+    Qty = floor(dollar_risk / per_contract_risk).
+    """
+    per_contract_risk = abs(entry_price - stop_loss) * point_value
+    if per_contract_risk <= 0:
+        return 1
+    dollar_risk = equity * risk_pct
+    qty = int(dollar_risk // per_contract_risk)
+    return max(1, qty)
+
+
 @dataclass
 class PaperTrade:
     id: str
@@ -267,6 +292,7 @@ class PaperTradeManager:
                                 entry_price = float(sig.get("entry_stop") or sig.get("last_close") or 0.0)
                                 stop_loss = float(sig.get("stop_loss") or (entry_price * 0.98 if side == "long" else entry_price * 1.02))
                                 target = self.compute_default_profit_target("Trendorama", side, entry_price, stop_loss, sym)
+                                unit_qty = int(sig.get("unit_qty") or 0)
                                 pt = self._create_paper_trade_dict(
                                     symbol=sym,
                                     strategy="Trendorama",
@@ -275,6 +301,7 @@ class PaperTradeManager:
                                     entry_price=entry_price,
                                     stop_loss=stop_loss,
                                     profit_target=target,
+                                    qty=unit_qty if unit_qty > 0 else None,
                                     notes=sig.get("notes", "55-day breakout trigger"),
                                 )
                                 new_trades.append(pt)
@@ -458,13 +485,23 @@ class PaperTradeManager:
         stop_loss: float,
         profit_target: Optional[float],
         notes: Optional[str] = None,
-        qty: int = 1,
+        qty: Optional[int] = None,
+        equity: float = STARTING_PORTFOLIO_CAPITAL,
     ) -> Dict[str, Any]:
         sym = symbol.upper().strip()
         point_val = get_point_value(sym)
         sym_name = get_symbol_name(sym)
         trade_id = f"pt_{sym}_{strategy.replace(' ', '')[:4]}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{uuid.uuid4().hex[:4]}"
         
+        if qty is None or qty <= 0:
+            qty = calculate_position_size(
+                entry_price=entry_price,
+                stop_loss=stop_loss,
+                point_value=point_val,
+                equity=equity,
+                risk_pct=DEFAULT_RISK_PER_TRADE_PCT,
+            )
+
         initial_risk = abs(entry_price - stop_loss) * point_val * qty
 
         trade = PaperTrade(
@@ -657,7 +694,7 @@ class PaperTradeManager:
         today_str = datetime.utcnow().strftime("%Y-%m-%d")
 
         if not trades:
-            return {
+            empty_payload = {
                 "timestamp": now_iso,
                 "date": today_str,
                 "total_trades": 0,
@@ -674,9 +711,19 @@ class PaperTradeManager:
                 "avg_win": 0.0,
                 "avg_loss": 0.0,
                 "strategy_breakdown": {},
-                "equity_curve": [],
+                "equity_curve": [
+                    {
+                        "date": today_str,
+                        "cum_pnl": 0.0,
+                        "equity": STARTING_PORTFOLIO_CAPITAL,
+                        "drawdown_pct": 0.0,
+                    }
+                ],
                 "recent_trades": [],
             }
+            self._export_json("paper_trade_performance.json", empty_payload)
+            self._export_json("paper_trades_latest.json", {"timestamp": now_iso, "date": today_str, "trades": []})
+            return empty_payload
 
         closed_trades = [t for t in trades if t.get("status") in ("HIT_TARGET", "STOPPED_OUT", "MANUALLY_CLOSED")]
         open_trades = [t for t in trades if t.get("status") == "OPEN"]
@@ -742,7 +789,7 @@ class PaperTradeManager:
         dates = sorted(list(set(t.get("entry_date", "") for t in sorted_trades if t.get("entry_date"))))
         
         equity_curve: List[Dict[str, Any]] = []
-        running_equity = 100000.0  # $100k starting nominal account
+        running_equity = STARTING_PORTFOLIO_CAPITAL  # $1,000,000 starting portfolio capital
         cum_pnl = 0.0
         peak_equity = running_equity
         max_dd = 0.0
