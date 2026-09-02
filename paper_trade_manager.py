@@ -136,8 +136,8 @@ def get_symbol_name(symbol: str) -> str:
     return SYMBOL_NAMES.get(sym, sym)
 
 
-STARTING_PORTFOLIO_CAPITAL: float = 1000000.0  # $1,000,000 starting portfolio capital
-DEFAULT_RISK_PER_TRADE_PCT: float = 0.02       # 2% risk of total equity per trade
+STARTING_PORTFOLIO_CAPITAL: float = 100000.0  # $100,000 starting portfolio capital
+DEFAULT_RISK_PER_TRADE_PCT: float = 0.02       # 2% risk of total equity per trade ($2,000 per trade)
 MAX_PORTFOLIO_OPEN_TRADES: int = 8             # Max 8 concurrent open trades (16% max portfolio heat)
 
 CLUSTERS: Dict[str, set[str]] = {
@@ -181,7 +181,7 @@ def calculate_position_size(
 ) -> int:
     """
     Calculate position contract quantity so that total trade risk is risk_pct (2%) of equity.
-    Dollar risk budget = equity * risk_pct ($20,000 on $1,000,000 equity).
+    Dollar risk budget = equity * risk_pct ($2,000 on $100,000 equity).
     Per-contract dollar risk = abs(entry_price - stop_loss) * point_value.
     Qty = floor(dollar_risk / per_contract_risk).
     """
@@ -1001,7 +1001,7 @@ class PaperTradeManager:
         dates = sorted(list(set(t.get("entry_date", "") for t in sorted_trades if t.get("entry_date"))))
         
         equity_curve: List[Dict[str, Any]] = []
-        running_equity = STARTING_PORTFOLIO_CAPITAL  # $1,000,000 starting portfolio capital
+        running_equity = STARTING_PORTFOLIO_CAPITAL  # $100,000 starting portfolio capital
         cum_pnl = 0.0
         peak_equity = running_equity
         max_dd = 0.0
