@@ -22,32 +22,32 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Optional, Any
 
-# Point values (contract multipliers) for CME / NYMEX / COMEX futures
+# Point values (contract multipliers) for CME / NYMEX / COMEX futures (Micro contracts for $100k account)
 FUTURES_POINT_VALUES: Dict[str, float] = {
-    "ES": 50.0,
-    "NQ": 20.0,
-    "RTY": 50.0,
-    "YM": 5.0,
-    "GC": 100.0,
-    "SI": 5000.0,
-    "CL": 1000.0,
-    "NG": 10000.0,
-    "6E": 125000.0,
-    "6B": 62500.0,
-    "6J": 12500000.0,
-    "6A": 100000.0,
-    "6C": 100000.0,
-    "AUD": 100000.0,
-    "CAD": 100000.0,
-    "EUR": 125000.0,
-    "GBP": 62500.0,
-    "JPY": 12500000.0,
-    "ZB": 1000.0,
-    "ZN": 1000.0,
+    "ES": 5.0,        # Micro E-mini S&P 500 (MES)
+    "NQ": 2.0,        # Micro E-mini Nasdaq 100 (MNQ)
+    "RTY": 5.0,       # Micro E-mini Russell 2000 (M2K)
+    "YM": 0.5,        # Micro E-mini Dow ($0.50) (MYM)
+    "GC": 10.0,       # Micro Gold (10 oz) (MGC)
+    "SI": 1000.0,     # Micro Silver (1000 oz) (SIL)
+    "CL": 100.0,      # Micro WTI Crude Oil (100 bbl) (MCL)
+    "NG": 2500.0,     # E-mini Natural Gas (QG)
+    "6E": 12500.0,    # Micro Euro FX (M6E)
+    "6B": 6250.0,     # Micro British Pound (M6B)
+    "6J": 1250000.0,  # Micro Japanese Yen (M6J)
+    "6A": 10000.0,    # Micro AUD
+    "6C": 10000.0,    # Micro CAD
+    "AUD": 10000.0,
+    "CAD": 10000.0,
+    "EUR": 12500.0,
+    "GBP": 6250.0,
+    "JPY": 1250000.0,
+    "ZB": 1000.0,     # 30-Year T-Bond Futures
+    "ZN": 1000.0,     # 10-Year T-Note Futures
     "ZF": 1000.0,
     "ZT": 2000.0,
-    "HG": 25000.0,
-    "HO": 42000.0,
+    "HG": 2500.0,
+    "HO": 4200.0,
     "KC": 375.0,
     "SB": 1120.0,
     "ZC": 50.0,
