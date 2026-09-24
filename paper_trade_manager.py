@@ -34,14 +34,12 @@ FUTURES_POINT_VALUES: Dict[str, float] = {
     "NG": 2500.0,     # E-mini Natural Gas (QG)
     "6E": 12500.0,    # Micro Euro FX (M6E)
     "6B": 6250.0,     # Micro British Pound (M6B)
-    "6J": 1250000.0,  # Micro Japanese Yen (M6J)
     "6A": 10000.0,    # Micro AUD
     "6C": 10000.0,    # Micro CAD
     "AUD": 10000.0,
     "CAD": 10000.0,
     "EUR": 12500.0,
     "GBP": 6250.0,
-    "JPY": 1250000.0,
     "ZB": 1000.0,     # 30-Year T-Bond Futures
     "ZN": 1000.0,     # 10-Year T-Note Futures
     "ZF": 1000.0,
